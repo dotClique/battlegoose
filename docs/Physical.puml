@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+skinparam linetype ortho
+node Android_Device1 {
+    node "Game Activity1"
+}
+database Firebase {
+    node BattleData {
+        node "..."
+        node BattleActions
+    }
+    node Leaderboard
+}
+
+node Android_Device2 {
+    node "Game Activity2"
+}
+
+
+
+Android_Device1 <...> Firebase : HTTPS
+Firebase <...> Android_Device2 : HTTPS
+
+@enduml

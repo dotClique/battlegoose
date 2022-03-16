@@ -1,0 +1,20 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+
+actor User
+node Client_Mobile{
+  node Android_Executable
+ }
+artifact APK {
+  node "Compiled classes"
+  node Assets
+}
+node Firebase {
+  database Database
+}
+
+
+User -> APK : Interacts with
+APK -> Client_Mobile : Install APK
+Client_Mobile <--> Firebase
+@enduml

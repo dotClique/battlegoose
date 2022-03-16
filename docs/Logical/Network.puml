@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package Network {
+    'Facade for DatabaseHandler etc?
+    interface MultiplayerService {
+        void tryRequestOpponent(Consumer<Boolean> listener)
+        void tryCreateLobby(Consumer<Lobby> listener)
+        void tryJoinLobby(String code, Consumer<Lobby> listener)
+        void postAction(Action action)
+        void startBattle(Lobby lobby)
+        void endBattle(boolean victory)
+        int[] getLeaderboard()
+        void cancelRequestOpponent()
+        ..
+        void addActionReceivedListener(Consumer<Action> listener)
+    }
+    
+    class FirebaseService implements MultiplayerService {
+        FirebaseDatabase database
+    }
+}
+
+@enduml

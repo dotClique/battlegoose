@@ -1,0 +1,21 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant "Hosting Client"
+participant "Other Client"
+participant "Firebase"
+"Hosting Client" -> "Firebase": Initiate Game Lobby
+"Firebase" --> "Hosting Client": Initiation Callback With Lobby ID
+
+"Other Client" --> "Firebase": Search for Game Lobby with specified ID
+"Firebase" -->"Other Client": Succesfully found a lobby with ID
+"Firebase" -->"Hosting Client": Callback with info about newly joined player
+"Hosting Client" -->"Firebase": Request to start game'
+"Firebase"-->"Firebase": Randomly set selected map
+"Firebase"-->"Other Client": Provide map and await army selection
+"Firebase"-->"Hosting Client": Provide map and await army selection
+"Other Client"-->"Firebase": Provide army selection
+"Hosting Client" -->"Firebase": Provide army selection
+"Firebase"-->"Firebase": Randomly select turn order (the game commences)
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package GameStates {
+    class GameStateManager {
+        GameState[] states
+    }
+    GameStateManager o-> GameState #black
+    abstract class GameState {
+        void update()
+    }
+    class MainMenuState extends GameState {}
+    class BattleState extends GameState {}
+    class MoveState extends GameState {}
+    class LeaderboardState extends GameState {}
+}
+@enduml

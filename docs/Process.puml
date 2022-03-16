@@ -1,0 +1,63 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+/'MainMenuView3
+  PreGame-View (hvor man får se banen, og kan velge loadout/deck)
+  GameView
+  LeaderboardActivity
+  MatchmakingView
+  CreateLobbyActiviy
+  JoinLobbyActivity
+  GameResultView
+
+ '/
+
+'!theme aws-orange
+skinparam backgroundColor #FFFFFF
+(*) --> "MainMenuView"
+-->[Quit](*)
+"MainMenuView"-->[Clicked]"MatchmakingView"
+-->[Create private\nlobby]"CreateLobbyActivity"
+"MainMenuView"-->[Leaderboard]"LeaderboardView"
+-->[Back to\nmain menu]"MainMenuView"
+"MatchmakingView"-->[Join private\nlobby]"JoinLobbyActivity"
+"JoinLobbyActivity"-->[Both players are ready]"PreGameView"
+"CreateLobbyActivity"-->[Both players are ready]"PreGameView"
+"MatchmakingView"-->[Random\nOpponent]"SearchingActivity"
+-->[Succesfully found\nopponent]"PreGameView"
+"SearchingActivity"-->[Cancel Search]"MainMenuView"
+"PreGameView"-->[Both players have\nlocked in their\nhero/army]"GameView"
+"GameView"-->[Some player has won]"GameResultView"
+-->[Return to\nmain menu]"MainMenuView"
+
+/'
+:ClickServlet.handleRequest();
+:new page;
+if (Page.onSecurityCheck) then (true)
+  :Page.onInit();
+  if (isForward?) then (no)
+    :Process controls;
+    if (continue processing?) then (no)
+      stop
+    endif
+
+    if (isPost?) then (yes)
+      :Page.onPost();
+    else (no)
+      :Page.onGet();
+    endif
+    :Page.onRender();
+  endif
+else (false)
+endif
+
+if (do redirect?) then (yes)
+  :redirect process;
+else
+  if (do forward?) then (yes)
+    :Forward request;
+  else (no)
+    :Render page template;
+  endif
+endif
+'/
+@enduml

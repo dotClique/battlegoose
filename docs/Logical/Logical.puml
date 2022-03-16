@@ -1,0 +1,164 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+skinparam linetype ortho
+
+package Models {
+    class Player {
+        {static} Player getInstance()
+        int id
+        String nickname
+    }
+    class Battle {
+        Player player1
+        Player player2
+        Hero hero1
+        Hero hero2
+        BattleMap battleMap
+    }
+    Battle o--> Player #black
+    Battle o-up-> Hero #black
+    Battle o-down-> BattleMap #black
+    class BattleMap {
+        Texture background
+        Obstacle[] obstacles
+        Unit[] units
+    }
+    BattleMap o-down-> Obstacle #black
+    BattleMap o-> Unit #black
+    abstract class BattleEntity {
+        int xPos
+        int yPos
+    }
+    class Obstacle extends BattleEntity {
+    }
+    abstract class Unit extends BattleEntity {
+        UnitStatsModifier[] statsModifiers
+        UnitStats stats
+        UnitStats getEffectiveStats()
+    }
+    Unit o-> UnitStats #black
+    Unit o-> UnitStatsModifier #black
+    class UnitStatsModifier {
+        UnitStats modify(UnitStats unitStats)
+    }
+    class UnitStats {
+        int health
+        int maxHealth
+        int attack
+        int defense
+        int speed
+        int range
+        boolean flying
+    }
+    class Pikeman extends Unit {
+
+    }
+    class Archer extends Unit {
+
+    }
+    class Eagle extends Unit {
+
+    }
+    abstract class Hero {
+        Spell[] spells
+        HeroStats stats
+        HeroStatsModifier[] statsModifiers
+        getEffectiveStats()
+    }
+    Hero o-> Spell #black
+    Hero o-> HeroStats #black
+    class HeroStats {
+        int actionPoints
+        UnitStatsModifier[] getUnitStatsModifiers(Unit unit)
+    }
+    HeroStats o-> HeroStatsModifier #black
+    class HeroStatsModifier {
+        HeroStats modify(HeroStats heroStats)
+    }
+    class Napoleon extends Hero {
+
+    }
+    class AlexanderTheGreat extends Hero {
+
+    }
+    abstract class Action {
+        int actionPointCost
+    }
+    class Movement extends Action {
+        Unit target
+        int toX
+        int toY 
+    }
+    class Attack extends Action {
+        Unit attacker
+        Unit target
+    }
+    abstract class Spell extends Action {
+        int cooldown
+        int remainingCooldown
+        int duration
+        ActiveSpell cast()
+    }
+    abstract class ActiveSpell {
+        Spell baseSpell
+        void apply(Battle battle, int turn)
+        int remainingDuration
+    }
+    ActiveSpell o-> Spell #black
+    class BoostAttack3TurnsSpell extends Spell {
+    
+    }
+    class BoostAttack3TurnsActiveSpell extends ActiveSpell {
+    
+    }
+}
+
+package Views {
+    abstract class ViewBase {
+        void render(float dt, SpriteBatch spriteBatch)
+    }
+    class BattleView extends ViewBase {
+        BattleMapView battleMapView
+    }
+    class BattleMapView extends ViewBase {
+    
+    }
+    class HeroView extends ViewBase {
+    
+    }
+    class ObstacleView extends ViewBase {
+    
+    }
+    class UnitView extends ViewBase {
+    
+    }
+    class PikemanView extends UnitView {
+
+    }
+    class ArcherView extends UnitView {
+
+    }
+    class EagleView extends UnitView {
+
+    }
+    class UnitStatsView extends ViewBase {
+    
+    }
+}
+
+package Controllers {
+    class ControllerBase {
+       void update(double dt)
+    }
+    class PikemanController extends ControllerBase {}
+    class ArcherController extends ControllerBase {}
+    class EagleController extends ControllerBase {}
+}
+
+Models .down.> Views : Update view
+Views .down.> Controllers : User interaction
+Controllers .down.> Views : Update view
+Controllers .left.> Models : Update model
+
+@enduml

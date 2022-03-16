@@ -1,0 +1,71 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+skinparam linetype ortho
+component Models #LightYellow {
+    component Player 
+    component Battle 
+    component Action 
+    component BattleMap 
+    component BattleEntity 
+    component Obstacle 
+    component Units #LightSteelBlue{ 
+        component Unit  
+        component UnitStatsModifier #LightBlue
+        component UnitStats #LightBlue
+        component Pikeman  #LightBlue
+        component Archer  #LightBlue
+        component Eagle  #LightBlue
+    }
+    component Heroes #LightSteelBlue{
+        component Hero 
+        component HeroStats #LightBlue
+        component HeroStatsModifier #LightBlue
+        component Napoleon  #LightBlue
+        component AlexanderTheGreat   #LightBlue
+    }
+    component Spells #LightSteelBlue{
+        component Spell #LightBlue
+        component ActiveSpell #LightBlue
+        component BoostAttack3TurnsSpell  #LightBlue
+        component BoostAttack3TurnsActiveSpell  #LightBlue
+    }
+}
+
+
+
+component Views #LightGrey{
+    component ViewBase
+    component BattleMapView  #LightBlue
+    component ObstacleView  #LightBlue
+    component UnitView  #LightBlue
+    component PikemanView  #LightBlue
+    component ArcherView  #LightBlue
+    component EagleView  #LightBlue
+    component UnitStatsView  #LightBlue
+}
+
+component Controllers #LightGreen {
+    'controller Interface? Hva tenker vi?
+     component ControllerBase
+     component PikemanController #LightBlue
+     component ArcherController  #LightBlue
+     component EagleController  #LightBlue
+}
+
+component GameStates #Pink{
+    component GameStateManager #LightBlue
+    component GameState #LightBlue
+    component MainMenuState  #LightBlue
+    component BattleState  #LightBlue
+    component MoveState  #LightBlue
+    component AttackState  #LightBlue
+}
+
+component DatabaseClient #LightSlateGrey {
+    'Facade for DatabaseHandler etc?
+    component NetworkService #LightBlue
+    component DatabaseHandler  #LightBlue
+}
+
+@enduml
