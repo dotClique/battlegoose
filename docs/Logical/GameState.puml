@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-package GameStates {
+package gamestates {
     class GameStateManager {
         GameState[] states
     }

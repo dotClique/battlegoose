@@ -2,7 +2,7 @@
 'https://plantuml.com/component-diagram
 
 skinparam linetype ortho
-component Models #LightYellow {
+component models #LightYellow {
     component Player 
     component Battle 
     component Action 
@@ -34,7 +34,7 @@ component Models #LightYellow {
 
 
 
-component Views #LightGrey{
+component views #LightGrey{
     component ViewBase
     component BattleMapView  #LightBlue
     component ObstacleView  #LightBlue
@@ -45,7 +45,7 @@ component Views #LightGrey{
     component UnitStatsView  #LightBlue
 }
 
-component Controllers #LightGreen {
+component controllers #LightGreen {
     'controller Interface? Hva tenker vi?
      component ControllerBase
      component PikemanController #LightBlue
@@ -53,7 +53,7 @@ component Controllers #LightGreen {
      component EagleController  #LightBlue
 }
 
-component GameStates #Pink{
+component gamestates #Pink{
     component GameStateManager #LightBlue
     component GameState #LightBlue
     component MainMenuState  #LightBlue
@@ -62,7 +62,7 @@ component GameStates #Pink{
     component AttackState  #LightBlue
 }
 
-component DatabaseClient #LightSlateGrey {
+component databaseclient #LightSlateGrey {
     'Facade for DatabaseHandler etc?
     component NetworkService #LightBlue
     component DatabaseHandler  #LightBlue

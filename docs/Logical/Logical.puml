@@ -3,7 +3,7 @@
 
 skinparam linetype ortho
 
-package Models {
+package models {
     class Player {
         {static} Player getInstance()
         int id
@@ -114,7 +114,7 @@ package Models {
     }
 }
 
-package Views {
+package views {
     abstract class ViewBase {
         void render(float dt, SpriteBatch spriteBatch)
     }
@@ -147,7 +147,7 @@ package Views {
     }
 }
 
-package Controllers {
+package controllers {
     class ControllerBase {
        void update(double dt)
     }
@@ -156,9 +156,9 @@ package Controllers {
     class EagleController extends ControllerBase {}
 }
 
-Models .down.> Views : Update view
-Views .down.> Controllers : User interaction
-Controllers .down.> Views : Update view
-Controllers .left.> Models : Update model
+models .down.> views : Update view
+views .down.> controllers : User interaction
+controllers .down.> views : Update view
+controllers .left.> models : Update model
 
 @enduml
