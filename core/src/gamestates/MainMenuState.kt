@@ -12,7 +12,7 @@ class MainMenuState
 
     private fun handleInput() {
         if (Gdx.input.justTouched())
-            GameStateManager.push(GameStates.BATTLE_STATE)
+            GameStateManager.push(BattleState())
     }
 
     override fun update(dt: Float) {

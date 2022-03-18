@@ -2,18 +2,17 @@ package com.progark.battlegoose
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.ScreenUtils
 import gamestates.GameStateManager
-import gamestates.GameStates
+import gamestates.MainMenuState
 
 class Game : ApplicationAdapter() {
     private lateinit var batch: SpriteBatch
 
     override fun create() {
         batch = SpriteBatch()
-        GameStateManager.push(GameStates.MAIN_MENU)
+        GameStateManager.push(MainMenuState())
     }
 
     override fun render() {

@@ -8,21 +8,17 @@ object GameStateManager {
     private val states: Stack<GameState> = Stack()
 
 
-    fun push(state: GameStates) {
-        when(state) {
-            GameStates.MAIN_MENU -> states.push(MainMenuState())
-            GameStates.BATTLE_STATE -> states.push(BattleState())
-            GameStates.LEADERBOARD_STATE -> states.push(LeaderboardState())
-            GameStates.MOVE_STATE -> states.push(MoveState())
-        }
+    fun push(state: GameState) {
+        states.push(state)
     }
 
     fun goBack(): GameState {
+        states.peek().dispose()
         return states.pop()
     }
 
     // What about props? Doing it like this t avoid coupling between the states
-    fun set(state: GameStates) {
+    fun set(state: GameState) {
         goBack()
         push(state)
     }
