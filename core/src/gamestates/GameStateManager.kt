@@ -9,12 +9,12 @@ object GameStateManager {
 
 
     fun push(state: GameStates) {
-//        when(state) {
-//            GameStates.MAIN_MENU -> states.push(MainMenuState())
-//            GameStates.BATTLE_STATE -> states.push(BattleState())
-//            GameStates.LEADERBOARD_STATE -> states.push(LeaderboardState())
-//            GameStates.MOVE_STATE -> states.push(MoveState())
-//        }
+        when(state) {
+            GameStates.MAIN_MENU -> states.push(MainMenuState())
+            GameStates.BATTLE_STATE -> states.push(BattleState())
+            GameStates.LEADERBOARD_STATE -> states.push(LeaderboardState())
+            GameStates.MOVE_STATE -> states.push(MoveState())
+        }
     }
 
     fun goBack(): GameState {
