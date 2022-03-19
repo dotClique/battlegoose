@@ -2,7 +2,7 @@ package gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-class LeaderboardState: GameState() {
+class LeaderboardState : GameState() {
     override fun update(dt: Float) {
         TODO("Not yet implemented")
     }

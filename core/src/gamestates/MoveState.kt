@@ -1,8 +1,8 @@
-package gamestates;
+package gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-public class MoveState: GameState(){
+class MoveState : GameState() {
     override fun update(dt: Float) {
         TODO("Not yet implemented")
     }

@@ -1,11 +1,12 @@
 package gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import java.lang.Error
 import java.util.*
+import java.util.concurrent.ConcurrentLinkedDeque
+
 // The singleton
 object GameStateManager {
-    private val states: Stack<GameState> = Stack()
+    private val states: Deque<GameState> = ConcurrentLinkedDeque()
 
 
     fun push(state: GameState) {
@@ -17,8 +18,7 @@ object GameStateManager {
         return states.pop()
     }
 
-    // What about props? Doing it like this t avoid coupling between the states
-    fun set(state: GameState) {
+    fun replace(state: GameState) {
         goBack()
         push(state)
     }

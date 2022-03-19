@@ -4,8 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-class BattleState : GameState()
-{
+class BattleState : GameState() {
     private val texture = Texture("badlogic.jpg")
     override fun update(dt: Float) {
         if (Gdx.input.justTouched())

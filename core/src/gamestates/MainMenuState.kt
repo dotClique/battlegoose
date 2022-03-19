@@ -20,8 +20,8 @@ class MainMenuState
     }
 
     override fun render(sb: SpriteBatch) {
-        val middleX =  Gdx.graphics.width/2f  - playBtn.width / 2f
-        val middleY = Gdx.graphics.height/2f  - playBtn.height/2
+        val middleX = Gdx.graphics.width / 2f - playBtn.width / 2f
+        val middleY = Gdx.graphics.height / 2f - playBtn.height / 2
         sb.begin()
         sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         sb.draw(playBtn, middleX, middleY)
