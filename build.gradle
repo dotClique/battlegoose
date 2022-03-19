@@ -15,10 +15,23 @@ buildscript {
     }
 }
 
+plugins {
+    // Prettier test output
+    id "com.adarshr.test-logger" version "3.0.0"
+    // Test coverage
+    id "jacoco"
+}
+
 apply from: "./ktlint.gradle"
+
+subprojects {
+    // Prettier test output
+    apply plugin: 'com.adarshr.test-logger'
+}
 
 allprojects {
     apply plugin: "eclipse"
+    apply plugin: "jacoco"
 
     version = '1.0'
     ext {
@@ -81,11 +94,32 @@ project(":android") {
 project(":core") {
     apply plugin: "kotlin"
 
-
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
+        testImplementation 'junit:junit:4.13.2'
+    }
+
+    test {
+        dependsOn cleanTest
+        useJUnit()
+        finalizedBy jacocoTestReport
+    }
+
+    jacocoTestReport {
+        dependsOn test
+        reports {
+            csv.enabled true
+            xml.enabled true
+        }
+    }
+
+    clean {
+        doFirst {
+            delete "${buildDir}/build"
+        }
     }
 }
