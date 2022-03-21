@@ -1,27 +1,30 @@
 package com.progark.battlegoose
 
 import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.ScreenUtils
+import gamestates.GameStateManager
+import gamestates.MainMenuState
 
 class Game : ApplicationAdapter() {
     private lateinit var batch: SpriteBatch
-    private lateinit var img: Texture
+
     override fun create() {
         batch = SpriteBatch()
-        img = Texture("badlogic.jpg")
+        GameStateManager.push(MainMenuState())
     }
 
     override fun render() {
-        ScreenUtils.clear(1f, 0f, 0f, 1f)
-        batch.begin()
-        batch.draw(img, 0f, 0f)
-        batch.end()
+        ScreenUtils.clear(1f, 1f, 1f, 1f)
+        GameStateManager.update(Gdx.graphics.deltaTime)
+        GameStateManager.render(batch)
+
     }
 
     override fun dispose() {
         batch.dispose()
-        img.dispose()
     }
+
+
 }
