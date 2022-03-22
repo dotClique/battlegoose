@@ -1,17 +1,16 @@
-package views
+package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 
 abstract class UnitViewBase(
     texturePath: String,
     protected val textureStartFacingDirection: FacingDirection = FacingDirection.RIGHT
-) : ViewBase(){
+) : ViewBase() {
 
     private val texture = Texture(texturePath)
     protected var textureRegion = TextureRegion(texture)
@@ -45,7 +44,7 @@ abstract class UnitViewBase(
     }
 
     override fun dispose() {
-       texture.dispose()
+        texture.dispose()
     }
 
 }
