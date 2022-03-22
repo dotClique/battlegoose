@@ -1,9 +1,9 @@
-package com.progark.battlegoose.desktop
+package se.battlegoo.battlegoose.desktop
 
 import kotlin.jvm.JvmStatic
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
-import com.progark.battlegoose.Game
+import se.battlegoo.battlegoose.Game
 
 object DesktopLauncher {
     @JvmStatic

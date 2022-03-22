@@ -17,7 +17,7 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "com.progark.battlegoose"
+        applicationId "se.battlegoo.battlegoose"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 1
@@ -86,7 +86,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.progark.battlegoose/com.progark.battlegoose.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'se.battlegoo.battlegoose/se.battlegoo.battlegoose.AndroidLauncher'
 }
 
 eclipse.project.name = appName + "-android"

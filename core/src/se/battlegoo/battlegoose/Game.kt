@@ -1,11 +1,11 @@
-package com.progark.battlegoose
+package se.battlegoo.battlegoose
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.ScreenUtils
-import gamestates.GameStateManager
-import gamestates.MainMenuState
+import se.battlegoo.battlegoose.gamestates.GameStateManager
+import se.battlegoo.battlegoose.gamestates.MainMenuState
 
 class Game : ApplicationAdapter() {
     private lateinit var batch: SpriteBatch
