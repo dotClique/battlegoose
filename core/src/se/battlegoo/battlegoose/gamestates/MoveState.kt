@@ -1,8 +1,8 @@
-package gamestates
+package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-class LeaderboardState : GameState() {
+class MoveState : GameState() {
     override fun update(dt: Float) {
         TODO("Not yet implemented")
     }

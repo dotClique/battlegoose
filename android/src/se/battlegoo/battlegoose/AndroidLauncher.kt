@@ -1,4 +1,4 @@
-package com.progark.battlegoose
+package se.battlegoo.battlegoose
 
 import com.badlogic.gdx.backends.android.AndroidApplication
 import android.os.Bundle

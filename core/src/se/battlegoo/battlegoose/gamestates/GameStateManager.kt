@@ -1,4 +1,4 @@
-package gamestates
+package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import java.util.*
