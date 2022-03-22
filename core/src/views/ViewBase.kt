@@ -35,11 +35,11 @@ abstract class ViewBase(
         sprite.flip(true, false)
     }
 
-    fun render(sb: SpriteBatch) {
+    open fun render(sb: SpriteBatch) {
         sprite.draw(sb)
     }
 
-    fun dispose() {
+    open fun dispose() {
         texture.dispose()
     }
 
