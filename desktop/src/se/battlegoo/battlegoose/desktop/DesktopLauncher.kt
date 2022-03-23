@@ -1,9 +1,9 @@
 package se.battlegoo.battlegoose.desktop
 
-import kotlin.jvm.JvmStatic
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import se.battlegoo.battlegoose.Game
+import kotlin.jvm.JvmStatic
 
 object DesktopLauncher {
     @JvmStatic

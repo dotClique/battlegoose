@@ -1,13 +1,12 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import java.util.*
+import java.util.Deque
 import java.util.concurrent.ConcurrentLinkedDeque
 
 // The singleton
 object GameStateManager {
     private val states: Deque<GameState> = ConcurrentLinkedDeque()
-
 
     fun push(state: GameState) {
         states.push(state)

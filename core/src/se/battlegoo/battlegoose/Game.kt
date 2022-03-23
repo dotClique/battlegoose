@@ -19,12 +19,9 @@ class Game : ApplicationAdapter() {
         ScreenUtils.clear(1f, 1f, 1f, 1f)
         GameStateManager.update(Gdx.graphics.deltaTime)
         GameStateManager.render(batch)
-
     }
 
     override fun dispose() {
         batch.dispose()
     }
-
-
 }
