@@ -9,6 +9,11 @@
 
 image: openjdk:11-jdk
 
+stages:
+  - build
+  - test
+  - visualize
+
 variables:
 
   # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
@@ -27,65 +32,84 @@ variables:
   ANDROID_SDK_TOOLS: "6514223"
 
 # Packages installation before running script
-before_script:
-  - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+.android_setup_template: &android_setup
+  before_script:
+    - apt-get --quiet update --yes
+    - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
 
-  # Setup path as android_home for moving/exporting the downloaded sdk into it
-  - export ANDROID_HOME="${PWD}/android-home"
-  # Create a new directory at specified location
-  - install -d $ANDROID_HOME
-  # Here we are installing androidSDK tools from official source,
-  # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
-  # after that unzipping those tools and
-  # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
-  - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
-  # move to the archive at ANDROID_HOME
-  - pushd $ANDROID_HOME
-  - unzip -d cmdline-tools cmdline-tools.zip
-  - popd
-  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
+    # Setup path as android_home for moving/exporting the downloaded sdk into it
+    - export ANDROID_HOME="${PWD}/android-home"
+    # Create a new directory at specified location
+    - install -d $ANDROID_HOME
+    # Here we are installing androidSDK tools from official source,
+    # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
+    # after that unzipping those tools and
+    # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
+    - wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
+    # move to the archive at ANDROID_HOME
+    - pushd $ANDROID_HOME
+    - unzip -d cmdline-tools cmdline-tools.zip
+    - popd
+    - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
 
-  # Nothing fancy here, just checking sdkManager version
-  - sdkmanager --version
+    # Nothing fancy here, just checking sdkManager version
+    - sdkmanager --version
 
-  # use yes to accept all licenses
-  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
+    # use yes to accept all licenses
+    - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
+    - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
+    - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+    - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
 
-  # Not necessary, but just for surity
-  - chmod +x ./gradlew
+    # Not necessary, but just for surity
+    - chmod +x ./gradlew
 
 # Basic android and gradle stuff
 # Check linting
-lintDebug:
+lint:
+  <<: *android_setup
   interruptible: true
   stage: build
   script:
-    - ./gradlew -Pci --console=plain lintDebug -PbuildDir=lint
+    - ./gradlew -Pci --console=plain lint -PbuildDir=lint
 
 # Run ktlint - Linting and formatting
 ktlint:
+  <<: *android_setup
   interruptible: true
   stage: build
   script:
     - ./gradlew -Pci --console=plain ktlint
 
 # Make Project
-assembleDebug:
+assemble:
+  <<: *android_setup
   interruptible: true
   stage: build
   script:
     - ./gradlew assembleDebug
   artifacts:
+    expose_as: APK
     paths:
-      - android/build/outputs/
+      - android/build/outputs/apk/debug/android-debug.apk
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
-debugTests:
+unitTests:
+  <<: *android_setup
   interruptible: true
   stage: test
   script:
-    - ./gradlew -Pci --console=plain testDebug
+    - ./gradlew -Pci --console=plain test
+    - >
+      awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/",
+      instructions, " instructions covered"; print 100*covered/instructions, "% covered" }'
+      core/build/reports/jacoco/test/jacocoTestReport.csv
+  coverage: "/([0-9]{1,3}.[0-9]*).%.covered/"
+  artifacts:
+    when: always
+    expose_as: "Test results"
+    paths:
+      - core/build/reports/jacoco/
+      - core/build/test-results/
+    reports:
+      junit: core/build/test-results/test/**/TEST-*.xml
