@@ -6,5 +6,4 @@ abstract class GameState {
     abstract fun update(dt: Float)
     abstract fun render(sb: SpriteBatch)
     abstract fun dispose()
-
 }

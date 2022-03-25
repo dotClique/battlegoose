@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
-class MainMenuState
-    : GameState() {
+class MainMenuState :
+    GameState() {
 
     private val background = Texture("heli1.png")
     private val playBtn = Texture("play.png")
@@ -32,6 +32,4 @@ class MainMenuState
         background.dispose()
         playBtn.dispose()
     }
-
-
 }
