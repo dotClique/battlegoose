@@ -8,6 +8,7 @@ abstract class ControllerBase(private val model: Any, private val view: ViewBase
     open fun render(sb: SpriteBatch) {
         view.render(sb)
     }
+
     open fun dispose() {
         view.dispose()
     }

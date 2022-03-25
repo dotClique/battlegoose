@@ -33,11 +33,10 @@ abstract class UnitViewBase(
     }
 
     fun setDirection(newDirection: FacingDirection) {
-        if (newDirection == this.facingDirection) return;
+        if (newDirection == this.facingDirection) return
         facingDirection = newDirection
         sprite.flip(true, false)
     }
-
 
     override fun render(sb: SpriteBatch) {
         sprite.draw(sb)
@@ -46,5 +45,4 @@ abstract class UnitViewBase(
     override fun dispose() {
         texture.dispose()
     }
-
 }
