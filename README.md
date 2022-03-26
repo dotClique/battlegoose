@@ -4,7 +4,7 @@ The ultimate turn-based online multiplayer game that will litterally give you go
 
 ## Development
 
-Commands are run from the root directory (battlegoose/).
+Commands are run from the root directory (`battlegoose/`).
 
 ### Setup
 
@@ -47,15 +47,15 @@ Units do not move when they attack.
 
 ## Spells
 
-Each spell can affect anything in the game state and can only be used once during a match.
+Each spell can affect anything in the game state and has a cooldown which denotes how many turns you have to wait from the spell is cast until the spell can be used again.
 
-- Bird-52: Deal 40 damange all units in the middle 2 columns of the battlefield.
-- Adrenalin Shot: Increase your action points by 1 for the next 3 turns. Thus, the total actions points the next three turns is 2, unless there is another condition that affects the hero's action points.
-- Ephemeral Allegience: One random unit the opponent controls joins your army and is now in your control for 3 turns. The position and stats of that unit stays the same.
+- Bird-52 (cooldown: 3): Deal 30 damage to all units in the middle 2 columns of the battlefield.
+- Adrenalin Shot (cooldown: 6): Increase your action points by 1 for the next 2 turns. Thus, the total actions points the next three turns is 3, unless there is another condition that affects the hero's action points.
+- Ephemeral Allegience (cooldown: 5): One random unit the opponent controls joins your army and is now in your control for 3 turns. The position and stats of that unit stays the same.
 
 ## Heroes
 
-Each Hero has 1 spell which can only be used once.
+Each Hero has 1 spell.
 
 - Admiral Albatraoz (spell: Bird-52)
 - Sergeant Swan (spell: Patriotic Persuation)
