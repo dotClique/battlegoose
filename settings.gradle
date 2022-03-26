@@ -1,2 +1,2 @@
 include 'desktop', 'android', 'core'
-rootProject.name = "se.battlegoo.battlegoose"
+rootProject.name = "battlegoose"
