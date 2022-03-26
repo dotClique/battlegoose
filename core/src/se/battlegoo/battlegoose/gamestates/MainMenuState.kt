@@ -16,6 +16,12 @@ class MainMenuState :
         cam.setToOrtho(false, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
     }
 
+    companion object {
+        const val X_OFFSET = 20f  // x-axis offset for menu screen options
+        const val Y_OFFSET = 14f  // y-axis offset for menu screen options
+        const val SPACER = 1.1f  // spacer between menu screen options
+    }
+
     private val background = Texture("menuBackgroundNoGoose.png")
 
     // Button icons background by Icons8
@@ -48,10 +54,10 @@ class MainMenuState :
         sb.begin()
         sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
-        sb.draw(createLobbyBtn, cam.viewportWidth/20f, cam.viewportHeight/14f, mainMenuBtnWidth, mainMenuBtnHeight)
-        sb.draw(joinLobbyBtn, cam.viewportWidth/20f + mainMenuBtnWidth*1.1f, cam.viewportHeight/14f, mainMenuBtnWidth, mainMenuBtnHeight)
-        sb.draw(quickJoinBtn, cam.viewportWidth/20f + 2*mainMenuBtnWidth*1.1f, cam.viewportHeight/14f, mainMenuBtnWidth, mainMenuBtnHeight)
-        sb.draw(leaderboardBtn, cam.viewportWidth/20f + 3*mainMenuBtnWidth*1.1f, cam.viewportHeight/14f, mainMenuBtnWidth, mainMenuBtnHeight)
+        sb.draw(createLobbyBtn, cam.viewportWidth/X_OFFSET, cam.viewportHeight/Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
+        sb.draw(joinLobbyBtn, cam.viewportWidth/X_OFFSET + mainMenuBtnWidth*SPACER, cam.viewportHeight/Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
+        sb.draw(quickJoinBtn, cam.viewportWidth/X_OFFSET + 2*mainMenuBtnWidth*SPACER, cam.viewportHeight/Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
+        sb.draw(leaderboardBtn, cam.viewportWidth/X_OFFSET + 3*mainMenuBtnWidth*SPACER, cam.viewportHeight/Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
 
         sb.end()
     }
