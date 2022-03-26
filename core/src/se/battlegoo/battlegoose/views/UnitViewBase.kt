@@ -22,8 +22,7 @@ abstract class UnitViewBase(
         if (!Gdx.input.justTouched()) return false
         val touchPoint = Vector2(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
         val thisRect = sprite.boundingRectangle
-        if (thisRect.contains(touchPoint)) return true
-        return false
+        return thisRect.contains(touchPoint)
     }
 
     fun overlaps(other: UnitViewBase): Boolean {
