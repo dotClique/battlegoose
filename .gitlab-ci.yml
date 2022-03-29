@@ -34,6 +34,7 @@ variables:
 # Packages installation before running script
 .android_setup_template: &android_setup
   before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
     - apt-get --quiet update --yes
     - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
 
@@ -63,6 +64,10 @@ variables:
 
     # Not necessary, but just for surity
     - chmod +x ./gradlew
+  cache:
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
 
 # Basic android and gradle stuff
 # Check linting
