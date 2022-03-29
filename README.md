@@ -30,7 +30,7 @@ This project only supports to be run in an android emulator or an actual android
 
 - maxHealth: The amount of damage a unit can take before it dies.
 - attack: The amount of damage each unit deals when it attacks.
-- defense: The percenteage of the attack stat the unit takes when it is attacked by another unit.
+- defense: The percentage decrease of the attack stat the unit takes when it is attacked by another unit.
 - speed: The number of tiles the unit can move if it decides to use its turn on moving to another tile.
 - range: The number of tiles away another unit can be for this unit to be able to attack it.
 - flying: If the unit is a flying unit. This means that is able to move across obstacles in the battlefield.
