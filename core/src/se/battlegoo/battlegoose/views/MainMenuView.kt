@@ -4,9 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
-import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.gamestates.MainMenuState
 
 class MainMenuView(var cam: OrthographicCamera): ViewBase() {
 
@@ -14,26 +11,29 @@ class MainMenuView(var cam: OrthographicCamera): ViewBase() {
         const val X_OFFSET = 20f  // x-axis offset for menu screen options
         const val Y_OFFSET = 14f  // y-axis offset for menu screen options
         const val SPACER = 1.1f  // spacer between menu screen option
+        const val SCALE = 3f // scale of main menu buttons
     }
 
     private val background = Texture("menuBackgroundGoose.png")
 
+    private val x0: Float = cam.viewportWidth / X_OFFSET
+    private val y0: Float = cam.viewportHeight/ Y_OFFSET
+
     // Button icons background by Icons8
-    private val createLobbyTexture = Texture("createLobbyBtn.png")
-    private val createLobbyBtn = TextureRegion(createLobbyTexture)
+    private val createLobbyBtn = ButtonView(cam,"createLobbyBtn.png", x0, y0, SCALE)
+    private val joinLobbyBtn = ButtonView(cam, "joinLobbyBtn.png", x0 + createLobbyBtn.btnWidth*SPACER, y0, SCALE)
+    private val quickJoinBtn = ButtonView(cam, "quickJoinBtn.png", x0 + 2*createLobbyBtn.btnWidth*SPACER, y0, SCALE)
+    private val leaderboardBtn = ButtonView(cam, "leaderboardBtn.png", x0 + 3*createLobbyBtn.btnWidth*SPACER, y0, SCALE)
 
-    private val joinLobbyTexture = Texture("joinLobbyBtn.png")
-    private val joinLobbyBtn = TextureRegion(joinLobbyTexture)
+    // val buttons = arrayOf<ButtonView>(createLobbyBtn, joinLobbyBtn, quickJoinBtn, leaderboardBtn)
 
-    private val quickJoinTexture = Texture("quickJoinBtn.png")
-    private val quickJoinBtn = TextureRegion(quickJoinTexture)
-
-    private val leaderboardTexture = Texture("leaderboardBtn.png")
-    private val leaderboardBtn = TextureRegion(leaderboardTexture)
-
-    // Scaling properties of the main menu buttons
-    private val mainMenuBtnWidth = createLobbyBtn.regionWidth*3f
-    private val mainMenuBtnHeight = createLobbyBtn.regionHeight*3f
+    fun handleInput(): Int {
+        if (createLobbyBtn.isPressed()) return 0
+        else if (joinLobbyBtn.isPressed()) return 1
+        else if (quickJoinBtn.isPressed()) return 2
+        else if (leaderboardBtn.isPressed()) return 3
+        else return -1
+    }
 
     override fun render(sb: SpriteBatch) {
         sb.projectionMatrix = cam.combined
@@ -41,19 +41,19 @@ class MainMenuView(var cam: OrthographicCamera): ViewBase() {
 
         sb.draw(background, 0f, 0f, cam.viewportWidth, cam.viewportHeight)
 
-        sb.draw(createLobbyBtn, cam.viewportWidth/ X_OFFSET, cam.viewportHeight/ Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
-        sb.draw(joinLobbyBtn, cam.viewportWidth/ X_OFFSET + mainMenuBtnWidth* SPACER, cam.viewportHeight/ Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
-        sb.draw(quickJoinBtn, cam.viewportWidth/ X_OFFSET + 2*mainMenuBtnWidth* SPACER, cam.viewportHeight/ Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
-        sb.draw(leaderboardBtn, cam.viewportWidth/ X_OFFSET + 3*mainMenuBtnWidth* SPACER, cam.viewportHeight/ Y_OFFSET, mainMenuBtnWidth, mainMenuBtnHeight)
+        createLobbyBtn.render(sb)
+        joinLobbyBtn.render(sb)
+        quickJoinBtn.render(sb)
+        leaderboardBtn.render(sb)
 
         sb.end()
     }
 
     override fun dispose() {
         background.dispose()
-        createLobbyTexture.dispose()
-        joinLobbyTexture.dispose()
-        quickJoinTexture.dispose()
-        leaderboardTexture.dispose()
+        createLobbyBtn.dispose()
+        joinLobbyBtn.dispose()
+        quickJoinBtn.dispose()
+        leaderboardBtn.dispose()
     }
 }
