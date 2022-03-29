@@ -1,16 +1,14 @@
 package com.progark.battlegoose.models.units
 
-import com.badlogic.gdx.utils.Null
+class UnitStatsModifier (val modifyFunc: (UnitStats) -> UnitStats, val unmodifyFunc: (UnitStats) -> UnitStats, descriptor: String) {
 
-open class UnitStatsModifier {
-
-    open val descriptor : String = "Standard modifier"
+    var descriptor : String = descriptor;
 
     open fun modify(unitStats: UnitStats) : UnitStats {
-        return unitStats;
+        return modifyFunc(unitStats);
     }
 
     open fun unmodify(unitStats: UnitStats) : UnitStats {
-        return unitStats
+        return unmodifyFunc(unitStats);
     }
 }

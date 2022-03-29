@@ -23,7 +23,7 @@ interface IObservable {
 open class Unit (unitStats: UnitStats, modifier: UnitStatsModifier) : IObservable{
     //private var baseUnitStats: UnitStats = unitStats;
     private var transformedUnitStats: UnitStats = unitStats;
-    private val modifierList :ArrayList<UnitStatsModifier> = ArrayList<UnitStatsModifier>()
+    private val modifierList :ArrayList<UnitStatsModifier> = ArrayList<UnitStatsModifier>();
 
 
     override val observers: ArrayList<IObserver>
@@ -32,13 +32,20 @@ open class Unit (unitStats: UnitStats, modifier: UnitStatsModifier) : IObservabl
     fun addModifier(modifier: UnitStatsModifier) {
         modifierList.add(modifier);
         transformedUnitStats = modifier.modify(transformedUnitStats);
-        checkStatState()
+        checkStatState();
+    }
+
+    fun silence() {
+        for (i in modifierList.indices.reversed()) {
+            transformedUnitStats = modifierList[i].unmodify(transformedUnitStats);
+        }
+        checkStatState();
     }
 
     public fun takeDamage(damage: Int) {
         //using flat reduction for now
-        transformedUnitStats.flatReduceIncomingDamage(damage)
-        checkStatState()
+        transformedUnitStats.linearReduceIncomingDamage(damage);
+        checkStatState();
     }
 
     private fun handleDeath() {

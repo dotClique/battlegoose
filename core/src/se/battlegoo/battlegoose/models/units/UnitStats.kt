@@ -1,26 +1,20 @@
 package com.progark.battlegoose.models.units
 
 import kotlin.math.ceil
-import kotlin.math.round
+import kotlin.math.roundToInt
 
-class UnitStats(maxHealth: Int, attack: Int, defense: Int, speed: Int, range: Int, isFlying: Boolean ) {
+class UnitStats(var maxHealth: Int, var attack: Int, var defense: Int, var speed: Int, var range: Int, var isFlying: Boolean ) {
     var health: Int = maxHealth;
-    var maxHealth: Int = maxHealth;
-    var attack: Int = attack;
-    var defense: Int = defense;
-    var speed: Int = speed;
-    var range: Int = range;
-    var isFlying: Boolean = isFlying;
 
-    public fun getMaxAttackRange(): Int {
+    fun getMaxAttackRange(): Int {
         return (speed + range);
     }
 
-    public fun getIsFlying() :Boolean {
+    fun getIsFlying() :Boolean {
         return isFlying;
     }
 
-    public fun heal(healAmount: Int) {
+    fun heal(healAmount: Int) {
         health += healAmount;
         if (health > maxHealth) health = maxHealth;
     }
@@ -28,22 +22,33 @@ class UnitStats(maxHealth: Int, attack: Int, defense: Int, speed: Int, range: In
     /**
      * Can never take zero damage (this is to avoid deadlock)
      */
-    public fun flatReduceIncomingDamage(incomingDamage : Int) {
+    fun flatReduceIncomingDamage(incomingDamage : Int) {
         health -= if (incomingDamage - defense > 0) {
             (incomingDamage - defense)
         } else {
             1
-        }
+        };
     }
 
     /**
-     * Rounds up to avoid deadlock situations
+     * Reduces damage by treating defense as a linearly scaling percent damage reduction.
+     * Rounded to nearest whole damage point.
+     * For example: Incoming 40 damage with 11 armor means 11% reduction from 40, which equals 35.6. Rounded to 36 damage taken
+     * Can per request allow 100% damage mitigation
      */
-    public fun scaledReduceIncomingDamage(incomingDamage: Int) {
-        health -= ceil(incomingDamage * (100.0f / (100.0f + (defense as Float)))).toInt();
+    fun linearReduceIncomingDamage(incomingDamage: Int) {
+        health -= ( incomingDamage * (100.0f - defense)).roundToInt();
     }
 
-    public fun takeTrueDamage(incomingDamage: Int) {
+    /**
+     * Usual MMORPG damage calc. Treat defense as percentage effective health
+     * Rounds up to avoid deadlock situations
+     */
+    fun scaledReduceIncomingDamage(incomingDamage: Int) {
+        health -= ceil(incomingDamage * (100.0f / (100.0f + defense))).toInt();
+    }
+
+    fun takeTrueDamage(incomingDamage: Int) {
         health -= incomingDamage;
     }
 }
