@@ -60,3 +60,15 @@ Each Hero has 1 spell.
 - Admiral Albatraoz (spell: Bird-52)
 - Sergeant Swan (spell: Patriotic Persuation)
 - Major Mallard (spell: Ephemeral Allegience)
+
+
+# Technical details
+
+## GitLab-runners
+
+This project has 6 specific gitlab-runners on a VM at Nardo. These are named 'gitlab-runner-frat-no1' through 'gitlab-runner-frat-no6'. Runners 1 through 3 are running default image 'ruby:2.7' while, runners 4 through 6 runs the default image 'alpine:latest'. If this causes any issues, please notify the team so it can be fixed.
+
+The runners were registered using the following command:
+```bash
+sudo gitlab-runner register --non-interactive --url https://gitlab.stud.idi.ntnu.no/ --registration-token $REGISTRATION_TOKEN --executor "docker" --docker-image alpine:latest --run-untagged --description "gitlab-runner-frat-no1337"
+```
