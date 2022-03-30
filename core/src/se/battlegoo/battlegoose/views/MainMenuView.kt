@@ -36,8 +36,6 @@ class MainMenuView(var cam: OrthographicCamera) : ViewBase() {
         x0 + 3 * createLobbyBtn.btnWidth * SPACER, y0, SCALE
     )
 
-    // val buttons = arrayOf<ButtonView>(createLobbyBtn, joinLobbyBtn, quickJoinBtn, leaderboardBtn)
-
     fun handleInput(): Int {
         if (createLobbyBtn.isPressed()) return 0
         else if (joinLobbyBtn.isPressed()) return 1

@@ -29,9 +29,6 @@ class MainMenuState :
                 GameStateManager.push(LeaderboardState())
             }
         }
-
-        // if (Gdx.input.justTouched())
-        //     GameStateManager.push(LeaderboardState())
     }
 
     override fun update(dt: Float) {
