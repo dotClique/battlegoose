@@ -9,9 +9,4 @@ class GameTest {
     fun test() {
         Game()
     }
-
-    @Test
-    fun test2() {
-        GameStateManager.push(LeaderboardState())
-    }
 }
