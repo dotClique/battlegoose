@@ -17,6 +17,8 @@ stages:
 # Packages installation before running script
 .android_setup_template: &android_setup
   before_script:
+    - export GRADLE_USER_HOME=$(pwd)/.gradle
+    - export GITLAB_USER_NAME=GHOST
     - chmod +x ./gradlew
     - >
       yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
@@ -30,12 +32,12 @@ stages:
 
 # Basic android and gradle stuff
 # Check linting
-lint:
-  <<: *android_setup
-  interruptible: true
-  stage: build
-  script:
-    - ./gradlew -Pci --console=plain lint -PbuildDir=lint
+#lint: # Disabled, as we've added ktlint instead
+#  <<: *android_setup
+#  interruptible: true
+#  stage: build
+#  script:
+#    - ./gradlew --no-daemon -Pci --console=plain lint -PbuildDir=lint
 
 # Run ktlint - Linting and formatting
 ktlint:
@@ -43,7 +45,7 @@ ktlint:
   interruptible: true
   stage: build
   script:
-    - ./gradlew -Pci --console=plain ktlint
+    - ./gradlew --no-daemon -Pci --console=plain ktlint
 
 # Make Project
 assemble:
@@ -51,7 +53,7 @@ assemble:
   interruptible: true
   stage: build
   script:
-    - ./gradlew assembleDebug
+    - ./gradlew --no-daemon assembleDebug
   artifacts:
     expose_as: APK
     paths:
@@ -63,7 +65,7 @@ unitTests:
   interruptible: true
   stage: test
   script:
-    - ./gradlew -Pci --console=plain test
+    - ./gradlew --no-daemon -Pci --console=plain test
     - >
       awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/",
       instructions, " instructions covered"; print 100*covered/instructions, "% covered" }'
