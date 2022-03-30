@@ -16,7 +16,7 @@ class JoinLobbyState : GameState() {
         cam.setToOrtho(false, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
     }
 
-    private val background = Texture("gitlab.png")
+    private val background = Texture("placeholder.png")
 
     private val title: BitmapFont = BitmapFont()
     private val titleText = "JOIN LOBBY"

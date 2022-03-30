@@ -16,7 +16,7 @@ class LeaderboardState : GameState() {
         cam.setToOrtho(false, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
     }
 
-    private val background = Texture("leaderboardBackground.jpg")
+    private val background = Texture("placeholder.jpg")
 
     private val title: BitmapFont = BitmapFont()
     private val titleText = "LEADERBOARD"
