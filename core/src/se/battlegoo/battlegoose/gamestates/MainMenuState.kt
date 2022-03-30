@@ -22,13 +22,13 @@ class MainMenuState :
     private fun handleInput() {
         if(Gdx.input.justTouched()) {
             if (mainMenuView.handleInput() == 0) {
-                //GameStateManager.push(CreateLobbyState())
+                GameStateManager.push(CreateLobbyState())
             }
             else if (mainMenuView.handleInput() == 1) {
-                //GameStateManager.push(JoinLobbyState())
+                GameStateManager.push(JoinLobbyState())
             }
             else if (mainMenuView.handleInput() == 2) {
-                //GameStateManager.push(QuickJoinState())
+                GameStateManager.push(QuickJoinState())
             }
             else if(mainMenuView.handleInput() == 3) {
                 GameStateManager.push(LeaderboardState())

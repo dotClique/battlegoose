@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2
 
 
 class ButtonView(val cam: OrthographicCamera, texturePath: String,
-                 private val xPos: Float,
+                 private val xPos: Float,.
                  private val yPos: Float,
                  scale: Float = 1f
 ): ViewBase() {
