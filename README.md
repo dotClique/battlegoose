@@ -66,7 +66,9 @@ Each Hero has 1 spell.
 
 ## GitLab-runners
 
-This project has 6 specific gitlab-runners on a VM at Nardo. These are named 'gitlab-runner-frat-no1' through 'gitlab-runner-frat-no6'. Runners 1 through 3 are running default image 'ruby:2.7' while, runners 4 through 6 runs the default image 'alpine:latest'. If this causes any issues, please notify the team so it can be fixed.
+This project has 1 project specific gitlab-runner on a VM at Nardo. It is name 'gitlab-runner-frat-no1'. The default image is 'alpine:latest'. If this causes any issues, please notify the team so it can be fixed.
+
+The gitlab-runner config is stored at `/etc/gitlab-runner/config.toml`, where `concurrent = 1` is default, but currently set to `concurrent = 32`.
 
 The runners were registered using the following command:
 ```bash
