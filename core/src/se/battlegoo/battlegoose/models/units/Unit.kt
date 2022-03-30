@@ -20,10 +20,10 @@ interface IObservable {
     }
 }
 
-open class Unit (unitStats: UnitStats, modifier: UnitStatsModifier) : IObservable{
+open class Unit (unitStats: UnitStats, var name : String, var description : String) : IObservable{
     //private var baseUnitStats: UnitStats = unitStats;
-    private var transformedUnitStats: UnitStats = unitStats;
-    private val modifierList :ArrayList<UnitStatsModifier> = ArrayList<UnitStatsModifier>();
+    var transformedUnitStats: UnitStats = unitStats;
+    val modifierList :ArrayList<UnitStatsModifier> = ArrayList<UnitStatsModifier>();
 
 
     override val observers: ArrayList<IObserver>
@@ -52,7 +52,7 @@ open class Unit (unitStats: UnitStats, modifier: UnitStatsModifier) : IObservabl
         sendUpdateEvent("Dead");
     }
 
-    private fun checkStatState() {
+    open fun checkStatState() {
         if (transformedUnitStats.health <= 0) {
             handleDeath()
         }
