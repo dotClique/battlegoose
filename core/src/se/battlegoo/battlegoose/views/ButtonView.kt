@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 
-
-class ButtonView(val cam: OrthographicCamera, texturePath: String,
-                 private val xPos: Float,.
-                 private val yPos: Float,
-                 scale: Float = 1f
-): ViewBase() {
+class ButtonView(
+    val cam: OrthographicCamera,
+    texturePath: String,
+    private val xPos: Float,
+    private val yPos: Float,
+    scale: Float = 1f
+) : ViewBase() {
 
     private val buttonTexture = Texture(texturePath)
     private val buttonTextureRegion = TextureRegion(buttonTexture)
@@ -21,12 +22,12 @@ class ButtonView(val cam: OrthographicCamera, texturePath: String,
     private val button = Rectangle(
         xPos,
         yPos,
-        buttonTextureRegion.regionWidth*scale,
-        buttonTextureRegion.regionHeight*scale
+        buttonTextureRegion.regionWidth * scale,
+        buttonTextureRegion.regionHeight * scale
     )
 
-    val btnWidth: Float = buttonTextureRegion.regionWidth*scale
-    val btnHeight: Float = buttonTextureRegion.regionHeight*scale
+    val btnWidth: Float = buttonTextureRegion.regionWidth * scale
+    val btnHeight: Float = buttonTextureRegion.regionHeight * scale
 
     /**
      * Handle whether a button is pressed or not
@@ -34,7 +35,8 @@ class ButtonView(val cam: OrthographicCamera, texturePath: String,
      * @return boolean
      */
     fun isPressed(): Boolean {
-        val yInverted = Gdx.graphics.height - Gdx.input.y.toFloat() // Because of different axis directions of cam and gdx
+        // Invert y because of different axis directions of cam and gdx
+        val yInverted = Gdx.graphics.height - Gdx.input.y.toFloat()
 
         val tmp = Vector2(Gdx.input.x.toFloat(), yInverted)
         val position = gdxToCam(tmp.x, tmp.y)

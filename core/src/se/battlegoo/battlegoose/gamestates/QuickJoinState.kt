@@ -26,7 +26,6 @@ class QuickJoinState : GameState() {
     private val goBackText = "Press anywhere to return to main menu..."
     private val layoutGoBack = GlyphLayout(goBack, goBackText)
 
-
     private fun handleInput() {
         if (Gdx.input.justTouched())
             GameStateManager.push(MainMenuState())
@@ -44,10 +43,16 @@ class QuickJoinState : GameState() {
         sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
         title.data.setScale(5f)
-        title.draw(sb, titleText, (cam.viewportWidth/2f)-(layoutTitle.width*5f/2f), (cam.viewportHeight*0.9f) + layoutTitle.height*3f)
+        title.draw(
+            sb, titleText, (cam.viewportWidth / 2f) - (layoutTitle.width * 5f / 2f),
+            (cam.viewportHeight * 0.9f) + layoutTitle.height * 3f
+        )
 
         goBack.data.setScale(3f)
-        goBack.draw(sb, goBackText, cam.viewportWidth/20f-(layoutGoBack.width/3f), cam.viewportHeight/20f + layoutGoBack.height*3f)
+        goBack.draw(
+            sb, goBackText, cam.viewportWidth / 20f - (layoutGoBack.width / 3f),
+            cam.viewportHeight / 20f + layoutGoBack.height * 3f
+        )
 
         sb.end()
     }
@@ -58,4 +63,3 @@ class QuickJoinState : GameState() {
         goBack.dispose()
     }
 }
-

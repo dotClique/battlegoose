@@ -10,7 +10,7 @@ import se.battlegoo.battlegoose.gamestates.MainMenuState
 class Game : ApplicationAdapter() {
     private lateinit var batch: SpriteBatch
 
-    companion object{
+    companion object {
         const val WIDTH = 2280
         const val HEIGHT = 1080
         const val TITLE = "Battlegoose"
