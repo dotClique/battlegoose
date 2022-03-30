@@ -11,21 +11,16 @@ class ButtonView(
     texturePath: String,
     private val xPos: Float,
     private val yPos: Float,
-    scale: Float = 1f
+    val width: Float = 1f
 ) : ViewBase() {
 
     private val buttonTexture = Texture(texturePath)
     private val buttonTextureRegion = TextureRegion(buttonTexture)
 
-    private val button = Rectangle(
-        xPos,
-        yPos,
-        buttonTextureRegion.regionWidth * scale,
-        buttonTextureRegion.regionHeight * scale
-    )
+    val height: Float = buttonTextureRegion.regionHeight.toFloat() / buttonTextureRegion.regionWidth
+        .toFloat() * width
 
-    val btnWidth: Float = buttonTextureRegion.regionWidth * scale
-    val btnHeight: Float = buttonTextureRegion.regionHeight * scale
+    private val button = Rectangle(xPos, yPos, width, height)
 
     /**
      * Handle whether a button is pressed or not
@@ -37,7 +32,7 @@ class ButtonView(
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(buttonTextureRegion, xPos, yPos, this.btnWidth, this.btnHeight)
+        sb.draw(buttonTextureRegion, xPos, yPos, width, height)
     }
 
     override fun dispose() {
