@@ -12,9 +12,7 @@ class BattleState : GameState() {
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.begin()
         sb.draw(texture, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        sb.end()
     }
 
     override fun dispose() {

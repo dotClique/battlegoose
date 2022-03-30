@@ -1,10 +1,10 @@
 package se.battlegoo.battlegoose.views
 
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import se.battlegoo.battlegoose.Game
 
-class MainMenuView(var cam: OrthographicCamera) : ViewBase() {
+class MainMenuView : ViewBase() {
 
     companion object {
         const val X_OFFSET = 20f // x-axis offset for menu screen options
@@ -15,24 +15,24 @@ class MainMenuView(var cam: OrthographicCamera) : ViewBase() {
 
     private val background = Texture("menuBackgroundGoose.png")
 
-    private val x0: Float = cam.viewportWidth / X_OFFSET
-    private val y0: Float = cam.viewportHeight / Y_OFFSET
+    private val x0: Float = Game.WIDTH / X_OFFSET
+    private val y0: Float = Game.HEIGHT / Y_OFFSET
 
     // Button icons background by Icons8
     private val createLobbyBtn = ButtonView(
-        cam, "createLobbyBtn.png",
+        "createLobbyBtn.png",
         x0, y0, SCALE
     )
     private val joinLobbyBtn = ButtonView(
-        cam, "joinLobbyBtn.png",
+        "joinLobbyBtn.png",
         x0 + createLobbyBtn.btnWidth * SPACER, y0, SCALE
     )
     private val quickJoinBtn = ButtonView(
-        cam, "quickJoinBtn.png",
+        "quickJoinBtn.png",
         x0 + 2 * createLobbyBtn.btnWidth * SPACER, y0, SCALE
     )
     private val leaderboardBtn = ButtonView(
-        cam, "leaderboardBtn.png",
+        "leaderboardBtn.png",
         x0 + 3 * createLobbyBtn.btnWidth * SPACER, y0, SCALE
     )
 
@@ -45,17 +45,12 @@ class MainMenuView(var cam: OrthographicCamera) : ViewBase() {
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.projectionMatrix = cam.combined
-        sb.begin()
-
-        sb.draw(background, 0f, 0f, cam.viewportWidth, cam.viewportHeight)
+        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
 
         createLobbyBtn.render(sb)
         joinLobbyBtn.render(sb)
         quickJoinBtn.render(sb)
         leaderboardBtn.render(sb)
-
-        sb.end()
     }
 
     override fun dispose() {

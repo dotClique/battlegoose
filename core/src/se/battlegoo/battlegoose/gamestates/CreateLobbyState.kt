@@ -36,10 +36,6 @@ class CreateLobbyState : GameState() {
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.projectionMatrix = cam.combined
-
-        sb.begin()
-
         sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
 
         title.data.setScale(5f)
@@ -53,8 +49,6 @@ class CreateLobbyState : GameState() {
             sb, goBackText, cam.viewportWidth / 20f - (layoutGoBack.width / 3f),
             cam.viewportHeight / 20f + layoutGoBack.height * 3f
         )
-
-        sb.end()
     }
 
     override fun dispose() {
