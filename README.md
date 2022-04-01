@@ -30,12 +30,12 @@ This project only supports to be run in an android emulator or an actual android
 
 - maxHealth: The amount of damage a unit can take before it dies.
 - attack: The amount of damage each unit deals when it attacks.
-- defense: The percenteage of the attack stat the unit takes when it is attacked by another unit.
-- speed: The number of tiles the unit can move if it decides to use its turn on moving to another tile. '
+- defense: The percentage decrease of the attack stat the unit takes when it is attacked by another unit.
+- speed: The number of tiles the unit can move if it decides to use its turn on moving to another tile.
 - range: The number of tiles away another unit can be for this unit to be able to attack it.
-- flying: If the unit is a flying unit. This means that is able to walk across obstacles in the battlefield.
+- flying: If the unit is a flying unit. This means that the unit is able to move across obstacles in the battlefield.
 
-In the class diagram, the 'health' stat denotes current health in-game.
+In the class diagram, the 'health' stat denotes current in-game health.
 Units do not move when they attack.
 
 ## Units
@@ -50,7 +50,7 @@ Units do not move when they attack.
 Each spell can affect anything in the game state and has a cooldown which denotes how many turns you have to wait from the spell is cast until the spell can be used again.
 
 - Bird-52 (cooldown: 3): Deal 30 damage to all units in the middle 2 columns of the battlefield.
-- Adrenalin Shot (cooldown: 6): Increase your action points by 1 for the next 2 turns. Thus, the total actions points the next three turns is 3, unless there is another condition that affects the hero's action points.
+- Adrenaline Shot (cooldown: 6): Increase your action points by 1 for the next 2 turns. Thus, the total actions points the next three turns is 2, unless there is another condition that affects the hero's action points.
 - Ephemeral Allegience (cooldown: 5): One random unit the opponent controls joins your army and is now in your control for 3 turns. The position and stats of that unit stays the same.
 
 ## Heroes
@@ -58,8 +58,8 @@ Each spell can affect anything in the game state and has a cooldown which denote
 Each Hero has 1 spell.
 
 - Admiral Albatraoz (spell: Bird-52)
-- Sergeant Swan (spell: Patriotic Persuation)
-- Major Mallard (spell: Ephemeral Allegience)
+- Sergeant Swan (spell: Ephemeral Allegience)
+- Major Mallard (spell: Adrenaline Shot)
 
 
 # Technical details
