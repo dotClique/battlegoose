@@ -2,9 +2,10 @@ package com.progark.battlegoose.models.units
 
 import kotlin.math.roundToInt
 
-open class Unit(unitStats: UnitStats, val name: String, val description: String) {
+open class Unit(baseStats: UnitStats, val name: String, val description: String) {
 
-    var currentStats: UnitStats = unitStats
+    var currentStats: UnitStats = baseStats
+        private set
 
     fun applyModifier(modifier: UnitStatsModifier) {
         currentStats = modifier(currentStats)
