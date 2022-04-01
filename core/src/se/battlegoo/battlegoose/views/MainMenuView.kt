@@ -7,16 +7,17 @@ import se.battlegoo.battlegoose.Game
 class MainMenuView : ViewBase() {
 
     companion object {
-        const val Y_OFFSET = 14f // y-axis offset for menu screen options
-        const val SPACER = 1.1f // spacer between menu screen option
+        const val BOTTOM_SPACING = 80f // y-axis offset for menu screen options
+        const val SPACER = 50f // spacer between menu screen option
+
         // width of main menu buttons
-        const val BUTTON_WIDTH = Game.WIDTH.toFloat() / (4 * SPACER + (SPACER - 1))
+        const val BUTTON_WIDTH = ((Game.WIDTH - 5 * SPACER) / 4).toInt()
     }
 
     private val background = Texture("menuBackgroundGoose.png")
 
-    private val x0: Float = (SPACER - 1) * BUTTON_WIDTH
-    private val y0: Float = Game.HEIGHT / Y_OFFSET
+    private val x0: Float = SPACER
+    private val y0: Float = BOTTOM_SPACING
 
     // Button icons background by Icons8
     private val createLobbyBtn = ButtonView(
@@ -25,15 +26,15 @@ class MainMenuView : ViewBase() {
     )
     private val joinLobbyBtn = ButtonView(
         "joinLobbyBtn.png",
-        x0 + createLobbyBtn.width * SPACER, y0, BUTTON_WIDTH
+        x0 + BUTTON_WIDTH + SPACER, y0, BUTTON_WIDTH
     )
     private val quickJoinBtn = ButtonView(
         "quickJoinBtn.png",
-        x0 + 2 * createLobbyBtn.width * SPACER, y0, BUTTON_WIDTH
+        x0 + 2 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH
     )
     private val leaderboardBtn = ButtonView(
         "leaderboardBtn.png",
-        x0 + 3 * createLobbyBtn.width * SPACER, y0, BUTTON_WIDTH
+        x0 + 3 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH
     )
 
     fun handleInput(): Int {
