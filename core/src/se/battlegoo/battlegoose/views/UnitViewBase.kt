@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2
 abstract class UnitViewBase(
     texturePath: String,
     protected val textureStartFacingDirection: FacingDirection = FacingDirection.RIGHT
+
 ) : ViewBase() {
 
     private val texture = Texture(texturePath)
@@ -17,6 +18,11 @@ abstract class UnitViewBase(
         get
     protected val sprite = Sprite(textureRegion)
     protected var facingDirection = textureStartFacingDirection
+    private var observer: UnitObserver? = null
+
+    fun subscribe(observer: UnitObserver) {
+        this.observer = observer
+    }
 
     fun clicked(): Boolean {
         if (!Gdx.input.justTouched()) return false
@@ -35,6 +41,11 @@ abstract class UnitViewBase(
         if (newDirection == this.facingDirection) return
         facingDirection = newDirection
         sprite.flip(true, false)
+    }
+
+    fun registerInput() {
+        if (!clicked()) return;
+        observer?.onClick()
     }
 
     override fun render(sb: SpriteBatch) {
