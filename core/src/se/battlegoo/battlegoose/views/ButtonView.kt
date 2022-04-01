@@ -11,7 +11,8 @@ class ButtonView(
     texturePath: String,
     private val xPos: Float,
     private val yPos: Float,
-    val width: Int = 1
+    val width: Int,
+    val onClick: () -> Unit
 ) : ViewBase() {
 
     private val buttonTexture = Texture(texturePath)
@@ -34,13 +35,19 @@ class ButtonView(
      *
      * @return boolean
      */
-    fun isPressed(): Boolean {
+    private fun isPressed(): Boolean {
         return buttonSprite.boundingRectangle.contains(
             Game.unproject(
                 Gdx.input.x.toFloat(),
                 Gdx.input.y.toFloat()
             )
         )
+    }
+
+    override fun registerInput() {
+        if (Gdx.input.justTouched() && isPressed()) {
+            onClick()
+        }
     }
 
     override fun render(sb: SpriteBatch) {

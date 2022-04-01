@@ -4,7 +4,12 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 
-class MainMenuView : ViewBase() {
+class MainMenuView(
+    onClickCreateLobby: () -> Unit,
+    onClickJoinLobby: () -> Unit,
+    onClickQuickJoin: () -> Unit,
+    onClickLeaderboard: () -> Unit
+) : ViewBase() {
 
     companion object {
         const val BOTTOM_SPACING = 80f // y-axis offset for menu screen options
@@ -22,32 +27,30 @@ class MainMenuView : ViewBase() {
     // Button icons background by Icons8
     private val createLobbyBtn = ButtonView(
         "createLobbyBtn.png",
-        x0, y0, BUTTON_WIDTH
+        x0, y0, BUTTON_WIDTH, onClickCreateLobby
     )
     private val joinLobbyBtn = ButtonView(
         "joinLobbyBtn.png",
-        x0 + BUTTON_WIDTH + SPACER, y0, BUTTON_WIDTH
+        x0 + BUTTON_WIDTH + SPACER, y0, BUTTON_WIDTH, onClickJoinLobby
     )
     private val quickJoinBtn = ButtonView(
         "quickJoinBtn.png",
-        x0 + 2 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH
+        x0 + 2 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH, onClickQuickJoin
     )
     private val leaderboardBtn = ButtonView(
         "leaderboardBtn.png",
-        x0 + 3 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH
+        x0 + 3 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH, onClickLeaderboard
     )
 
-    fun handleInput(): Int {
-        if (createLobbyBtn.isPressed()) return 0
-        else if (joinLobbyBtn.isPressed()) return 1
-        else if (quickJoinBtn.isPressed()) return 2
-        else if (leaderboardBtn.isPressed()) return 3
-        else return -1
+    override fun registerInput() {
+        createLobbyBtn.registerInput()
+        joinLobbyBtn.registerInput()
+        quickJoinBtn.registerInput()
+        leaderboardBtn.registerInput()
     }
 
     override fun render(sb: SpriteBatch) {
         sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
-
         createLobbyBtn.render(sb)
         joinLobbyBtn.render(sb)
         quickJoinBtn.render(sb)
