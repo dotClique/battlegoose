@@ -15,20 +15,26 @@ open class Unit(unitStats: UnitStats, val name: String, val description: String)
     }
 
     fun takeAttackDamage(incomingDamage: Int) {
-        applyModifier(fun (unitStats: UnitStats): UnitStats {
-            return unitStats.copy(health = unitStats.health - incomingDamage * (100.0f - currentStats.defense).roundToInt())
+        applyModifier(fun(unitStats: UnitStats): UnitStats {
+            return unitStats.copy(
+                health = unitStats.health - incomingDamage
+                    * (100.0f - currentStats.defense).roundToInt()
+            )
         })
     }
 
     fun takeTrueDamage(incomingDamage: Int) {
-        applyModifier(fun (unitStats: UnitStats): UnitStats {
+        applyModifier(fun(unitStats: UnitStats): UnitStats {
             return unitStats.copy(health = unitStats.health - incomingDamage)
         })
     }
 
     fun heal(healAmount: Int) {
-        applyModifier(fun (unitStats: UnitStats): UnitStats {
-            return unitStats.copy(health = if (unitStats.health + healAmount >= unitStats.maxHealth) unitStats.maxHealth else unitStats.health + healAmount)
+        applyModifier(fun(unitStats: UnitStats): UnitStats {
+            return unitStats.copy(
+                health = if (unitStats.health + healAmount >= unitStats.maxHealth)
+                    unitStats.maxHealth else unitStats.health + healAmount
+            )
         })
     }
 }
