@@ -7,12 +7,12 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 
-class LeaderboardState : GameState() {
+class QuickJoinState : GameState() {
 
     private val background = Texture("placeholder.png")
 
     private val title: BitmapFont = BitmapFont()
-    private val titleText = "LEADERBOARD"
+    private val titleText = "QUICK JOIN"
     private val layoutTitle = GlyphLayout(title, titleText)
 
     private val goBack: BitmapFont = BitmapFont()
