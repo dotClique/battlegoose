@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyState : GameState() {
 
@@ -16,11 +17,7 @@ class CreateLobbyState : GameState() {
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     }
 
-    private val background = Texture("placeholder.png")
-
-    private val title: BitmapFont = BitmapFont()
-    private val titleText = "CREATE LOBBY"
-    private val layoutTitle = GlyphLayout(title, titleText)
+    private val createLobbyView: CreateLobbyView = CreateLobbyView()
 
     private val goBack: BitmapFont = BitmapFont()
     private val goBackText = "Press anywhere to return to main menu..."
@@ -36,13 +33,7 @@ class CreateLobbyState : GameState() {
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-
-        title.data.setScale(5f)
-        title.draw(
-            sb, titleText, (cam.viewportWidth / 2f) - (layoutTitle.width * 5f / 2f),
-            (cam.viewportHeight * 0.9f) + layoutTitle.height * 3f
-        )
+        createLobbyView.render(sb)
 
         goBack.data.setScale(3f)
         goBack.draw(
@@ -52,8 +43,7 @@ class CreateLobbyState : GameState() {
     }
 
     override fun dispose() {
-        background.dispose()
-        title.dispose()
+        createLobbyView.dispose()
         goBack.dispose()
     }
 }
