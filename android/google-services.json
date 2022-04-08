@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "637382925655",
+    "firebase_url": "https://battlegoose-a31a7-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "battlegoose-a31a7",
+    "storage_bucket": "battlegoose-a31a7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637382925655:android:99282bfa5d00c2ab94b212",
+        "android_client_info": {
+          "package_name": "com.progark.battlegoose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637382925655-vjnth6kbdcv84po88oks63j1fje6br4q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5wcwlZtHh2M8XLaCxu7Mc9zOdT9cin70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637382925655-vjnth6kbdcv84po88oks63j1fje6br4q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637382925655:android:8ccb793f2127b3eb94b212",
+        "android_client_info": {
+          "package_name": "se.battlegoo.battlegoose"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637382925655-vjnth6kbdcv84po88oks63j1fje6br4q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5wcwlZtHh2M8XLaCxu7Mc9zOdT9cin70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637382925655-vjnth6kbdcv84po88oks63j1fje6br4q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
