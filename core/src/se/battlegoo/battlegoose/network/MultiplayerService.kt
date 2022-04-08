@@ -2,7 +2,6 @@ package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
 import java.util.LinkedList
-import java.util.UUID
 import java.util.function.Consumer
 import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
@@ -34,10 +33,15 @@ object MultiplayerService {
         )
     }
 
+    private fun generateReadableUID(): String {
+        return (1..6).map { ('A'..'Z').random() }.joinToString("")
+    }
+
     fun tryCreateLobby(listener: Consumer<LobbyData>) {
         databaseHandler.getUserID { userID ->
-            databaseHandler.pushValue(DataPaths.LOBBIES.toString(), LobbyData(userID)).then<Void> {
-                listener.accept(LobbyData(userID))
+            val lobbyID = generateReadableUID()
+            databaseHandler.setValue("${DataPaths.LOBBIES}/$lobbyID", LobbyData(lobbyID, userID)).then<Void> {
+                listener.accept(LobbyData(lobbyID, userID))
             }
         }
     }
@@ -84,7 +88,7 @@ object MultiplayerService {
                     joinLobby(lobbyID, userID).then<Void> {
                         joinBattle(lobbyID)
                         listener.accept(
-                            LobbyStatus.Ready(LobbyData(lobby.hostID, userID, lobby.shouldStart))
+                            LobbyStatus.Ready(LobbyData(lobbyID, lobby.hostID, userID, lobby.shouldStart))
                         )
                     }
                 }
@@ -93,7 +97,7 @@ object MultiplayerService {
     }
 
     fun startBattle(lobbyID: String) {
-        val battleID = UUID.randomUUID().toString()
+        val battleID = generateReadableUID()
         databaseHandler.getUserID { userID ->
             val initialBattleData =
                 BattleData(

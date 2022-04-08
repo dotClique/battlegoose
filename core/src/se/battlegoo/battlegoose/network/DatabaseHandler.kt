@@ -136,10 +136,11 @@ class DatabaseHandler {
     }
 
     fun convertToLobby(data: Map<String, Any>): LobbyData {
+        val lobbyID = data["lobbyID"].toString()
         val hostID = data[LobbyData::hostID.name] as String
         val otherPlayerID = data[LobbyData::otherPlayerID.name] as String
         val shouldStart = data[LobbyData::shouldStart.name] as Boolean
-        return LobbyData(hostID, otherPlayerID, shouldStart)
+        return LobbyData(lobbyID, hostID, otherPlayerID, shouldStart)
     }
 
     fun convertToBattle(battleData: Map<String, Any>): BattleData {
