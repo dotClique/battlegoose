@@ -9,12 +9,16 @@ abstract class UnitController(
     private val unitView: UnitViewBase,
     private val onUnitClick: () -> Unit
 ) : // Unit which means Void which means ()
-    ControllerBase(unitView), UnitObserver {
+    ControllerBase(unitView) {
 
     abstract fun updateUnit(dt: Float)
 
     init {
-        unitView.subscribe(this)
+        unitView.subscribe(object : UnitObserver {
+            override fun onClick() {
+                onUnitClick() // should toggle some sort of external state.
+            }
+        })
     }
 
     override fun update(dt: Float) {
@@ -26,9 +30,5 @@ abstract class UnitController(
         val range = unitModel.currentStats.range
         val speed = unitModel.currentStats.speed
         val isFlying = unitModel.currentStats.isFlying
-    }
-
-    override fun onClick() {
-        onUnitClick() // should toggle some sort of external state.
     }
 }
