@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:637382925655:android:99282bfa5d00c2ab94b212",
         "android_client_info": {
-          "package_name": "com.progark.battlegoose"
+          "package_name": "se.battlegoo.battlegoose"
         }
       },
       "oauth_client": [

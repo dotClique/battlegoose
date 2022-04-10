@@ -1,8 +1,8 @@
-package com.progark.battlegoose.models.units
+package se.battlegoo.battlegoose.models.units
 
 import kotlin.math.roundToInt
 
-open class Unit(baseStats: UnitStats, val name: String, val description: String) {
+open class UnitModel(baseStats: UnitStats, val name: String, val description: String) {
 
     var currentStats: UnitStats = baseStats
         private set
