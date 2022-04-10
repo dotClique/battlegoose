@@ -1,4 +1,4 @@
-package com.progark.battlegoose.models.units
+package se.battlegoo.battlegoose.models.units
 
 import kotlin.math.roundToInt
 

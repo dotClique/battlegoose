@@ -43,8 +43,8 @@ abstract class UnitViewBase(
         sprite.flip(true, false)
     }
 
-    fun registerInput() {
-        if (!clicked()) return;
+    override fun registerInput() {
+        if (!clicked()) return
         observer?.onClick()
     }
 

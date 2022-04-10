@@ -1,4 +1,4 @@
-package com.progark.battlegoose.models.units
+package se.battlegoo.battlegoose.models.units
 
 data class UnitStats(
     val maxHealth: Int,

@@ -1,10 +1,10 @@
 package se.battlegoo.battlegoose.controllers
 
-import com.progark.battlegoose.models.units.UnitModel
+import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.views.UnitObserver
 import se.battlegoo.battlegoose.views.UnitViewBase
 
-open abstract class UnitController(
+abstract class UnitController(
     private val unitModel: UnitModel,
     private val unitView: UnitViewBase,
     private val onUnitClick: () -> Unit
@@ -29,7 +29,6 @@ open abstract class UnitController(
     }
 
     override fun onClick() {
-        onUnitClick() //should toggle some sort of external state.
+        onUnitClick() // should toggle some sort of external state.
     }
-
 }

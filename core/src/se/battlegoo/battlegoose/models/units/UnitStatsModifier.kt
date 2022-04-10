@@ -1,3 +1,3 @@
-package com.progark.battlegoose.models.units
+package se.battlegoo.battlegoose.models.units
 
 typealias UnitStatsModifier = (UnitStats) -> UnitStats
