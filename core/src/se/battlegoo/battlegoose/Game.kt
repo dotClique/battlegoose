@@ -15,10 +15,10 @@ class Game : ApplicationAdapter() {
     private lateinit var batch: SpriteBatch
 
     companion object {
-        const val WIDTH = 2280
-        const val HEIGHT = 1080
-        const val TITLE = "Battlegoose"
-        val viewPort = FitViewport(WIDTH.toFloat(), HEIGHT.toFloat())
+        const val WIDTH = 2280f
+        const val HEIGHT = 1080f
+        const val TITLE = "BattleGoose"
+        val viewPort = FitViewport(WIDTH, HEIGHT)
 
         /**
          * Public function that scales Gdx values to Viewport values
@@ -31,7 +31,7 @@ class Game : ApplicationAdapter() {
 
     override fun create() {
         batch = SpriteBatch()
-        resize(WIDTH, HEIGHT)
+        resize(WIDTH.toInt(), HEIGHT.toInt())
         GameStateManager.push(MainMenuState())
     }
 
