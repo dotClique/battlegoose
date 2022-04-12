@@ -40,3 +40,10 @@
    boolean reportFixture(long);
    float   reportRayFixture(long, float, float, float, float, float);
 }
+
+# gdx-fireapp
+-keep class pl.mk5.gdx.fireapp.**{*;}
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepclassmembers class se.battlegoo.battlegoose.datamodels.** {*;}
+-keep class se.battlegoo.battlegoose.datamodels.** {*;}
