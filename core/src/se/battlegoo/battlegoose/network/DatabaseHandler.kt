@@ -87,6 +87,10 @@ class DatabaseHandler {
         return GdxFIRDatabase.inst().inReference(databasePath).push().setValue(value)
     }
 
+    fun deleteValue(databasePath: String): Promise<Void> {
+        return GdxFIRDatabase.inst().inReference(databasePath).removeValue()
+    }
+
 
     fun convertToLobby(data: HashMap<String, Any>): LobbyData {
         val hostID = data["hostID"].toString()
