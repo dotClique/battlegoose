@@ -1,13 +1,14 @@
 package se.battlegoo.battlegoose.network
 
-import se.battlegoo.battlegoose.datamodels.BattleData
 import com.badlogic.gdx.utils.Logger
-import java.util.LinkedList
-import java.util.function.Consumer
-import kotlin.collections.ArrayList
+import pl.mk5.gdx.fireapp.database.FilterType
+import pl.mk5.gdx.fireapp.database.OrderByMode
 import pl.mk5.gdx.fireapp.promises.Promise
+import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
-import se.battlegoo.battlegoose.datamodels.ActionData
+import java.util.*
+import java.util.function.Consumer
+import kotlin.collections.HashMap
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -34,14 +35,13 @@ object MultiplayerService {
 
     fun tryRequestOpponent(listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userID ->
-            databaseHandler.readPrimitiveValue<Any>(DataPaths.RANDOM_OPPONENT_QUEUE.toString()) {
-                    data ->
+            databaseHandler.readPrimitiveValue<Any>(DataPaths.RANDOM_OPPONENT_QUEUE.toString()) { data ->
                 val queue: LinkedList<String> =
-                        if (data !is ArrayList<*>) {
-                            LinkedList()
-                        } else {
-                            LinkedList(data.map { it.toString() })
-                        }
+                    if (data !is ArrayList<*>) {
+                        LinkedList()
+                    } else {
+                        LinkedList(data.map { it.toString() })
+                    }
 
                 if (!queue.contains(userID)) {
                     queue.add(userID)
@@ -57,48 +57,73 @@ object MultiplayerService {
 
     fun tryJoinLobby(lobbyID: String, listener: Consumer<Pair<LobbyStatus, LobbyData?>>) {
         databaseHandler.readReferenceValue<LobbyData>(
-                "${DataPaths.LOBBIES}/$lobbyID",
-                Consumer { lobby ->
-                    if (lobby == null) {
-                        listener.accept(Pair(LobbyStatus.DOES_NOT_EXIST, null))
-                        return@Consumer
+            "${DataPaths.LOBBIES}/$lobbyID",
+            Consumer { lobby ->
+                if (lobby == null) {
+                    listener.accept(Pair(LobbyStatus.DOES_NOT_EXIST, null))
+                    return@Consumer
+                }
+
+                databaseHandler.getUserID { userID ->
+                    if (userCanJoinLobby(userID, lobby)) {
+                        listener.accept(Pair(LobbyStatus.FULL, null))
+                        return@getUserID
                     }
 
-                    databaseHandler.getUserID { userID ->
-                        if (userCanJoinLobby(userID, lobby)) {
-                            listener.accept(Pair(LobbyStatus.FULL, null))
-                            return@getUserID
-                        }
-
-                        joinLobby(lobbyID, userID).then<Void> {
-                            listener.accept(
-                                    Pair(
-                                            LobbyStatus.READY,
-                                            LobbyData(lobby.hostID, userID, lobby.shouldStart)
-                                    )
+                    joinLobby(lobbyID, userID).then<Void> {
+                        listener.accept(
+                            Pair(
+                                LobbyStatus.READY,
+                                LobbyData(lobby.hostID, userID, lobby.shouldStart)
                             )
-                        }
+                        )
                     }
                 }
+            }
         )
     }
 
     fun startBattle(lobbyID: String) {
-        val logger = Logger("ulrik")
-        logger.error("Hello")
         val lobbyConsumer =
-                Consumer<LobbyData?> { lobby ->
-                    if (lobby == null) return@Consumer logger.error("Is null") // TODO: Error handling here
-                    val initialBattleData =
-                            BattleData(
-                                    lobby.hostID,
-                                    "",
-                                listOf(ActionData("initialAction"))
-                            ) // The otherPlayerId is set by that other player.
-                    databaseHandler.pushValue(DataPaths.BATTLES.toString(), initialBattleData)
+            Consumer<LobbyData?> { lobby ->
+                if (lobby == null) return@Consumer // TODO: Error handling here
+                val initialBattleData =
+                    BattleData(
+                        lobby.hostID,
+                        "",
+                        listOf()
+                    ) // The otherPlayerId is set by that other player.
+                databaseHandler.pushValue(DataPaths.BATTLES.toString(), initialBattleData)
 
-                }
-
+            }
         databaseHandler.readReferenceValue("${DataPaths.LOBBIES}/$lobbyID", lobbyConsumer)
     }
+
+    fun joinBattle(lobbyID: String) {
+        val battleConsumer = Consumer<HashMap<String, Any>?> battle@{
+            val battleDataID = it?.keys?.toList()?.get(0) ?: return@battle
+            // TODO handle error
+            databaseHandler.getUserID { userID ->
+                databaseHandler.setValue(
+                    "${DataPaths.BATTLES}/$battleDataID/otherPlayerID",
+                    userID
+                )
+            }
+        }
+        val lobbyConsumer =
+            Consumer<LobbyData?> { lobby ->
+                if (lobby == null) return@Consumer // TODO: Error handling here
+                databaseHandler.readFilteredValue(
+                    DataPaths.BATTLES.toString(),
+                    OrderByMode.ORDER_BY_CHILD,
+                    "hostID",
+                    FilterType.EQUAL_TO,
+                    lobby.hostID,
+                    consumer = battleConsumer)
+            }
+        databaseHandler.readReferenceValue(
+            "${DataPaths.LOBBIES}/$lobbyID", lobbyConsumer
+        )
+    }
+
 }
