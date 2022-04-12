@@ -22,9 +22,7 @@ class DatabaseHandler {
     }
 
     fun getUserID(consumer: Consumer<String>) {
-        this.signInAnonymously().then<GdxFirebaseUser> { user ->
-            consumer.accept(user.userInfo.uid)
-        }
+        consumer.accept(GdxFIRAuth.inst().currentUser.userInfo.uid)
     }
 
     inline fun <reified T : Any> readFilteredValue(

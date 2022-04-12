@@ -328,4 +328,18 @@ object MultiplayerService {
         battleListeners = mutableListOf()
         battleID = null
     }
+
+    fun getUsername(listener: Consumer<String?>) {
+        databaseHandler.getUserID { userId ->
+            databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}/$userId", listener)
+        }
+    }
+
+    fun setUsername(username: String, listener: Consumer<Boolean>) {
+        databaseHandler.getUserID { userId ->
+            databaseHandler.setValue("${DataPaths.USERNAME}/$userId", username).then<Void> {
+                listener.accept(true)
+            }
+        }
+    }
 }
