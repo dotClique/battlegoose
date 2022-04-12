@@ -45,6 +45,10 @@ allprojects {
         gdxFireappVersion = '3.3.0'
     }
 
+    jacoco {
+        toolVersion = "0.8.7"
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
