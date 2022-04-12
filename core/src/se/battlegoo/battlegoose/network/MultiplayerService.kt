@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Logger
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
 import pl.mk5.gdx.fireapp.promises.Promise
+import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.*
@@ -91,7 +92,7 @@ object MultiplayerService {
                     BattleData(
                         lobby.hostID,
                         "",
-                        listOf()
+                        listOf(ActionData("Initial Action"))
                     ) // The otherPlayerId is set by that other player.
                 databaseHandler.pushValue(DataPaths.BATTLES.toString(), initialBattleData)
 
@@ -101,8 +102,7 @@ object MultiplayerService {
 
     fun joinBattle(lobbyID: String) {
         val battleConsumer = Consumer<HashMap<String, Any>?> battle@{
-            val battleDataID = it?.keys?.toList()?.get(0) ?: return@battle
-            // TODO handle error
+            val battleDataID = it?.keys?.toList()?.get(0) ?: return@battle // TODO: Error handling here
             databaseHandler.getUserID { userID ->
                 databaseHandler.setValue(
                     "${DataPaths.BATTLES}/$battleDataID/otherPlayerID",
@@ -119,11 +119,13 @@ object MultiplayerService {
                     "hostID",
                     FilterType.EQUAL_TO,
                     lobby.hostID,
-                    consumer = battleConsumer)
+                    battleConsumer)
             }
         databaseHandler.readReferenceValue(
             "${DataPaths.LOBBIES}/$lobbyID", lobbyConsumer
         )
+        databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID")
+
     }
 
 }
