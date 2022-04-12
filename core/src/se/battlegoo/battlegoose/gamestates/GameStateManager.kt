@@ -11,7 +11,10 @@ object GameStateManager {
         states.push(state)
     }
 
-    fun goBack(): GameState {
+    fun goBack(): GameState? {
+        if (states.size <= 1) {
+            return null
+        }
         states.peek().dispose()
         return states.pop()
     }
