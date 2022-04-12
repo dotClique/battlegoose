@@ -1,6 +1,5 @@
 package se.battlegoo.battlegoose.network
 
-import com.badlogic.gdx.utils.Logger
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
 import pl.mk5.gdx.fireapp.promises.Promise
@@ -9,13 +8,15 @@ import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.*
 import java.util.function.Consumer
-import kotlin.collections.HashMap
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
+    var userID = ""
+        private set
 
     init {
         databaseHandler.signInAnonymously()
+        databaseHandler.getUserID { id -> userID = id }
     }
 
     private fun userCanJoinLobby(userID: String, lobbyData: LobbyData): Boolean {
@@ -65,20 +66,18 @@ object MultiplayerService {
                     return@Consumer
                 }
 
-                databaseHandler.getUserID { userID ->
-                    if (userCanJoinLobby(userID, lobby)) {
-                        listener.accept(Pair(LobbyStatus.FULL, null))
-                        return@getUserID
-                    }
+                if (userCanJoinLobby(userID, lobby)) {
+                    listener.accept(Pair(LobbyStatus.FULL, null))
+                    return@Consumer
+                }
 
-                    joinLobby(lobbyID, userID).then<Void> {
-                        listener.accept(
-                            Pair(
-                                LobbyStatus.READY,
-                                LobbyData(lobby.hostID, userID, lobby.shouldStart)
-                            )
+                joinLobby(lobbyID, userID).then<Void> {
+                    listener.accept(
+                        Pair(
+                            LobbyStatus.READY,
+                            LobbyData(lobby.hostID, userID, lobby.shouldStart)
                         )
-                    }
+                    )
                 }
             }
         )
@@ -102,13 +101,12 @@ object MultiplayerService {
 
     fun joinBattle(lobbyID: String) {
         val battleConsumer = Consumer<HashMap<String, Any>?> battle@{
-            val battleDataID = it?.keys?.toList()?.get(0) ?: return@battle // TODO: Error handling here
-            databaseHandler.getUserID { userID ->
-                databaseHandler.setValue(
-                    "${DataPaths.BATTLES}/$battleDataID/otherPlayerID",
-                    userID
-                )
-            }
+            val battleDataID =
+                it?.keys?.toList()?.get(0) ?: return@battle // TODO: Error handling here
+            databaseHandler.setValue(
+                "${DataPaths.BATTLES}/$battleDataID/otherPlayerID",
+                userID
+            )
         }
         val lobbyConsumer =
             Consumer<LobbyData?> { lobby ->
@@ -119,7 +117,8 @@ object MultiplayerService {
                     "hostID",
                     FilterType.EQUAL_TO,
                     lobby.hostID,
-                    battleConsumer)
+                    battleConsumer
+                )
             }
         databaseHandler.readReferenceValue(
             "${DataPaths.LOBBIES}/$lobbyID", lobbyConsumer
