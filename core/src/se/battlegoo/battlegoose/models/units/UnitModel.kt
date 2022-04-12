@@ -1,8 +1,14 @@
 package se.battlegoo.battlegoose.models.units
 
+import se.battlegoo.battlegoose.models.heroes.Hero
 import kotlin.math.roundToInt
 
-open class UnitModel(baseStats: UnitStats, val name: String, val description: String) {
+open class UnitModel(
+    val hero: Hero,
+    baseStats: UnitStats,
+    val name: String,
+    val description: String
+) {
 
     var currentStats: UnitStats = baseStats
         private set

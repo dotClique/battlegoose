@@ -1,5 +1,5 @@
 package se.battlegoo.battlegoose.views
 
-interface UnitObserver {
+interface ClickObserver {
     fun onClick()
 }

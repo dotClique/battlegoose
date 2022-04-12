@@ -10,7 +10,7 @@ import se.battlegoo.battlegoose.Game
 
 class CreateLobbyState : GameState() {
 
-    protected var cam: OrthographicCamera = OrthographicCamera()
+    private var cam: OrthographicCamera = OrthographicCamera()
 
     init {
         cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
