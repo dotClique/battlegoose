@@ -20,6 +20,7 @@ class CreateLobbyState : GameState() {
 
     private val createLobbyView: CreateLobbyView = CreateLobbyView()
 
+    /*
     private val title: BitmapFont = BitmapFont()
     private val titleText = "CREATE LOBBY"
     private val layoutTitle = GlyphLayout(title, titleText)
@@ -27,27 +28,30 @@ class CreateLobbyState : GameState() {
     private val goBack: BitmapFont = BitmapFont()
     private val goBackText = "Press anywhere to return to main menu..."
     private val layoutGoBack = GlyphLayout(goBack, goBackText)
+     */
 
     private fun handleInput() {
-        if (Gdx.input.justTouched())
-            GameStateManager.push(MainMenuState())
+        createLobbyView.handleInput()
+
     }
 
     override fun update(dt: Float) {
-        //handleInput()
+        handleInput()
     }
 
     override fun render(sb: SpriteBatch) {
         createLobbyView.render(sb)
 
+        /*
         title.data.setScale(5f)
         title.draw(
             sb, titleText, (Game.WIDTH / 2f) - (layoutTitle.width * 5f / 2f),
             (Game.HEIGHT * 0.9f) + layoutTitle.height * 3f
         )
+         */
 
-        goBack.data.setScale(3f)
         /*
+        goBack.data.setScale(3f)
         goBack.draw(
             sb, goBackText, cam.viewportWidth / 20f - (layoutGoBack.width / 3f),
             cam.viewportHeight / 20f + layoutGoBack.height * 3f
@@ -57,7 +61,7 @@ class CreateLobbyState : GameState() {
 
     override fun dispose() {
         createLobbyView.dispose()
-        title.dispose()
-        goBack.dispose()
+        // title.dispose()
+        // goBack.dispose()
     }
 }

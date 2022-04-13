@@ -4,51 +4,107 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle
 import com.badlogic.gdx.utils.Align
+import se.battlegoo.battlegoose.Game
 import java.util.*
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import se.battlegoo.battlegoose.gamestates.GameStateManager
+import se.battlegoo.battlegoose.gamestates.MainMenuState
+
 
 class CreateLobbyView : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
 
+    private var stage = Stage()
+
     private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
     private var textField: TextField = TextField("", skin)
     private var textFieldStyle = skin.get(TextFieldStyle::class.java)
 
-    private val stage = Stage()
+    private val title: Label = Label("CREATE LOBBY", skin)
+    private var label: Label = Label("Lobby ID: ", skin)
+    private var mainMenuButton = TextButton("MAIN MENU", skin)
+    private var create = TextButton("CREATE", skin)
 
-    private var uuid = UUID.randomUUID()
+    private val x0: Float = MainMenuView.SPACER
+    private val y0: Float = MainMenuView.BOTTOM_SPACING
 
     init {
-        textField.messageText = "Enter an ID for your lobby"
+        Gdx.input.inputProcessor = stage;
+
         textField.alignment = Align.center
-        textFieldStyle.font.data.setScale(2.4f)
-        textField.height = Gdx.graphics.height.toFloat() / 10
-        textField.width = Gdx.graphics.width.toFloat() / 2
-        textField.setPosition(Gdx.graphics.width.toFloat() / 2 - textField.width / 2, Gdx.graphics.height.toFloat() / 1.5f)
-        stage.addActor(textField)
-        Gdx.input.inputProcessor = stage
-        generateRandomLobbyId(textField)
+        textField.height = Gdx.graphics.height.toFloat() / 12
+        textField.width = Gdx.graphics.width.toFloat() / 5
+        textField.isDisabled = true
+        textFieldStyle.font.data.setScale(2.6f)
+        textField.text = "ABCDEF"
+
+        mainMenuButton.width = MainMenuView.BUTTON_WIDTH.toFloat()
+        mainMenuButton.height *= 2
+
+        create.width = MainMenuView.BUTTON_WIDTH.toFloat() / 1.3f
+        create.height *= 2
     }
 
     //Gdx.input.setOnscreenKeyboardVisible(true);
+    fun handleInput() {
+        if (mainMenuButton.isPressed) {
+            GameStateManager.push(MainMenuState())
+        }
+        /*
+        mainMenuButton.addListener(object : ClickListener() {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                GameStateManager.push(MainMenuState())
+            }
+        })
+         */
+    }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        stage.addActor(textField)
+        stage.addActor(mainMenuButton)
+        stage.addActor(create)
+        stage.addActor(label)
+
+        textField.setPosition(Gdx.graphics.width / 2f - textField.width / 2f, Gdx.graphics.height / 1.7f)
+
+        title.setFontScale(5f)
+        title.setPosition((Gdx.graphics.width / 2f) - (title.width * 5f / 2f),
+            (Gdx.graphics.height * 0.9f))
+
+        label.setPosition(Gdx.graphics.width / 2f - textField.width * 1.3f,
+            Gdx.graphics.height / 1.6f)
+        create.setPosition(Gdx.graphics.width / 2f + textField.width * 0.56f,
+            Gdx.graphics.height / 1.75f)
+
+        mainMenuButton.setPosition(x0, y0)
+
+        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
+
+        title.draw(sb, 1f)
+        label.draw(sb, 1f)
         textField.draw(sb, 1f)
-        stage.draw()
-        stage.act()
+        create.draw(sb, 1f)
+
+        mainMenuButton.draw(sb, 1f)
     }
 
     override fun dispose() {
         background.dispose()
+        stage.dispose()
     }
 
+    /*
     private fun generateRandomLobbyId(textField: TextField) {
-        textField.text = uuid.toString().slice(0..15)
+        textField.text = uuid.toString().slice(0..5)
     }
+     */
 }
