@@ -11,7 +11,7 @@ import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
-    var userID = ""
+    lateinit var userID: String
         private set
 
     init {
