@@ -31,8 +31,9 @@ class CreateLobbyView : ViewBase() {
 
     private val title: Label = Label("CREATE LOBBY", skin)
     private var label: Label = Label("Lobby ID: ", skin)
-    private var mainMenuButton = TextButton("MAIN MENU", skin)
-    private var create = TextButton("CREATE", skin)
+    private var mainMenuButton: TextButton = TextButton("MAIN MENU", skin)
+    private var create: TextButton = TextButton("CREATE", skin)
+    private var waiting: Label = Label("Waiting for opponent...", skin)
 
     private val x0: Float = MainMenuView.SPACER
     private val y0: Float = MainMenuView.BOTTOM_SPACING
@@ -41,23 +42,30 @@ class CreateLobbyView : ViewBase() {
         Gdx.input.inputProcessor = stage;
 
         textField.alignment = Align.center
-        textField.height = Gdx.graphics.height.toFloat() / 12
-        textField.width = Gdx.graphics.width.toFloat() / 5
+        textField.height = Gdx.graphics.height / 12f
+        textField.width = Gdx.graphics.width / 5f
         textField.isDisabled = true
         textFieldStyle.font.data.setScale(2.6f)
-        textField.text = "ABCDEF"
+        textField.text = "ABCDEF" // Insert random lobby id generated here
 
         mainMenuButton.width = MainMenuView.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 2
 
-        create.width = MainMenuView.BUTTON_WIDTH.toFloat() / 1.3f
+        create.width = MainMenuView.BUTTON_WIDTH / 1.3f
         create.height *= 2
+        create.setPosition(Gdx.graphics.width / 2f + textField.width * 0.56f,
+            Gdx.graphics.height / 1.75f)
     }
 
     //Gdx.input.setOnscreenKeyboardVisible(true);
     fun handleInput() {
         if (mainMenuButton.isPressed) {
             GameStateManager.push(MainMenuState())
+        }
+        else if (create.isPressed) {
+            create.setPosition(-200f, -200f)
+            waiting.setPosition(Gdx.graphics.width / 2f - waiting.width * 1.2f,
+                Gdx.graphics.height * 0.8f)
         }
         /*
         mainMenuButton.addListener(object : ClickListener() {
@@ -82,8 +90,6 @@ class CreateLobbyView : ViewBase() {
 
         label.setPosition(Gdx.graphics.width / 2f - textField.width * 1.3f,
             Gdx.graphics.height / 1.6f)
-        create.setPosition(Gdx.graphics.width / 2f + textField.width * 0.56f,
-            Gdx.graphics.height / 1.75f)
 
         mainMenuButton.setPosition(x0, y0)
 
@@ -93,8 +99,10 @@ class CreateLobbyView : ViewBase() {
         label.draw(sb, 1f)
         textField.draw(sb, 1f)
         create.draw(sb, 1f)
+        waiting.draw(sb, 1f)
 
         mainMenuButton.draw(sb, 1f)
+
     }
 
     override fun dispose() {
@@ -107,4 +115,6 @@ class CreateLobbyView : ViewBase() {
         textField.text = uuid.toString().slice(0..5)
     }
      */
+        // Remove button, only keep lobby id
+        // Tell 'waiting for opponent'
 }
