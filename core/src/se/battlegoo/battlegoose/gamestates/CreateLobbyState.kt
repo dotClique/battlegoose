@@ -1,12 +1,7 @@
 package se.battlegoo.battlegoose.gamestates
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.Stage
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.views.CreateLobbyView
 
@@ -32,7 +27,6 @@ class CreateLobbyState : GameState() {
 
     private fun handleInput() {
         createLobbyView.handleInput()
-
     }
 
     override fun update(dt: Float) {
