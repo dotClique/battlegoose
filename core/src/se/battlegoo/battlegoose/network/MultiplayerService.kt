@@ -1,8 +1,6 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
-import pl.mk5.gdx.fireapp.promises.ListenerPromise
-import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
@@ -18,20 +16,16 @@ object MultiplayerService {
     private var lastReadActionIndex: Int = -1
     private var actionListBuffer: List<ActionData>? = null
 
-    private var battleListeners = mutableListOf<ListenerPromise<*>>()
-
-    init {
-        databaseHandler.signInAnonymously()
-    }
+    private var battleListenerCancelers = mutableListOf<ListenerCanceler>()
 
     private fun userCanJoinLobby(userID: String, lobbyData: LobbyData): Boolean {
         return lobbyData.otherPlayerID.isNotEmpty() && lobbyData.otherPlayerID != userID
     }
 
-    private fun joinLobby(lobbyID: String, userID: String): Promise<Void> {
-        return databaseHandler.setValue(
+    private fun joinLobby(lobbyID: String, userID: String, callback: () -> Unit) {
+        databaseHandler.setValue(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID.name}",
-            userID
+            userID, callback
         )
     }
 
@@ -44,7 +38,7 @@ object MultiplayerService {
             val lobbyID = generateReadableUID()
             databaseHandler.setValue(
                 "${DataPaths.LOBBIES}/$lobbyID", LobbyData(lobbyID, userID)
-            ).then<Void> {
+            ) {
                 listener.accept(LobbyData(lobbyID, userID))
             }
         }
@@ -69,10 +63,10 @@ object MultiplayerService {
             return@readPrimitiveValue
         }
 
-        databaseHandler.setValue("${DataPaths.RANDOM_OPPONENT_DATA}/lastUpdated", now).then<Void> {
+        databaseHandler.setValue("${DataPaths.RANDOM_OPPONENT_DATA}/lastUpdated", now) {
             databaseHandler.setValue(
                 "${DataPaths.RANDOM_OPPONENT_QUEUE}", LinkedList<String>()
-            ).then<Void> {
+            ) {
                 listener.accept(RandomOpponentStatus.TIMEOUT_INACTIVE_PLAYER)
                 purgedQueueConsumer.accept(LinkedList<String>())
             }
@@ -93,7 +87,7 @@ object MultiplayerService {
         if (queue.contains(userID)) return
 
         queue.add(userID)
-        databaseHandler.setValue(DataPaths.RANDOM_OPPONENT_QUEUE.toString(), queue).then<Void> {
+        databaseHandler.setValue(DataPaths.RANDOM_OPPONENT_QUEUE.toString(), queue) {
             listener.accept(RandomOpponentStatus.JOIN_QUEUE)
         }
     }
@@ -102,13 +96,13 @@ object MultiplayerService {
         lobbyID: String,
         listener: Consumer<RandomOpponentStatus>
     ) {
-        var otherPlayerIDListener: ListenerPromise<String>? = null
+        var otherPlayerIDListenerCanceler: ListenerCanceler? = null
 
-        otherPlayerIDListener = databaseHandler.listenPrimitiveValue(
-            "${DataPaths.LOBBIES}/$lobbyID/otherPlayerID"
+        otherPlayerIDListenerCanceler = databaseHandler.listenPrimitiveValue<String>(
+            "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID}"
         ) { otherPlayerID ->
             if (!otherPlayerID.isNullOrEmpty()) {
-                otherPlayerIDListener?.cancel()
+                otherPlayerIDListenerCanceler?.invoke()
                 listener.accept(RandomOpponentStatus.OTHER_PLAYER_JOINED)
                 return@listenPrimitiveValue
             }
@@ -116,25 +110,27 @@ object MultiplayerService {
         }
     }
 
-    private fun setAvailableLobby(availableLobby: String): Promise<Void> =
+    private fun setAvailableLobby(availableLobby: String, callback: () -> Unit) {
         databaseHandler.setValue(
             "${DataPaths.RANDOM_OPPONENT_DATA}",
-            RandomOpponentData(availableLobby, Date().time)
+            RandomOpponentData(availableLobby, Date().time),
+            callback
         )
+    }
 
-    private fun popQueue(queue: LinkedList<String>): Promise<Void> {
+    private fun popQueue(queue: LinkedList<String>, callback: () -> Unit) {
         queue.pop()
-        return databaseHandler.setValue(
+        databaseHandler.setValue(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
-            queue
+            queue, callback
         )
     }
 
     fun tryRequestOpponent(listener: Consumer<RandomOpponentStatus>) {
         var processing = false
-        var queueChangedListener: ListenerPromise<Any>? = null
+        var queueChangedListener: ListenerCanceler? = null
 
-        queueChangedListener = databaseHandler.listenPrimitiveValue(
+        queueChangedListener = databaseHandler.listenPrimitiveValue<Any>(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
         ) { updatedQueueData ->
             if (processing) {
@@ -157,10 +153,10 @@ object MultiplayerService {
                     this.checkRandomLobbyAvailability { availableLobbyID ->
 
                         if (!availableLobbyID.isNullOrEmpty()) {
-                            setAvailableLobby("").then<Void> {
+                            setAvailableLobby("") {
                                 tryJoinLobby(availableLobbyID) {
-                                    queueChangedListener?.cancel()
-                                    popQueue(queue).then<Void> {
+                                    queueChangedListener?.invoke()
+                                    popQueue(queue) {
                                         listener.accept(RandomOpponentStatus.JOINED_LOBBY)
                                     }
                                 }
@@ -170,10 +166,10 @@ object MultiplayerService {
 
                         if (queue.size > 1) {
                             tryCreateLobby { lobby ->
-                                setAvailableLobby(lobby.lobbyID).then<Void> {
+                                setAvailableLobby(lobby.lobbyID) {
                                     listenForOtherPlayerJoinLobby(lobby.lobbyID, listener)
-                                    queueChangedListener?.cancel()
-                                    popQueue(queue).then<Void> {
+                                    queueChangedListener?.invoke()
+                                    popQueue(queue) {
                                         listener.accept(RandomOpponentStatus.CREATED_LOBBY)
                                     }
                                 }
@@ -204,7 +200,7 @@ object MultiplayerService {
                         return@Consumer
                     }
 
-                    joinLobby(lobbyID, userID).then<Void> {
+                    joinLobby(lobbyID, userID) {
                         joinBattle(lobbyID)
                         listener.accept(
                             LobbyStatus.Ready(
@@ -235,31 +231,32 @@ object MultiplayerService {
 
             databaseHandler.setValue(
                 "${DataPaths.BATTLES}/$battleID", initialBattleData
-            ).then<Void> {
+            ) {
                 databaseHandler.setValue(
                     "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::battleID.name}",
                     battleID
-                )
-                // Listen for the other player to join the battle
-                var otherPlayerIDListener: ListenerPromise<String>? = null
-                otherPlayerIDListener = databaseHandler.listenPrimitiveValue(
-                    "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}"
-                ) { otherPlayerID ->
-                    if (otherPlayerID == "" || otherPlayerID == null) {
-                        return@listenPrimitiveValue
+                ) {
+                    // Listen for the other player to join the battle
+                    var otherPlayerIDListenerCanceler: ListenerCanceler? = null
+                    otherPlayerIDListenerCanceler = databaseHandler.listenPrimitiveValue<String>(
+                        "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}"
+                    ) { otherPlayerID ->
+                        if (otherPlayerID == null || otherPlayerID.length < 0) {
+                            return@listenPrimitiveValue
+                        }
+                        this.battleID = battleID
+                        databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID") {}
+                        otherPlayerIDListenerCanceler?.invoke()
+                        listenForActions(battleID)
                     }
-                    this.battleID = battleID
-                    databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID")
-                    otherPlayerIDListener?.cancel()
-                    listenForActions(battleID)
                 }
             }
         }
     }
 
     private fun joinBattle(lobbyID: String) {
-        var battleIDListener: ListenerPromise<String>? = null
-        battleIDListener = databaseHandler.listenPrimitiveValue(
+        var battleIDListenerCanceler: ListenerCanceler? = null
+        battleIDListenerCanceler = databaseHandler.listenPrimitiveValue<String>(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::battleID.name}"
         ) { battleID ->
             if (battleID == null || battleID == "") {
@@ -270,9 +267,7 @@ object MultiplayerService {
                 databaseHandler.setValue(
                     "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}",
                     userID
-                ).then<Void> {
-                    battleIDListener?.cancel()
-                }
+                ) { battleIDListenerCanceler?.invoke() }
             }
 
             this.battleID = battleID
@@ -292,7 +287,7 @@ object MultiplayerService {
             databaseHandler.setValue(
                 "${DataPaths.BATTLES}/$battleDataID/${BattleData::actions.name}",
                 it.actions + listOf(action)
-            )
+            ) {}
         }
     }
 
@@ -307,7 +302,7 @@ object MultiplayerService {
                 updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
             }
         }
-        battleListeners.add(actionListener as ListenerPromise<*>)
+        actionListener?.let(battleListenerCancelers::add)
     }
 
     fun readActionDataBuffer(): List<ActionData>? {
@@ -323,9 +318,9 @@ object MultiplayerService {
     }
 
     fun endBattle() {
-        battleListeners.forEach { it.cancel() }
+        battleListenerCancelers.forEach { it.invoke() }
         resetActionDataBuffer()
-        battleListeners = mutableListOf()
+        battleListenerCancelers = mutableListOf()
         battleID = null
     }
 
@@ -341,7 +336,7 @@ object MultiplayerService {
 
     fun setUsername(username: String, listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userId ->
-            databaseHandler.setValue("${DataPaths.USERNAME}/$userId", username).then<Void> {
+            databaseHandler.setValue("${DataPaths.USERNAME}/$userId", username) {
                 listener.accept(true)
             }
         }
