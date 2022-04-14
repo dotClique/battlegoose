@@ -60,16 +60,17 @@ class CreateLobbyView : ViewBase() {
         )
 
         waiting.setPosition(
-            Gdx.graphics.width / 2f - waiting.width * 1.2f,
+            Gdx.graphics.width / 2f - waiting.width * 1.3f,
             Gdx.graphics.height * 0.8f
         )
     }
 
-    // Gdx.input.setOnscreenKeyboardVisible(true);
+    fun backToMainMenu(): Boolean {
+        return mainMenuButton.isPressed
+    }
+
     fun handleInput() {
-        if (mainMenuButton.isPressed) {
-            GameStateManager.push(MainMenuState())
-        } else if (create.isPressed) {
+        if (create.isPressed) {
             created = true
         }
         /*

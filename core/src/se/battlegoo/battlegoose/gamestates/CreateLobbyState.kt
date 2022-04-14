@@ -27,6 +27,9 @@ class CreateLobbyState : GameState() {
 
     private fun handleInput() {
         createLobbyView.handleInput()
+        if (createLobbyView.backToMainMenu()) {
+            GameStateManager.push(MainMenuState())
+        }
     }
 
     override fun update(dt: Float) {
