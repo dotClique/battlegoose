@@ -11,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.gamestates.GameStateManager
-import se.battlegoo.battlegoose.gamestates.MainMenuState
 
 class CreateLobbyView : ViewBase() {
 
@@ -87,8 +85,6 @@ class CreateLobbyView : ViewBase() {
     }
 
     override fun render(sb: SpriteBatch) {
-        //update(Gdx.graphics.deltaTime)
-
         stage.addActor(textField)
         stage.addActor(mainMenuButton)
         stage.addActor(create)
