@@ -5,5 +5,6 @@ enum class DataPaths {
     RANDOM_OPPONENT_QUEUE,
     RANDOM_OPPONENT_DATA,
     BATTLES,
-    USERNAME
+    USERNAME,
+    LEADERBOARD
 }

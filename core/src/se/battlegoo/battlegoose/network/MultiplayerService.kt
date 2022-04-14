@@ -328,7 +328,11 @@ object MultiplayerService {
     }
 
     fun getUsernameMap(listener: Consumer<Map<String, String>?>) {
-        databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}", consumer = listener)
+        databaseHandler.readPrimitiveValue(
+            "${DataPaths.USERNAME}",
+            fail = { _, _ -> listener.accept(null) },
+            consumer = listener
+        )
     }
 
     fun setUsername(username: String, listener: Consumer<Boolean>) {
@@ -342,4 +346,36 @@ object MultiplayerService {
             }
         }
     }
+
+    fun getLeaderboard(listener: Consumer<List<LeaderboardEntry>?>) {
+        databaseHandler.readPrimitiveValue<Map<String, Long>>(
+            "${DataPaths.LEADERBOARD}",
+            fail = { _, _ -> listener.accept(null) }
+        ) { board ->
+            if (board == null) {
+                listener.accept(listOf())
+            } else {
+                getUsernameMap { usernameMap ->
+                    listener.accept(
+                        board.entries
+                            .sortedByDescending { entry -> entry.value }
+                            .map { LeaderboardEntry(it.key, usernameMap?.get(it.key), it.value) }
+                    )
+                }
+            }
+        }
+    }
+
+    fun incrementScore(incrementBy: Long, listener: Consumer<Boolean>) {
+        databaseHandler.getUserID { userId ->
+            databaseHandler.readPrimitiveValue<Long>("${DataPaths.LEADERBOARD}/$userId") { before ->
+                val new = (before ?: 0) + incrementBy
+                databaseHandler.setValue("${DataPaths.LEADERBOARD}/$userId", new) {
+                    listener.accept(true)
+                }
+            }
+        }
+    }
 }
+
+data class LeaderboardEntry(val userId: String, val username: String?, val score: Long)
