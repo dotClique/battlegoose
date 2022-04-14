@@ -33,12 +33,23 @@ class DatabaseHandler {
         filterArg: String,
         consumer: Consumer<T?>,
     ) {
-        GdxFIRDatabase.inst().inReference(databasePath)
-            .filter(filter, filterArg).orderBy(order, orderByArg)
-            .readValue(T::class.java).then<T> {
-                consumer.accept(it)
-            }
+        GdxFIRDatabase.inst()
+            .inReference(databasePath)
+            .filter(filter, filterArg)
+            .orderBy(order, orderByArg)
+            .readValue(T::class.java)
+            .then<T> { consumer.accept(it) }
     }
+
+    inline fun <reified T : Any> listenPrimitiveValue(
+        databasePath: String,
+        consumer: Consumer<T?>
+    ) {
+        GdxFIRDatabase.inst().inReference(databasePath).onDataChange(T::class.java).then<T> {
+            consumer.accept(it)
+        }
+    }
+
 
     inline fun <reified T : Any> readPrimitiveValue(databasePath: String, consumer: Consumer<T?>) {
         GdxFIRDatabase.inst().inReference(databasePath).readValue(T::class.java).then<T> {
@@ -48,19 +59,16 @@ class DatabaseHandler {
 
     inline fun <reified T : Any> readReferenceValue(databasePath: String, consumer: Consumer<T?>) {
         when (T::class) {
-            LobbyData::class -> readDataClass(
-                databasePath,
-                consumer,
-                this::convertToLobby as ConversionFunc<T>
-            )
-            BattleData::class -> readDataClass(
-                databasePath,
-                consumer,
-                this::convertToBattle as ConversionFunc<T>
-            )
+            LobbyData::class ->
+                readDataClass(databasePath, consumer, this::convertToLobby as ConversionFunc<T>)
+            BattleData::class ->
+                readDataClass(
+                    databasePath,
+                    consumer,
+                    this::convertToBattle as ConversionFunc<T>
+                )
         }
     }
-
 
     fun <T> readDataClass(
         databasePath: String,
@@ -71,12 +79,12 @@ class DatabaseHandler {
             databasePath,
             Consumer { consumerData ->
                 if (consumerData == null) {
-                    consumer.accept(null);
+                    consumer.accept(null)
                     return@Consumer
                 }
                 consumer.accept(conversionFunc(consumerData))
-            })
-
+            }
+        )
     }
 
     fun setValue(databasePath: String, value: Any): Promise<Void> {
@@ -91,7 +99,6 @@ class DatabaseHandler {
         return GdxFIRDatabase.inst().inReference(databasePath).removeValue()
     }
 
-
     fun convertToLobby(data: HashMap<String, Any>): LobbyData {
         val hostID = data["hostID"].toString()
         val otherPlayerID = data["otherPlayerID"].toString()
@@ -100,14 +107,26 @@ class DatabaseHandler {
     }
 
     fun convertToBattle(battleData: HashMap<String, Any>): BattleData {
+        Logger("ulrik").error("convertToBattle")
+        val battleID = battleData["battleID"].toString()
         val hostID = battleData["hostID"].toString()
         val otherPlayerID = battleData["otherPlayerID"].toString()
-        val actionsSome = battleData["actions"]
+        Logger("ulrik").error("before try")
+        var actions: List<ActionData>
+        try {
+            actions =
+                (battleData["actions"] as ArrayList<*>).map {
+                    convertToActionData(it as HashMap<String, Any>)
+                }
 
-        val logger = Logger("ulrik")
-        logger.error("ActionsSome: $actionsSome, type: ${actionsSome!!::class}")
+        } catch (t: Throwable) {
+            actions = listOf()
+        }
 
-        val actions = listOf<ActionData>()
-        return BattleData(hostID, otherPlayerID, actions)
+        return BattleData(battleID, hostID, otherPlayerID, actions)
+    }
+
+    fun convertToActionData(actionData: HashMap<String, Any>): ActionData {
+        return ActionData(actionData["action"].toString(), actionData["playerID"].toString())
     }
 }
