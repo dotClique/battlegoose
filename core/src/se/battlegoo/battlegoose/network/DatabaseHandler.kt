@@ -1,6 +1,5 @@
 package se.battlegoo.battlegoose.network
 
-import com.badlogic.gdx.utils.Logger
 import pl.mk5.gdx.fireapp.GdxFIRAuth
 import pl.mk5.gdx.fireapp.GdxFIRDatabase
 import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
@@ -107,26 +106,19 @@ class DatabaseHandler {
     }
 
     fun convertToBattle(battleData: HashMap<String, Any>): BattleData {
-        Logger("ulrik").error("convertToBattle")
         val battleID = battleData["battleID"].toString()
         val hostID = battleData["hostID"].toString()
         val otherPlayerID = battleData["otherPlayerID"].toString()
-        Logger("ulrik").error("before try")
-        var actions: List<ActionData>
-        try {
-            actions =
-                (battleData["actions"] as ArrayList<*>).map {
-                    convertToActionData(it as HashMap<String, Any>)
-                }
-
-        } catch (t: Throwable) {
-            actions = listOf()
-        }
-
+        var actionsRaw = battleData["actions"]
+        var actions: List<ActionData> =
+            if (actionsRaw == null) emptyList()
+            else (battleData["actions"] as ArrayList<*>).map {
+                convertToActionData(it as HashMap<String, Any>)
+            }
         return BattleData(battleID, hostID, otherPlayerID, actions)
     }
 
-    fun convertToActionData(actionData: HashMap<String, Any>): ActionData {
+    private fun convertToActionData(actionData: HashMap<String, Any>): ActionData {
         return ActionData(actionData["action"].toString(), actionData["playerID"].toString())
     }
 }

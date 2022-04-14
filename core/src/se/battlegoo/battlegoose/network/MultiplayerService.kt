@@ -85,26 +85,7 @@ object MultiplayerService {
         }
     }
 
-    fun getBattleIDByKey(key: String, value: String, consumer: Consumer<String>) {
-        val battleConsumer =
-            Consumer<HashMap<String, Any>?> battle@{
-                val battleID =
-                    it?.keys?.toList()?.get(0)
-                        ?: return@battle
-                consumer.accept(battleID)
-            }
-        databaseHandler.readFilteredValue(
-            DataPaths.BATTLES.toString(),
-            OrderByMode.ORDER_BY_CHILD,
-            key,
-            FilterType.EQUAL_TO,
-            value,
-            battleConsumer
-        )
-    }
-
     fun startBattle(lobbyID: String) {
-        Logger("ulrik").error("startBattle")
         val battleID = UUID.randomUUID().toString()
         databaseHandler.getUserID { userID ->
             val initialBattleData =
@@ -118,24 +99,24 @@ object MultiplayerService {
             databaseHandler.setValue("${DataPaths.BATTLES}/$battleID", initialBattleData).then<
                 Void> {
                 databaseHandler.setValue("${DataPaths.LOBBIES}/$lobbyID/battleID", battleID)
+                // Listen for the other player to join the battle
+                var hasDeletedLobby = false
+                databaseHandler.listenPrimitiveValue<String>(
+                    "${DataPaths.BATTLES}/$battleID/otherPlayerID"
+                ) { otherPlayerID ->
+                    if (otherPlayerID == null || otherPlayerID.length < 0 || hasDeletedLobby) {
+                        return@listenPrimitiveValue
+                    }
+                    hasDeletedLobby = true
+                    this.battleID = battleID
+                    databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID")
+                    listenForActions(battleID)
+                }
             }
-        }
-        // Listen for the other player to join the battle
-        var hasDeletedLobby = false
-        databaseHandler.listenPrimitiveValue<String>(
-            "${DataPaths.BATTLES}/$battleID/otherPlayerID"
-        ) { otherPlayerID ->
-            if (otherPlayerID == null || otherPlayerID.length < 0 || hasDeletedLobby) {
-                return@listenPrimitiveValue
-            }
-            hasDeletedLobby = true
-            this.battleID = battleID
-            databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID")
-            listenForActions(battleID)
         }
     }
 
-    fun joinBattle(lobbyID: String) {
+    private fun joinBattle(lobbyID: String) {
         var hasJoinedBattle = false
         databaseHandler.listenPrimitiveValue<String>("${DataPaths.LOBBIES}/$lobbyID/battleID") { battleID ->
             if (hasJoinedBattle || battleID == null || battleID == "") {
@@ -144,6 +125,9 @@ object MultiplayerService {
 
             databaseHandler.getUserID { userID ->
                 databaseHandler.setValue("${DataPaths.BATTLES}/$battleID/otherPlayerID", userID)
+                    .then<Void> {
+                        hasJoinedBattle = true
+                    }
             }
 
             this.battleID = battleID
@@ -153,7 +137,8 @@ object MultiplayerService {
 
     /** Pushes an action to the actionlist. */
     fun postAction(action: ActionData) {
-        val battleDataID = battleID ?: return Logger("ulrik").error("No battleID") // TODO: Handle error
+        val battleDataID =
+            battleID ?: return Logger("ulrik").error("No battleID") // TODO: Handle error
         databaseHandler.readReferenceValue<BattleData>(
             "${DataPaths.BATTLES}/$battleDataID"
         ) Consumer@{
@@ -165,7 +150,7 @@ object MultiplayerService {
         }
     }
 
-    fun listenForActions(battleID: String) {
+    private fun listenForActions(battleID: String) {
         databaseHandler.listenPrimitiveValue<Any>("${DataPaths.BATTLES}/$battleID/actions") { updatedActionData ->
             Logger("ulrik").error("Listen actions: ${updatedActionData}")
             // More code here
