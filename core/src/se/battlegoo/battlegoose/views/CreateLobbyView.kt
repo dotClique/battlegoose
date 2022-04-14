@@ -30,8 +30,8 @@ class CreateLobbyView : ViewBase() {
     private var create: TextButton = TextButton("Create", skin)
     private var waiting: Label = Label("Waiting for opponent", skin)
 
-    private val x0: Float = MainMenuView.SPACER
-    private val y0: Float = MainMenuView.BOTTOM_SPACING
+    private val x0: Float = Menu.SPACER
+    private val y0: Float = Menu.BOTTOM_SPACING
 
     private var created: Boolean = false
 
@@ -45,10 +45,10 @@ class CreateLobbyView : ViewBase() {
         textFieldStyle.font.data.setScale(2.6f)
         textField.text = "abcdef" // Insert random lobby id generated here
 
-        mainMenuButton.width = MainMenuView.BUTTON_WIDTH.toFloat()
+        mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 2
 
-        create.width = MainMenuView.BUTTON_WIDTH / 1.3f
+        create.width = Menu.BUTTON_WIDTH / 1.3f
         create.height *= 2
         create.setPosition(
             Gdx.graphics.width / 2f + textField.width * 0.56f,

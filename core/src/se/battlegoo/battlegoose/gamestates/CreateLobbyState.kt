@@ -46,7 +46,5 @@ class CreateLobbyState : GameState() {
 
     override fun dispose() {
         createLobbyView.dispose()
-        // title.dispose()
-        // goBack.dispose()
     }
 }
