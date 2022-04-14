@@ -35,10 +35,6 @@ class CreateLobbyView : ViewBase() {
 
     private var created: Boolean = false
 
-    private var timer: Float = 0f
-    private val spawn: Float = 1f
-    private var counter: Float = 0f
-
     init {
         Gdx.input.inputProcessor = stage
 
@@ -82,21 +78,16 @@ class CreateLobbyView : ViewBase() {
          */
     }
 
-    fun update(dt: Float) {
-        // Dynamic 'waiting for opponent' message
-        timer += dt
-        if (counter >= 4f) {
-            waiting.setText("Waiting for opponent")
-            counter -= 4f
-        } else if (timer > spawn) {
-            waiting.setText("${waiting.text}.")
-            timer -= spawn
-            counter += 1f
-        }
+    fun resetWaitingText() {
+        waiting.setText("Waiting for opponent")
+    }
+
+    fun updateWaitingText() {
+        waiting.setText("${waiting.text}.")
     }
 
     override fun render(sb: SpriteBatch) {
-        update(Gdx.graphics.deltaTime)
+        //update(Gdx.graphics.deltaTime)
 
         stage.addActor(textField)
         stage.addActor(mainMenuButton)
