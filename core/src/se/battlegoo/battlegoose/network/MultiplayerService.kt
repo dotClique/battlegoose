@@ -335,6 +335,10 @@ object MultiplayerService {
         }
     }
 
+    fun getUsernameMap(listener: Consumer<Map<String, String>?>) {
+        databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}", listener)
+    }
+
     fun setUsername(username: String, listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userId ->
             databaseHandler.setValue("${DataPaths.USERNAME}/$userId", username).then<Void> {
