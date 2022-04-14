@@ -12,6 +12,7 @@ import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.function.Consumer
 
 typealias ConversionFunc<T> = (HashMap<String, Any>) -> T
+typealias ListConversionFunc<T> = (ArrayList<HashMap<String, Any>>) -> List<T>
 
 class DatabaseHandler {
     fun signInAnonymously(): Promise<GdxFirebaseUser> {
@@ -49,6 +50,18 @@ class DatabaseHandler {
         }
     }
 
+    inline fun <reified T : Any> listenListValue(
+        databasePath: String,
+        consumer: Consumer<List<T>?>
+    ) {
+        when (T::class) {
+            ActionData::class -> listenListDataClass(
+                databasePath,
+                consumer,
+                this::convertToActionDataList as ListConversionFunc<T>
+            )
+        }
+    }
 
     inline fun <reified T : Any> readPrimitiveValue(databasePath: String, consumer: Consumer<T?>) {
         GdxFIRDatabase.inst().inReference(databasePath).readValue(T::class.java).then<T> {
@@ -86,6 +99,25 @@ class DatabaseHandler {
         )
     }
 
+
+    fun <T> listenListDataClass(
+        databasePath: String,
+        consumer: Consumer<List<T>?>,
+        listConversionFunc: ListConversionFunc<T>
+    ) {
+        return listenPrimitiveValue<ArrayList<HashMap<String, Any>>>(
+            databasePath,
+            Consumer { consumerData ->
+                if (consumerData == null) {
+                    consumer.accept(null)
+                    return@Consumer
+                }
+                consumer.accept(listConversionFunc(consumerData))
+            }
+        )
+    }
+
+
     fun setValue(databasePath: String, value: Any): Promise<Void> {
         return GdxFIRDatabase.inst().inReference(databasePath).setValue(value)
     }
@@ -120,5 +152,9 @@ class DatabaseHandler {
 
     private fun convertToActionData(actionData: HashMap<String, Any>): ActionData {
         return ActionData(actionData["action"].toString(), actionData["playerID"].toString())
+    }
+
+    fun convertToActionDataList(actionDataList: ArrayList<HashMap<String, Any>>): List<ActionData> {
+        return actionDataList.map { convertToActionData(it) }
     }
 }

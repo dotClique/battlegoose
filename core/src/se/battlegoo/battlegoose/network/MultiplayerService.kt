@@ -151,7 +151,7 @@ object MultiplayerService {
     }
 
     private fun listenForActions(battleID: String) {
-        databaseHandler.listenPrimitiveValue<Any>("${DataPaths.BATTLES}/$battleID/actions") { updatedActionData ->
+        databaseHandler.listenListValue<ActionData>("${DataPaths.BATTLES}/$battleID/actions") { updatedActionData ->
             Logger("ulrik").error("Listen actions: ${updatedActionData}")
             // More code here
         }
