@@ -1,8 +1,6 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
-import pl.mk5.gdx.fireapp.database.FilterType
-import pl.mk5.gdx.fireapp.database.OrderByMode
 import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
@@ -12,7 +10,10 @@ import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
-    var battleID: String? = null
+    private var battleID: String? = null
+
+    private var lastReadActionIndex: Int = -1
+    private var actionListBuffer: List<ActionData>? = null
 
     init {
         databaseHandler.signInAnonymously()
@@ -152,8 +153,27 @@ object MultiplayerService {
 
     private fun listenForActions(battleID: String) {
         databaseHandler.listenListValue<ActionData>("${DataPaths.BATTLES}/$battleID/actions") { updatedActionData ->
-            Logger("ulrik").error("Listen actions: ${updatedActionData}")
-            // More code here
+            val lastReadIndex = lastReadActionIndex
+            val bufferCpy = actionListBuffer
+            if (updatedActionData == null) return@listenListValue
+            if (bufferCpy == null || lastReadIndex == -1) {
+                actionListBuffer = updatedActionData
+            } else {
+                actionListBuffer =
+                    updatedActionData.subList(lastReadIndex + 1, updatedActionData.size)
+            }
         }
+    }
+
+    fun readActionDataBuffer(): List<ActionData>? {
+        val bufferCpy = actionListBuffer ?: return null
+        this.lastReadActionIndex += bufferCpy.size
+        actionListBuffer = emptyList()
+        return bufferCpy
+    }
+
+    fun resetActionDataBuffer() {
+        this.lastReadActionIndex = -1
+        this.actionListBuffer = null
     }
 }
