@@ -11,8 +11,8 @@ import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.function.Consumer
 
-typealias ConversionFunc<T> = (HashMap<String, Any>) -> T
-typealias ListConversionFunc<T> = (ArrayList<HashMap<String, Any>>) -> List<T>
+typealias ConversionFunc<T> = (Map<String, Any>) -> T
+typealias ListConversionFunc<T> = (List<Map<String, Any>>) -> List<T>
 
 class DatabaseHandler {
     fun signInAnonymously(): Promise<GdxFirebaseUser> {
@@ -54,6 +54,7 @@ class DatabaseHandler {
         databasePath: String,
         consumer: Consumer<List<T>?>
     ) {
+        @Suppress("UNCHECKED_CAST")
         when (T::class) {
             ActionData::class -> listenListDataClass(
                 databasePath,
@@ -70,6 +71,7 @@ class DatabaseHandler {
     }
 
     inline fun <reified T : Any> readReferenceValue(databasePath: String, consumer: Consumer<T?>) {
+        @Suppress("UNCHECKED_CAST")
         when (T::class) {
             LobbyData::class ->
                 readDataClass(databasePath, consumer, this::convertToLobby as ConversionFunc<T>)
@@ -87,7 +89,7 @@ class DatabaseHandler {
         consumer: Consumer<T?>,
         conversionFunc: ConversionFunc<T>
     ) {
-        return readPrimitiveValue<HashMap<String, Any>>(
+        return readPrimitiveValue<Map<String, Any>>(
             databasePath,
             Consumer { consumerData ->
                 if (consumerData == null) {
@@ -104,7 +106,7 @@ class DatabaseHandler {
         consumer: Consumer<List<T>?>,
         listConversionFunc: ListConversionFunc<T>
     ) {
-        return listenPrimitiveValue<ArrayList<HashMap<String, Any>>>(
+        return listenPrimitiveValue<List<Map<String, Any>>>(
             databasePath,
             Consumer { consumerData ->
                 if (consumerData == null) {
@@ -128,31 +130,34 @@ class DatabaseHandler {
         return GdxFIRDatabase.inst().inReference(databasePath).removeValue()
     }
 
-    fun convertToLobby(data: HashMap<String, Any>): LobbyData {
-        val hostID = data["hostID"].toString()
-        val otherPlayerID = data["otherPlayerID"].toString()
-        val shouldStart = data["shouldStart"].toString().toBoolean()
+    fun convertToLobby(data: Map<String, Any>): LobbyData {
+        val hostID = data[LobbyData::hostID.name] as String
+        val otherPlayerID = data[LobbyData::otherPlayerID.name] as String
+        val shouldStart = data[LobbyData::shouldStart.name] as Boolean
         return LobbyData(hostID, otherPlayerID, shouldStart)
     }
 
-    fun convertToBattle(battleData: HashMap<String, Any>): BattleData {
-        val battleID = battleData["battleID"].toString()
-        val hostID = battleData["hostID"].toString()
-        val otherPlayerID = battleData["otherPlayerID"].toString()
-        var actionsRaw = battleData["actions"]
-        var actions: List<ActionData> =
-            if (actionsRaw == null) emptyList()
-            else (battleData["actions"] as ArrayList<*>).map {
-                convertToActionData(it as HashMap<String, Any>)
-            }
+    fun convertToBattle(battleData: Map<String, Any>): BattleData {
+        val battleID = battleData[BattleData::battleID.name] as String
+        val hostID = battleData[BattleData::hostID.name] as String
+        val otherPlayerID = battleData[BattleData::otherPlayerID.name] as String
+
+        @Suppress("UNCHECKED_CAST")
+        val actionsRaw = battleData[BattleData::actions.name] as List<Map<String, Any>>?
+        val actions: List<ActionData> = actionsRaw
+            ?.map(::convertToActionData)
+            ?: emptyList()
         return BattleData(battleID, hostID, otherPlayerID, actions)
     }
 
-    private fun convertToActionData(actionData: HashMap<String, Any>): ActionData {
-        return ActionData(actionData["action"].toString(), actionData["playerID"].toString())
+    private fun convertToActionData(actionData: Map<String, Any>): ActionData {
+        return ActionData(
+            actionData[ActionData::action.name] as String,
+            actionData[ActionData::playerID.name] as String
+        )
     }
 
-    fun convertToActionDataList(actionDataList: ArrayList<HashMap<String, Any>>): List<ActionData> {
-        return actionDataList.map { convertToActionData(it) }
+    fun convertToActionDataList(actionDataList: List<Map<String, Any>>): List<ActionData> {
+        return actionDataList.map(::convertToActionData)
     }
 }

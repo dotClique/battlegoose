@@ -25,7 +25,10 @@ object MultiplayerService {
     }
 
     private fun joinLobby(lobbyID: String, userID: String): Promise<Void> {
-        return databaseHandler.setValue("${DataPaths.LOBBIES}/$lobbyID/otherPlayerID", userID)
+        return databaseHandler.setValue(
+            "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID}",
+            userID
+        )
     }
 
     fun tryCreateLobby(listener: Consumer<LobbyData>) {
@@ -42,10 +45,10 @@ object MultiplayerService {
                 DataPaths.RANDOM_OPPONENT_QUEUE.toString()
             ) { data ->
                 val queue: LinkedList<String> =
-                    if (data !is ArrayList<*>) {
+                    if (data !is List<*>) {
                         LinkedList()
                     } else {
-                        LinkedList(data.map { it.toString() })
+                        LinkedList(data.map { it as String })
                     }
 
                 if (!queue.contains(userID)) {
@@ -102,13 +105,15 @@ object MultiplayerService {
 
             databaseHandler.setValue(
                 "${DataPaths.BATTLES}/$battleID", initialBattleData
-            ).then<
-                Void> {
-                databaseHandler.setValue("${DataPaths.LOBBIES}/$lobbyID/battleID", battleID)
+            ).then<Void> {
+                databaseHandler.setValue(
+                    "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::battleID.name}",
+                    battleID
+                )
                 // Listen for the other player to join the battle
                 var hasDeletedLobby = false
                 databaseHandler.listenPrimitiveValue<String>(
-                    "${DataPaths.BATTLES}/$battleID/otherPlayerID"
+                    "${DataPaths.BATTLES}/$battleID/${BattleData::battleID.name}"
                 ) { otherPlayerID ->
                     if (otherPlayerID == null || otherPlayerID.length < 0 || hasDeletedLobby) {
                         return@listenPrimitiveValue
@@ -125,17 +130,19 @@ object MultiplayerService {
     private fun joinBattle(lobbyID: String) {
         var hasJoinedBattle = false
         databaseHandler.listenPrimitiveValue<String>(
-            "${DataPaths.LOBBIES}/$lobbyID/battleID"
+            "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::battleID.name}"
         ) { battleID ->
             if (hasJoinedBattle || battleID == null || battleID == "") {
                 return@listenPrimitiveValue
             }
 
             databaseHandler.getUserID { userID ->
-                databaseHandler.setValue("${DataPaths.BATTLES}/$battleID/otherPlayerID", userID)
-                    .then<Void> {
-                        hasJoinedBattle = true
-                    }
+                databaseHandler.setValue(
+                    "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}",
+                    userID
+                ).then<Void> {
+                    hasJoinedBattle = true
+                }
             }
 
             this.battleID = battleID
@@ -153,7 +160,7 @@ object MultiplayerService {
             if (it == null)
                 return@Consumer Logger("ulrik").error("BattleData is null") // TODO: Error
             databaseHandler.setValue(
-                "${DataPaths.BATTLES}/$battleDataID/actions",
+                "${DataPaths.BATTLES}/$battleDataID/${BattleData::actions.name}",
                 it.actions + listOf(action)
             )
         }
@@ -161,16 +168,13 @@ object MultiplayerService {
 
     private fun listenForActions(battleID: String) {
         databaseHandler.listenListValue<ActionData>(
-            "${DataPaths.BATTLES}/$battleID/actions"
+            "${DataPaths.BATTLES}/$battleID/${BattleData::actions.name}"
         ) { updatedActionData ->
-            val lastReadIndex = lastReadActionIndex
-            val bufferCpy = actionListBuffer
             if (updatedActionData == null) return@listenListValue
-            if (bufferCpy == null || lastReadIndex == -1) {
-                actionListBuffer = updatedActionData
+            actionListBuffer = if (actionListBuffer == null || lastReadActionIndex == -1) {
+                updatedActionData
             } else {
-                actionListBuffer =
-                    updatedActionData.subList(lastReadIndex + 1, updatedActionData.size)
+                updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
             }
         }
     }
