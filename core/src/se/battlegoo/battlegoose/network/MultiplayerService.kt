@@ -63,28 +63,25 @@ object MultiplayerService {
         }
     }
 
-    fun tryJoinLobby(lobbyID: String, listener: Consumer<Pair<LobbyStatus, LobbyData?>>) {
+    fun tryJoinLobby(lobbyID: String, listener: Consumer<LobbyStatus>) {
         databaseHandler.getUserID { userID ->
             databaseHandler.readReferenceValue<LobbyData>(
                 "${DataPaths.LOBBIES}/$lobbyID",
                 Consumer { lobby ->
                     if (lobby == null) {
-                        listener.accept(Pair(LobbyStatus.DOES_NOT_EXIST, null))
+                        listener.accept(LobbyStatus.DoesNotExist)
                         return@Consumer
                     }
 
                     if (userCanJoinLobby(userID, lobby)) {
-                        listener.accept(Pair(LobbyStatus.FULL, null))
+                        listener.accept(LobbyStatus.Full)
                         return@Consumer
                     }
 
                     joinLobby(lobbyID, userID).then<Void> {
                         joinBattle(lobbyID)
                         listener.accept(
-                            Pair(
-                                LobbyStatus.READY,
-                                LobbyData(lobby.hostID, userID, lobby.shouldStart)
-                            )
+                            LobbyStatus.Ready(LobbyData(lobby.hostID, userID, lobby.shouldStart))
                         )
                     }
                 }
