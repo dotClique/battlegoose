@@ -25,7 +25,7 @@ object MultiplayerService {
     private fun joinLobby(lobbyID: String, userID: String, callback: () -> Unit) {
         databaseHandler.setValue(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID.name}",
-            userID, callback
+            userID, callback = callback
         )
     }
 
@@ -96,13 +96,11 @@ object MultiplayerService {
         lobbyID: String,
         listener: Consumer<RandomOpponentStatus>
     ) {
-        var otherPlayerIDListenerCanceler: ListenerCanceler? = null
-
-        otherPlayerIDListenerCanceler = databaseHandler.listenPrimitiveValue<String>(
+        databaseHandler.listenPrimitiveValue<String>(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID}"
-        ) { otherPlayerID ->
+        ) { otherPlayerID, otherPlayerIDListenerCanceler ->
             if (!otherPlayerID.isNullOrEmpty()) {
-                otherPlayerIDListenerCanceler?.invoke()
+                otherPlayerIDListenerCanceler.invoke()
                 listener.accept(RandomOpponentStatus.OTHER_PLAYER_JOINED)
                 return@listenPrimitiveValue
             }
@@ -114,7 +112,7 @@ object MultiplayerService {
         databaseHandler.setValue(
             "${DataPaths.RANDOM_OPPONENT_DATA}",
             RandomOpponentData(availableLobby, Date().time),
-            callback
+            callback = callback
         )
     }
 
@@ -122,17 +120,15 @@ object MultiplayerService {
         queue.pop()
         databaseHandler.setValue(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
-            queue, callback
+            queue, callback = callback
         )
     }
 
     fun tryRequestOpponent(listener: Consumer<RandomOpponentStatus>) {
         var processing = false
-        var queueChangedListener: ListenerCanceler? = null
-
-        queueChangedListener = databaseHandler.listenPrimitiveValue<Any>(
+        databaseHandler.listenPrimitiveValue<Any>(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
-        ) { updatedQueueData ->
+        ) { updatedQueueData, queueListenerCanceler ->
             if (processing) {
                 return@listenPrimitiveValue
             }
@@ -155,7 +151,7 @@ object MultiplayerService {
                         if (!availableLobbyID.isNullOrEmpty()) {
                             setAvailableLobby("") {
                                 tryJoinLobby(availableLobbyID) {
-                                    queueChangedListener?.invoke()
+                                    queueListenerCanceler.invoke()
                                     popQueue(queue) {
                                         listener.accept(RandomOpponentStatus.JOINED_LOBBY)
                                     }
@@ -168,7 +164,7 @@ object MultiplayerService {
                             tryCreateLobby { lobby ->
                                 setAvailableLobby(lobby.lobbyID) {
                                     listenForOtherPlayerJoinLobby(lobby.lobbyID, listener)
-                                    queueChangedListener?.invoke()
+                                    queueListenerCanceler.invoke()
                                     popQueue(queue) {
                                         listener.accept(RandomOpponentStatus.CREATED_LOBBY)
                                     }
@@ -189,7 +185,7 @@ object MultiplayerService {
         databaseHandler.getUserID { userID ->
             databaseHandler.readReferenceValue<LobbyData>(
                 "${DataPaths.LOBBIES}/$lobbyID",
-                Consumer { lobby ->
+                consumer = Consumer { lobby ->
                     if (lobby == null) {
                         listener.accept(LobbyStatus.DoesNotExist)
                         return@Consumer
@@ -237,16 +233,15 @@ object MultiplayerService {
                     battleID
                 ) {
                     // Listen for the other player to join the battle
-                    var otherPlayerIDListenerCanceler: ListenerCanceler? = null
-                    otherPlayerIDListenerCanceler = databaseHandler.listenPrimitiveValue<String>(
+                    databaseHandler.listenPrimitiveValue<String>(
                         "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}"
-                    ) { otherPlayerID ->
+                    ) { otherPlayerID, otherPlayerIDListenerCanceler ->
                         if (otherPlayerID == null || otherPlayerID.length < 0) {
                             return@listenPrimitiveValue
                         }
                         this.battleID = battleID
                         databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID") {}
-                        otherPlayerIDListenerCanceler?.invoke()
+                        otherPlayerIDListenerCanceler.invoke()
                         listenForActions(battleID)
                     }
                 }
@@ -255,10 +250,9 @@ object MultiplayerService {
     }
 
     private fun joinBattle(lobbyID: String) {
-        var battleIDListenerCanceler: ListenerCanceler? = null
-        battleIDListenerCanceler = databaseHandler.listenPrimitiveValue<String>(
+        databaseHandler.listenPrimitiveValue<String>(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::battleID.name}"
-        ) { battleID ->
+        ) { battleID, battleIDListenerCanceler ->
             if (battleID == null || battleID == "") {
                 return@listenPrimitiveValue
             }
@@ -267,7 +261,7 @@ object MultiplayerService {
                 databaseHandler.setValue(
                     "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}",
                     userID
-                ) { battleIDListenerCanceler?.invoke() }
+                ) { battleIDListenerCanceler.invoke() }
             }
 
             this.battleID = battleID
@@ -292,9 +286,10 @@ object MultiplayerService {
     }
 
     private fun listenForActions(battleID: String) {
-        val actionListener = databaseHandler.listenListValue<ActionData>(
-            "${DataPaths.BATTLES}/$battleID/${BattleData::actions.name}"
-        ) { updatedActionData ->
+        databaseHandler.listenListValue<ActionData>(
+            "${DataPaths.BATTLES}/$battleID/${BattleData::actions.name}",
+            listenerCancelerConsumer = battleListenerCancelers::add
+        ) { updatedActionData, actionListenerCanceler ->
             if (updatedActionData == null) return@listenListValue
             actionListBuffer = if (actionListBuffer == null || lastReadActionIndex == -1) {
                 updatedActionData
@@ -302,7 +297,6 @@ object MultiplayerService {
                 updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
             }
         }
-        actionListener?.let(battleListenerCancelers::add)
     }
 
     fun readActionDataBuffer(): List<ActionData>? {
@@ -326,17 +320,21 @@ object MultiplayerService {
 
     fun getUsername(listener: Consumer<String?>) {
         databaseHandler.getUserID { userId ->
-            databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}/$userId", listener)
+            databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}/$userId", consumer = listener)
         }
     }
 
     fun getUsernameMap(listener: Consumer<Map<String, String>?>) {
-        databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}", listener)
+        databaseHandler.readPrimitiveValue("${DataPaths.USERNAME}", consumer = listener)
     }
 
     fun setUsername(username: String, listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userId ->
-            databaseHandler.setValue("${DataPaths.USERNAME}/$userId", username) {
+            databaseHandler.setValue(
+                "${DataPaths.USERNAME}/$userId",
+                username,
+                fail = { _, _ -> listener.accept(false) }
+            ) {
                 listener.accept(true)
             }
         }

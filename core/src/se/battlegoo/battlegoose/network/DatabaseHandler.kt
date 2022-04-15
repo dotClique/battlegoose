@@ -9,6 +9,7 @@ import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
+import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 typealias ConversionFunc<T> = (Map<String, Any>) -> T
@@ -55,125 +56,162 @@ class DatabaseHandler {
         orderByArg: String,
         filter: FilterType,
         filterArg: String,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: Consumer<T?>,
     ) {
-        GdxFIRDatabase.inst()
-            .inReference(databasePath)
-            .filter(filter, filterArg)
-            .orderBy(order, orderByArg)
-            .readValue(T::class.java)
-            .then<T> { consumer.accept(it) }
+        dbAccessWrapper {
+            GdxFIRDatabase.inst()
+                .inReference(databasePath)
+                .filter(filter, filterArg)
+                .orderBy(order, orderByArg)
+                .readValue(T::class.java)
+                .then<T> { consumer.accept(it) }
+                .fail(fail)
+        }
     }
 
     inline fun <reified T : Any> listenPrimitiveValue(
         databasePath: String,
-        consumer: Consumer<T?>
-    ): ListenerCanceler {
-        val listener = GdxFIRDatabase.inst().inReference(databasePath).onDataChange(T::class.java)
-        listener.then<T> {
-            consumer.accept(it)
+        noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: BiConsumer<T?, ListenerCanceler>
+    ) {
+        dbAccessWrapper {
+            val listener =
+                GdxFIRDatabase.inst().inReference(databasePath).onDataChange(T::class.java)
+            listener.then<T> {
+                consumer.accept(it, listener::cancel)
+            }.fail(fail)
+            listenerCancelerConsumer.invoke(listener::cancel)
         }
-        return { listener.cancel() }
     }
 
     inline fun <reified T : Any> listenListValue(
         databasePath: String,
-        consumer: Consumer<List<T>?>
-    ): ListenerCanceler? {
+        noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: BiConsumer<List<T>?, ListenerCanceler>,
+    ) {
         @Suppress("UNCHECKED_CAST")
-        return when (T::class) {
+        when (T::class) {
             ActionData::class -> listenListDataClass(
                 databasePath,
-                consumer,
-                this::convertToActionDataList as ListConversionFunc<T>
+                this::convertToActionDataList as ListConversionFunc<T>,
+                fail, listenerCancelerConsumer, consumer
             )
-            else -> null
         }
     }
 
-    inline fun <reified T : Any> readPrimitiveValue(databasePath: String, consumer: Consumer<T?>) {
+    inline fun <reified T : Any> readPrimitiveValue(
+        databasePath: String,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: Consumer<T?>
+    ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst().inReference(databasePath).readValue(T::class.java).then<T> {
                 consumer.accept(it)
-            }
+            }.fail(fail)
         }
     }
 
-    inline fun <reified T : Any> readReferenceValue(databasePath: String, consumer: Consumer<T?>) {
-        dbAccessWrapper {
-            @Suppress("UNCHECKED_CAST")
-            when (T::class) {
-                LobbyData::class ->
-                    readDataClass(databasePath, consumer, this::convertToLobby as ConversionFunc<T>)
-                BattleData::class ->
-                    readDataClass(
-                        databasePath,
-                        consumer,
-                        this::convertToBattle as ConversionFunc<T>
-                    )
-            }
+    inline fun <reified T : Any> readReferenceValue(
+        databasePath: String,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: Consumer<T?>
+    ) {
+        @Suppress("UNCHECKED_CAST")
+        when (T::class) {
+            LobbyData::class ->
+                readDataClass(
+                    databasePath, fail, consumer,
+                    this::convertToLobby as
+                        ConversionFunc<T>
+                )
+            BattleData::class ->
+                readDataClass(
+                    databasePath, fail, consumer,
+                    this::convertToBattle as ConversionFunc<T>
+                )
         }
     }
 
     fun <T> readDataClass(
         databasePath: String,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: Consumer<T?>,
         conversionFunc: ConversionFunc<T>
     ) {
         return readPrimitiveValue<Map<String, Any>>(
-            databasePath,
-            Consumer { consumerData ->
-                if (consumerData == null) {
-                    consumer.accept(null)
-                    return@Consumer
-                }
+            databasePath, fail
+        ) { consumerData ->
+            if (consumerData == null) {
+                consumer.accept(null)
+            } else {
                 consumer.accept(conversionFunc(consumerData))
             }
-        )
+        }
     }
 
     fun <T> listenListDataClass(
         databasePath: String,
-        consumer: Consumer<List<T>?>,
-        listConversionFunc: ListConversionFunc<T>
-    ): ListenerCanceler {
-        return listenPrimitiveValue(
-            databasePath,
-            Consumer<List<Map<String, Any>>?> { consumerData ->
-                if (consumerData == null) {
-                    consumer.accept(null)
-                    return@Consumer
-                }
-                consumer.accept(listConversionFunc(consumerData))
+        listConversionFunc: ListConversionFunc<T>,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
+        consumer: BiConsumer<List<T>?, ListenerCanceler>
+    ) {
+        listenPrimitiveValue<List<Map<String, Any>>>(
+            databasePath, listenerCancelerConsumer, fail
+        ) { consumerData, canceler ->
+            if (consumerData == null) {
+                consumer.accept(null, canceler)
+            } else {
+                consumer.accept(listConversionFunc(consumerData), canceler)
             }
-        )
+        }
     }
 
-    fun setValue(databasePath: String, value: Any, callback: () -> Unit) {
+    fun setValue(
+        databasePath: String,
+        value: Any,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        callback: () -> Unit
+    ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
                 .inReference(databasePath)
                 .setValue(value)
                 .then<Void> { callback() }
+                .fail(fail)
         }
     }
 
-    fun pushValue(databasePath: String, value: Any, callback: () -> Unit) {
+    fun pushValue(
+        databasePath: String,
+        value: Any,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        callback: () -> Unit
+    ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
                 .inReference(databasePath)
                 .push()
                 .setValue(value)
                 .then<Void> { callback() }
+                .fail(fail)
         }
     }
 
-    fun deleteValue(databasePath: String, callback: () -> Unit) {
+    fun deleteValue(
+        databasePath: String,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        callback: () -> Unit
+    ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
                 .inReference(databasePath)
                 .removeValue()
                 .then<Void> { callback() }
+                .fail(fail)
         }
     }
 
