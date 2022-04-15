@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -15,8 +14,11 @@ class LeaderboardView : ViewBase() {
     private var stage: Stage = Stage()
     private val skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
     private var leaderboard: Table = Table()
-    private var topPlayers: MutableList<String> = mutableListOf("Arne", "Per", "Gudrun",
-        "Olga", "Ulvhild", "Tore", "Jalmar", "Lise", "Vidar", "Ernst")
+    private var topPlayers: MutableList<String> = mutableListOf(
+        "Arne", "Per", "Gudrun",
+        "Olga", "Ulvhild", "Tore",
+        "Jalmar", "Lise", "Vidar", "Ernst"
+    )
 
     private var labelStyle: Label.LabelStyle = skin.get(Label.LabelStyle::class.java)
 
@@ -42,8 +44,8 @@ class LeaderboardView : ViewBase() {
     }
 
     override fun render(sb: SpriteBatch) {
-        stage.act(Gdx.graphics.deltaTime);
-        stage.draw();
+        stage.act(Gdx.graphics.deltaTime)
+        stage.draw()
     }
 
     override fun dispose() {
