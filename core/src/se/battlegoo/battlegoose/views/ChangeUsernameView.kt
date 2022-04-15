@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import se.battlegoo.battlegoose.Game
 
 class ChangeUsernameView(
     val x: Float = 0f,
@@ -29,7 +30,7 @@ class ChangeUsernameView(
         usernameChangedListener(username)
     }
 
-    private val stage = Stage()
+    private val stage = Stage(Game.viewPort)
     private var savedUsername: String = ""
     var username: String by textField::text
 
