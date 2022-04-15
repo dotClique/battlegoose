@@ -28,7 +28,7 @@ class JoinLobbyState : GameState() {
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
 
         title.data.setScale(5f)
         title.draw(

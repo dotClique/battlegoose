@@ -37,8 +37,8 @@ class CreateLobbyView : ViewBase() {
         Gdx.input.inputProcessor = stage
 
         textField.alignment = Align.center
-        textField.height = Gdx.graphics.height / 12f
-        textField.width = Gdx.graphics.width / 5f
+        textField.height = Game.HEIGHT / 12f
+        textField.width = Game.WIDTH / 5f
         textField.isDisabled = true
         textFieldStyle.font.data.setScale(2.6f)
         textField.text = "abcdef" // Insert random lobby id generated here
@@ -49,13 +49,13 @@ class CreateLobbyView : ViewBase() {
         create.width = Menu.BUTTON_WIDTH / 1.3f
         create.height *= 2
         create.setPosition(
-            Gdx.graphics.width / 2f + textField.width * 0.56f,
-            Gdx.graphics.height / 1.75f
+            Game.WIDTH / 2f + textField.width * 0.56f,
+            Game.HEIGHT / 1.75f
         )
 
         waiting.setPosition(
-            Gdx.graphics.width / 2f - waiting.width * 1.3f,
-            Gdx.graphics.height * 0.8f
+            Game.WIDTH / 2f - waiting.width * 1.3f,
+            Game.HEIGHT * 0.8f
         )
     }
 
@@ -91,19 +91,19 @@ class CreateLobbyView : ViewBase() {
         stage.addActor(label)
 
         textField.setPosition(
-            Gdx.graphics.width / 2f - textField.width / 2f,
-            Gdx.graphics.height / 1.7f
+            Game.WIDTH / 2f - textField.width / 2f,
+            Game.HEIGHT / 1.7f
         )
 
         title.setFontScale(5f)
         title.setPosition(
-            (Gdx.graphics.width / 2f) - (title.width * 5f / 2f),
-            Gdx.graphics.height * 0.9f
+            (Game.WIDTH / 2f) - (title.width * 5f / 2f),
+            Game.HEIGHT * 0.9f
         )
 
         label.setPosition(
-            Gdx.graphics.width / 2f - textField.width * 1.3f,
-            Gdx.graphics.height / 1.6f
+            Game.WIDTH / 2f - textField.width * 1.3f,
+            Game.HEIGHT / 1.6f
         )
 
         mainMenuButton.setPosition(x0, y0)
