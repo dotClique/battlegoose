@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.LeaderboardEntry
 import se.battlegoo.battlegoose.network.MultiplayerService
+import se.battlegoo.battlegoose.views.Fonts
 
 class LeaderboardState : GameState() {
 
@@ -17,6 +19,7 @@ class LeaderboardState : GameState() {
     }
 
     private val background = Texture("placeholder.png")
+    private val skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
 
     private val title: BitmapFont = BitmapFont()
     private val titleText = "LEADERBOARD"
@@ -29,7 +32,7 @@ class LeaderboardState : GameState() {
     private var leaderboard: List<LeaderboardEntry> = listOf()
         set(value) {
             field = value
-            leaderboardLayout.setText(goBack, leaderboardText)
+            leaderboardLayout.setText(leaderboardFont, leaderboardText)
         }
 
     private val leaderboardText: String
@@ -39,14 +42,16 @@ class LeaderboardState : GameState() {
             }
         }
 
-    private val leaderboardLayout = GlyphLayout(goBack, leaderboardText)
+    private val leaderboardFont: BitmapFont = skin.getFont(Fonts.STAR_SOLDIER.identifier)
+    private val leaderboardLayout = GlyphLayout(leaderboardFont, leaderboardText)
 
     init {
         updateLeaderboard()
+        leaderboardFont.data.setScale(3f)
     }
 
     private fun updateLeaderboard() {
-        MultiplayerService.getLeaderboard { it?.let { leaderboard = it }}
+        MultiplayerService.getLeaderboard { it?.let { leaderboard = it } }
     }
 
     private fun handleInput() {
@@ -75,7 +80,7 @@ class LeaderboardState : GameState() {
             Game.HEIGHT / 20f + layoutGoBack.height * 3f
         )
 
-        goBack.draw(
+        leaderboardFont.draw(
             sb, leaderboardLayout, Game.WIDTH / 2f - leaderboardLayout.width / 2f,
             Game.HEIGHT * 0.8f
         )
@@ -85,5 +90,7 @@ class LeaderboardState : GameState() {
         background.dispose()
         title.dispose()
         goBack.dispose()
+        leaderboardFont.dispose()
+        skin.dispose()
     }
 }
