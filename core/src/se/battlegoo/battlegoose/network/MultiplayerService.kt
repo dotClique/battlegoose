@@ -5,7 +5,8 @@ import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
-import java.util.*
+import java.util.LinkedList
+import java.util.UUID
 import java.util.function.Consumer
 
 object MultiplayerService {
@@ -37,7 +38,9 @@ object MultiplayerService {
 
     fun tryRequestOpponent(listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userID ->
-            databaseHandler.readPrimitiveValue<Any>(DataPaths.RANDOM_OPPONENT_QUEUE.toString()) { data ->
+            databaseHandler.readPrimitiveValue<Any>(
+                DataPaths.RANDOM_OPPONENT_QUEUE.toString()
+            ) { data ->
                 val queue: LinkedList<String> =
                     if (data !is ArrayList<*>) {
                         LinkedList()
@@ -97,7 +100,9 @@ object MultiplayerService {
                     listOf()
                 ) // The otherPlayerId is set by that other player.
 
-            databaseHandler.setValue("${DataPaths.BATTLES}/$battleID", initialBattleData).then<
+            databaseHandler.setValue(
+                "${DataPaths.BATTLES}/$battleID", initialBattleData
+            ).then<
                 Void> {
                 databaseHandler.setValue("${DataPaths.LOBBIES}/$lobbyID/battleID", battleID)
                 // Listen for the other player to join the battle
@@ -119,7 +124,9 @@ object MultiplayerService {
 
     private fun joinBattle(lobbyID: String) {
         var hasJoinedBattle = false
-        databaseHandler.listenPrimitiveValue<String>("${DataPaths.LOBBIES}/$lobbyID/battleID") { battleID ->
+        databaseHandler.listenPrimitiveValue<String>(
+            "${DataPaths.LOBBIES}/$lobbyID/battleID"
+        ) { battleID ->
             if (hasJoinedBattle || battleID == null || battleID == "") {
                 return@listenPrimitiveValue
             }
@@ -143,7 +150,8 @@ object MultiplayerService {
         databaseHandler.readReferenceValue<BattleData>(
             "${DataPaths.BATTLES}/$battleDataID"
         ) Consumer@{
-            if (it == null) return@Consumer Logger("ulrik").error("BattleData is null") // TODO: Handle error
+            if (it == null)
+                return@Consumer Logger("ulrik").error("BattleData is null") // TODO: Error
             databaseHandler.setValue(
                 "${DataPaths.BATTLES}/$battleDataID/actions",
                 it.actions + listOf(action)
@@ -152,7 +160,9 @@ object MultiplayerService {
     }
 
     private fun listenForActions(battleID: String) {
-        databaseHandler.listenListValue<ActionData>("${DataPaths.BATTLES}/$battleID/actions") { updatedActionData ->
+        databaseHandler.listenListValue<ActionData>(
+            "${DataPaths.BATTLES}/$battleID/actions"
+        ) { updatedActionData ->
             val lastReadIndex = lastReadActionIndex
             val bufferCpy = actionListBuffer
             if (updatedActionData == null) return@listenListValue

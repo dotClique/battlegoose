@@ -99,7 +99,6 @@ class DatabaseHandler {
         )
     }
 
-
     fun <T> listenListDataClass(
         databasePath: String,
         consumer: Consumer<List<T>?>,
@@ -116,7 +115,6 @@ class DatabaseHandler {
             }
         )
     }
-
 
     fun setValue(databasePath: String, value: Any): Promise<Void> {
         return GdxFIRDatabase.inst().inReference(databasePath).setValue(value)
