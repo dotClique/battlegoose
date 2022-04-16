@@ -8,7 +8,7 @@ import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroStats
-import se.battlegoo.battlegoose.models.heroes.SeargentSwan
+import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
 import se.battlegoo.battlegoose.models.spells.AdrenalinBoostSpell
 import se.battlegoo.battlegoose.models.spells.Spell
@@ -16,10 +16,10 @@ import se.battlegoo.battlegoose.models.spells.Spell
 class SpellTest {
     @Test
     fun testAdrenalinBoostSpell() {
-        val hero = object : Hero(HeroStats(1), AdrenalinBoostSpell(), "", "") {}
+        val hero = object : Hero(HeroStats(1), AdrenalinBoostSpell(), "", "", "") {}
         val battle = Battle(
             hero,
-            SeargentSwan(),
+            SergeantSwan(),
             BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
         )
         val spell = hero.spell.cast()
@@ -55,8 +55,8 @@ class SpellTest {
     @Test
     fun testActiveSpellCallsImplementationCorrectNumberOfTimes() {
         val battle = Battle(
-            SeargentSwan(),
-            SeargentSwan(),
+            SergeantSwan(),
+            SergeantSwan(),
             BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
         )
         var counter = 0

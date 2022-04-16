@@ -7,7 +7,8 @@ abstract class Hero(
     val baseStats: HeroStats,
     val spell: Spell,
     val name: String,
-    val description: String
+    val description: String,
+    val texturePath: String
 ) {
     var currentStats: HeroStats = baseStats
         private set
