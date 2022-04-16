@@ -29,7 +29,7 @@ object MultiplayerService {
 
     private fun joinLobby(lobbyID: String, userID: String): Promise<Void> {
         return databaseHandler.setValue(
-            "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID}",
+            "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID.name}",
             userID
         )
     }
