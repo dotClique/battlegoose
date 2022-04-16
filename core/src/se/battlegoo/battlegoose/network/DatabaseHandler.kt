@@ -1,17 +1,16 @@
 package se.battlegoo.battlegoose.network
 
-import java.util.UUID
 import pl.mk5.gdx.fireapp.GdxFIRAuth
 import pl.mk5.gdx.fireapp.GdxFIRDatabase
 import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
+import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.function.Consumer
-import pl.mk5.gdx.fireapp.promises.ListenerPromise
 
 typealias ConversionFunc<T> = (Map<String, Any>) -> T
 typealias ListConversionFunc<T> = (List<Map<String, Any>>) -> List<T>
@@ -44,7 +43,6 @@ class DatabaseHandler {
             .then<T> { consumer.accept(it) }
     }
 
-
     inline fun <reified T : Any> listenPrimitiveValue(
         databasePath: String,
         consumer: Consumer<T?>
@@ -55,9 +53,6 @@ class DatabaseHandler {
         }
         return listener
     }
-
-
-
 
     inline fun <reified T : Any> listenListValue(
         databasePath: String,
@@ -73,7 +68,6 @@ class DatabaseHandler {
             else -> null
         }
     }
-
 
     inline fun <reified T : Any> readPrimitiveValue(databasePath: String, consumer: Consumer<T?>) {
         GdxFIRDatabase.inst().inReference(databasePath).readValue(T::class.java).then<T> {

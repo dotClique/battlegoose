@@ -1,6 +1,7 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
+import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
@@ -8,7 +9,6 @@ import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.LinkedList
 import java.util.UUID
 import java.util.function.Consumer
-import pl.mk5.gdx.fireapp.promises.ListenerPromise
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -193,7 +193,7 @@ object MultiplayerService {
     }
 
     fun endBattle() {
-        battleListeners.forEach{ it.cancel() }
+        battleListeners.forEach { it.cancel() }
         resetActionDataBuffer()
         battleListeners = mutableListOf()
         battleID = null
