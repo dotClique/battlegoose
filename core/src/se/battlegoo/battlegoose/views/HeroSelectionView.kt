@@ -4,29 +4,37 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
+import kotlin.math.max
 import kotlin.math.min
 
 class HeroSelectionView(heroSelection: HeroSelection) : ViewBase() {
 
     companion object {
-        val BASELINE = 100f
-        val MAX_WINDOW_WIDTH = Game.WIDTH * 0.9f
-        val MARGIN = Game.WIDTH * 0.05f
-        val PADDING = 20f
-        val MAX_HERO_WIDTH = 500f
+        const val MAX_WINDOW_WIDTH = Game.WIDTH * 0.9f
+        const val MIN_PADDING = 5f
+        const val MAX_HERO_WIDTH = 500f
     }
 
     private val heroViews: Array<HeroView>
     private val backgroundTexture = Texture("menuBackground.jpg")
 
     init {
-        val outerWidth = min(MAX_WINDOW_WIDTH / heroSelection.heroCount, MAX_HERO_WIDTH)
-        val innerWidth = outerWidth - 2 * PADDING
+        // Calculate sizes, padding etc.
+        val cardWidthIncludingPadding = min(MAX_WINDOW_WIDTH / heroSelection.heroCount, MAX_HERO_WIDTH)
+        val cardPadding = max(0.04f * cardWidthIncludingPadding, MIN_PADDING)
+        val cardWidth = cardWidthIncludingPadding - 2 * cardPadding
+        val cardHeight = 2f * cardWidth
+        val baselineVertical = (Game.HEIGHT / 2) - (cardHeight / 2)
+        val totalWidth = heroSelection.heroCount * cardWidthIncludingPadding
+        val baselineHorizontal = (Game.WIDTH / 2) - (totalWidth / 2)
+
+        // Init the views
         heroViews = Array(heroSelection.heroCount) { i ->
             HeroView(
-                MARGIN + i * outerWidth + PADDING,
-                BASELINE,
-                innerWidth,
+                baselineHorizontal + (i * cardWidthIncludingPadding) + cardPadding,
+                baselineVertical,
+                cardWidth,
+                cardHeight,
                 heroSelection.getHero(i)
             )
         }
@@ -38,13 +46,11 @@ class HeroSelectionView(heroSelection: HeroSelection) : ViewBase() {
 
         for (view in heroViews)
             view.render(sb)
-//        TODO("Not yet implemented")
     }
 
     override fun dispose() {
         backgroundTexture.dispose()
         for (view in heroViews)
             view.dispose()
-//        TODO("Not yet implemented")
     }
 }
