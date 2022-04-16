@@ -187,7 +187,7 @@ object MultiplayerService {
         return bufferCpy
     }
 
-    fun resetActionDataBuffer() {
+    private fun resetActionDataBuffer() {
         this.lastReadActionIndex = -1
         this.actionListBuffer = null
     }
