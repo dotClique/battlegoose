@@ -1,5 +1,9 @@
 package se.battlegoo.battlegoose.network
 
-enum class LobbyStatus {
-    READY, FULL, DOES_NOT_EXIST
+import se.battlegoo.battlegoose.datamodels.LobbyData
+
+sealed class LobbyStatus {
+    data class Ready(val lobby: LobbyData) : LobbyStatus()
+    object Full : LobbyStatus()
+    object DoesNotExist : LobbyStatus()
 }
