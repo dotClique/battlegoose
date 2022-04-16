@@ -1,5 +1,6 @@
 package se.battlegoo.battlegoose.network
 
+import java.util.UUID
 import pl.mk5.gdx.fireapp.GdxFIRAuth
 import pl.mk5.gdx.fireapp.GdxFIRDatabase
 import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
@@ -10,11 +11,13 @@ import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.function.Consumer
+import pl.mk5.gdx.fireapp.promises.ListenerPromise
 
 typealias ConversionFunc<T> = (Map<String, Any>) -> T
 typealias ListConversionFunc<T> = (List<Map<String, Any>>) -> List<T>
 
 class DatabaseHandler {
+
     fun signInAnonymously(): Promise<GdxFirebaseUser> {
         return GdxFIRAuth.inst().signInAnonymously()
     }
@@ -41,28 +44,36 @@ class DatabaseHandler {
             .then<T> { consumer.accept(it) }
     }
 
+
     inline fun <reified T : Any> listenPrimitiveValue(
         databasePath: String,
         consumer: Consumer<T?>
-    ) {
-        GdxFIRDatabase.inst().inReference(databasePath).onDataChange(T::class.java).then<T> {
+    ): ListenerPromise<T> {
+        val listener = GdxFIRDatabase.inst().inReference(databasePath).onDataChange(T::class.java)
+        listener.then<T> {
             consumer.accept(it)
         }
+        return listener
     }
+
+
+
 
     inline fun <reified T : Any> listenListValue(
         databasePath: String,
         consumer: Consumer<List<T>?>
-    ) {
+    ): ListenerPromise<List<Map<String, Any>>>? {
         @Suppress("UNCHECKED_CAST")
-        when (T::class) {
+        return when (T::class) {
             ActionData::class -> listenListDataClass(
                 databasePath,
                 consumer,
                 this::convertToActionDataList as ListConversionFunc<T>
             )
+            else -> null
         }
     }
+
 
     inline fun <reified T : Any> readPrimitiveValue(databasePath: String, consumer: Consumer<T?>) {
         GdxFIRDatabase.inst().inReference(databasePath).readValue(T::class.java).then<T> {
@@ -105,8 +116,8 @@ class DatabaseHandler {
         databasePath: String,
         consumer: Consumer<List<T>?>,
         listConversionFunc: ListConversionFunc<T>
-    ) {
-        return listenPrimitiveValue<List<Map<String, Any>>>(
+    ): ListenerPromise<List<Map<String, Any>>> {
+        return listenPrimitiveValue(
             databasePath,
             Consumer { consumerData ->
                 if (consumerData == null) {

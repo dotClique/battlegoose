@@ -8,6 +8,7 @@ import se.battlegoo.battlegoose.datamodels.LobbyData
 import java.util.LinkedList
 import java.util.UUID
 import java.util.function.Consumer
+import pl.mk5.gdx.fireapp.promises.ListenerPromise
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -15,6 +16,8 @@ object MultiplayerService {
 
     private var lastReadActionIndex: Int = -1
     private var actionListBuffer: List<ActionData>? = null
+
+    private var battleListeners = mutableListOf<ListenerPromise<*>>()
 
     init {
         databaseHandler.signInAnonymously()
@@ -108,16 +111,16 @@ object MultiplayerService {
                     battleID
                 )
                 // Listen for the other player to join the battle
-                var hasDeletedLobby = false
-                databaseHandler.listenPrimitiveValue<String>(
-                    "${DataPaths.BATTLES}/$battleID/${BattleData::battleID.name}"
+                var otherPlayerIDListener: ListenerPromise<String>? = null
+                otherPlayerIDListener = databaseHandler.listenPrimitiveValue(
+                    "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}"
                 ) { otherPlayerID ->
-                    if (otherPlayerID == null || otherPlayerID.length < 0 || hasDeletedLobby) {
+                    if (otherPlayerID == null || otherPlayerID.length < 0) {
                         return@listenPrimitiveValue
                     }
-                    hasDeletedLobby = true
                     this.battleID = battleID
                     databaseHandler.deleteValue("${DataPaths.LOBBIES}/$lobbyID")
+                    otherPlayerIDListener?.cancel()
                     listenForActions(battleID)
                 }
             }
@@ -125,11 +128,11 @@ object MultiplayerService {
     }
 
     private fun joinBattle(lobbyID: String) {
-        var hasJoinedBattle = false
-        databaseHandler.listenPrimitiveValue<String>(
+        var battleIDListener: ListenerPromise<String>? = null
+        battleIDListener = databaseHandler.listenPrimitiveValue(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::battleID.name}"
         ) { battleID ->
-            if (hasJoinedBattle || battleID == null || battleID == "") {
+            if (battleID == null || battleID == "") {
                 return@listenPrimitiveValue
             }
 
@@ -138,7 +141,7 @@ object MultiplayerService {
                     "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}",
                     userID
                 ).then<Void> {
-                    hasJoinedBattle = true
+                    battleIDListener?.cancel()
                 }
             }
 
@@ -164,7 +167,7 @@ object MultiplayerService {
     }
 
     private fun listenForActions(battleID: String) {
-        databaseHandler.listenListValue<ActionData>(
+        val actionListener = databaseHandler.listenListValue<ActionData>(
             "${DataPaths.BATTLES}/$battleID/${BattleData::actions.name}"
         ) { updatedActionData ->
             if (updatedActionData == null) return@listenListValue
@@ -174,6 +177,7 @@ object MultiplayerService {
                 updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
             }
         }
+        battleListeners.add(actionListener as ListenerPromise<*>)
     }
 
     fun readActionDataBuffer(): List<ActionData>? {
@@ -186,5 +190,12 @@ object MultiplayerService {
     fun resetActionDataBuffer() {
         this.lastReadActionIndex = -1
         this.actionListBuffer = null
+    }
+
+    fun endBattle() {
+        battleListeners.forEach{ it.cancel() }
+        resetActionDataBuffer()
+        battleListeners = mutableListOf()
+        battleID = null
     }
 }
