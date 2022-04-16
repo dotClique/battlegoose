@@ -1,30 +1,20 @@
 package se.battlegoo.battlegoose.controllers
 
+import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.units.UnitModel
-import se.battlegoo.battlegoose.views.UnitObserver
-import se.battlegoo.battlegoose.views.UnitViewBase
+import se.battlegoo.battlegoose.views.UnitView
 
-abstract class UnitController(
-    private val unitModel: UnitModel,
-    private val unitView: UnitViewBase,
-    private val onUnitClick: () -> Unit
-) : // Unit which means Void which means ()
+open class UnitController(
+    val unitModel: UnitModel,
+    private val unitView: UnitView
+) :
     ControllerBase(unitView) {
 
-    abstract fun updateUnit(dt: Float)
+    var viewSize: ScreenVector by unitView::size
+    var viewPosition: ScreenVector by unitView::position
+    var selected: Boolean by unitView::focused
 
-    init {
-        unitView.subscribe(object : UnitObserver {
-            override fun onClick() {
-                onUnitClick() // should toggle some sort of external state.
-            }
-        })
-    }
-
-    override fun update(dt: Float) {
-        unitView.registerInput()
-        updateUnit(dt)
-    }
+    override fun update(dt: Float) {}
 
     fun showRangeData() = object {
         val range = unitModel.currentStats.range

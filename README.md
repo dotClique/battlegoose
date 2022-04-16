@@ -1,6 +1,6 @@
-# Battlegoose
+# BattleGoose
 
-The ultimate turn-based online multiplayer game that will litterally give you goosebumps.
+The ultimate turn-based online multiplayer game that will literally give you goosebumps.
 
 ## Development
 
@@ -51,14 +51,14 @@ Each spell can affect anything in the game state and has a cooldown which denote
 
 - Bird-52 (cooldown: 3): Deal 30 damage to all units in the middle 2 columns of the battlefield.
 - Adrenaline Shot (cooldown: 6): Increase your action points by 1 for the next 2 turns. Thus, the total actions points the next three turns is 2, unless there is another condition that affects the hero's action points.
-- Ephemeral Allegience (cooldown: 5): One random unit the opponent controls joins your army and is now in your control for 3 turns. The position and stats of that unit stays the same.
+- Ephemeral Allegiance (cooldown: 5): One random unit the opponent controls joins your army and is now in your control for 3 turns. The position and stats of that unit stays the same.
 
 ## Heroes
 
 Each Hero has 1 spell.
 
 - Admiral Albatraoz (spell: Bird-52)
-- Sergeant Swan (spell: Ephemeral Allegience)
+- Sergeant Swan (spell: Ephemeral Allegiance)
 - Major Mallard (spell: Adrenaline Shot)
 
 

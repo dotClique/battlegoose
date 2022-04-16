@@ -4,6 +4,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.battlegoo.battlegoose.models.Battle
+import se.battlegoo.battlegoose.models.BattleMap
+import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.SeargentSwan
@@ -15,7 +17,11 @@ class SpellTest {
     @Test
     fun testAdrenalinBoostSpell() {
         val hero = object : Hero(HeroStats(1), AdrenalinBoostSpell(), "", "") {}
-        val battle = Battle(hero)
+        val battle = Battle(
+            hero,
+            SeargentSwan(),
+            BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+        )
         val spell = hero.spell.cast()
         assertTrue(
             "ActiveSpell saved parent spell instance incorrect",
@@ -48,7 +54,11 @@ class SpellTest {
 
     @Test
     fun testActiveSpellCallsImplementationCorrectNumberOfTimes() {
-        val battle = Battle(SeargentSwan())
+        val battle = Battle(
+            SeargentSwan(),
+            SeargentSwan(),
+            BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+        )
         var counter = 0
         val spell = object : Spell("test", "t2") {
             override fun cast(): ActiveSpell {

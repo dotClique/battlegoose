@@ -10,10 +10,10 @@ import se.battlegoo.battlegoose.Game
 
 class CreateLobbyState : GameState() {
 
-    protected var cam: OrthographicCamera = OrthographicCamera()
+    private var cam: OrthographicCamera = OrthographicCamera()
 
     init {
-        cam.setToOrtho(false, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
+        cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
     }
 
     private val background = Texture("placeholder.png")

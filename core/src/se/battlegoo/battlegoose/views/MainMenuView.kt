@@ -50,7 +50,7 @@ class MainMenuView(
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
+        sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
         createLobbyBtn.render(sb)
         joinLobbyBtn.render(sb)
         quickJoinBtn.render(sb)
