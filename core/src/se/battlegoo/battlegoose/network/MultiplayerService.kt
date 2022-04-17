@@ -1,14 +1,14 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
+import java.util.LinkedList
+import java.util.UUID
+import java.util.function.Consumer
 import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
-import java.util.LinkedList
-import java.util.UUID
-import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -115,7 +115,7 @@ object MultiplayerService {
                 otherPlayerIDListener = databaseHandler.listenPrimitiveValue(
                     "${DataPaths.BATTLES}/$battleID/${BattleData::otherPlayerID.name}"
                 ) { otherPlayerID ->
-                    if (otherPlayerID == null || otherPlayerID.length < 0) {
+                    if (otherPlayerID == "" || otherPlayerID == null) {
                         return@listenPrimitiveValue
                     }
                     this.battleID = battleID
