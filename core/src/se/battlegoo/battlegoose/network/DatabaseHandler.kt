@@ -3,9 +3,9 @@ package se.battlegoo.battlegoose.network
 import pl.mk5.gdx.fireapp.GdxFIRAuth
 import pl.mk5.gdx.fireapp.GdxFIRDatabase
 import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
+import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
-import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
@@ -136,10 +136,11 @@ class DatabaseHandler {
     }
 
     fun convertToLobby(data: Map<String, Any>): LobbyData {
+        val lobbyID = data["lobbyID"].toString()
         val hostID = data[LobbyData::hostID.name] as String
         val otherPlayerID = data[LobbyData::otherPlayerID.name] as String
         val shouldStart = data[LobbyData::shouldStart.name] as Boolean
-        return LobbyData(hostID, otherPlayerID, shouldStart)
+        return LobbyData(lobbyID, hostID, otherPlayerID, shouldStart)
     }
 
     fun convertToBattle(battleData: Map<String, Any>): BattleData {
