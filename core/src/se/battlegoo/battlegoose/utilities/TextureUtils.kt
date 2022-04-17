@@ -17,12 +17,12 @@ fun fitScale(texture: Texture, targetWidth: Float, targetHeight: Float): Quad<Fl
         // If width/height is larger for target than origin, scale width
         targetRatio > originRatio -> {
             val newWidth = targetHeight / texture.height * texture.width
-            Quad(newWidth, targetHeight, (targetWidth-newWidth)/2, 0f)
+            Quad(newWidth, targetHeight, (targetWidth - newWidth) / 2, 0f)
         }
         // If width/height is lower for target than origin, scale height
         targetRatio < originRatio -> {
             val newHeight = targetWidth / texture.width * texture.height
-            Quad(targetWidth, newHeight, 0f, (targetHeight-newHeight)/2)
+            Quad(targetWidth, newHeight, 0f, (targetHeight - newHeight) / 2)
         }
         else -> Quad(targetWidth, targetHeight, 0f, 0f)
     }

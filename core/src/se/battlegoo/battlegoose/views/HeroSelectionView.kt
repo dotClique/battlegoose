@@ -3,12 +3,14 @@ package se.battlegoo.battlegoose.views
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import kotlin.math.max
 import kotlin.math.min
 
 class HeroSelectionView(
-    heroSelection: HeroSelection
+    heroSelection: HeroSelection,
+    onClickHeroCard: (hero: Hero) -> Unit
 ) : ViewBase() {
 
     companion object {
@@ -17,8 +19,8 @@ class HeroSelectionView(
         const val MAX_HERO_WIDTH = 500f
     }
 
-    private val heroCardViews: Array<HeroCardView>
     private val backgroundTexture = Texture("menuBackground.jpg")
+    private val heroCardViews: Array<HeroCardView>
 
     init {
         // Calculate sizes, padding etc.
@@ -37,9 +39,16 @@ class HeroSelectionView(
                 baselineVertical,
                 cardWidth,
                 cardHeight,
-                heroSelection.getHero(i)
+                heroSelection,
+                heroSelection.getHero(i),
+                onClickHeroCard
             )
         }
+    }
+
+    override fun registerInput() {
+        for (heroCardView in heroCardViews)
+            heroCardView.registerInput()
     }
 
     override fun render(sb: SpriteBatch) {

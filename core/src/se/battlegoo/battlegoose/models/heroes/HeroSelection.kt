@@ -1,10 +1,10 @@
 package se.battlegoo.battlegoose.models.heroes
 
-class HeroSelection(private val heroes : Array<Hero>) {
-    var selected : Int = 0
-    val heroCount : Int
+class HeroSelection(private val heroes: Array<Hero>) {
+    var selected: Int = 0
+    val heroCount: Int
         get() = heroes.size
-    val selectedHero : Hero
+    val selectedHero: Hero
         get() = heroes[selected]
 
     init {
@@ -13,4 +13,11 @@ class HeroSelection(private val heroes : Array<Hero>) {
     }
 
     fun getHero(i: Int) = heroes[i]
+
+    fun selectHero(hero: Hero) {
+        val new = heroes.indexOf(hero)
+        if (new < 0)
+            throw IllegalArgumentException("Hero not found!")
+        selected = new
+    }
 }
