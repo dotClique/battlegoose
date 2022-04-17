@@ -6,6 +6,6 @@ class AdmiralAlbatross : Hero(
     HeroStats(),
     AdrenalinBoostSpell(),
     "Admiral Albatross",
-    "He's an albatross.",
+    "\"I'm an Albatross!\"",
     "heroes/admiral_albatross.png"
 )

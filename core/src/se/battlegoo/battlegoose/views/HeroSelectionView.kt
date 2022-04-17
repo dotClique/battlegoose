@@ -7,7 +7,9 @@ import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import kotlin.math.max
 import kotlin.math.min
 
-class HeroSelectionView(heroSelection: HeroSelection) : ViewBase() {
+class HeroSelectionView(
+    heroSelection: HeroSelection
+) : ViewBase() {
 
     companion object {
         const val MAX_WINDOW_WIDTH = Game.WIDTH * 0.9f
@@ -15,7 +17,7 @@ class HeroSelectionView(heroSelection: HeroSelection) : ViewBase() {
         const val MAX_HERO_WIDTH = 500f
     }
 
-    private val heroViews: Array<HeroView>
+    private val heroCardViews: Array<HeroCardView>
     private val backgroundTexture = Texture("menuBackground.jpg")
 
     init {
@@ -29,8 +31,8 @@ class HeroSelectionView(heroSelection: HeroSelection) : ViewBase() {
         val baselineHorizontal = (Game.WIDTH / 2) - (totalWidth / 2)
 
         // Init the views
-        heroViews = Array(heroSelection.heroCount) { i ->
-            HeroView(
+        heroCardViews = Array(heroSelection.heroCount) { i ->
+            HeroCardView(
                 baselineHorizontal + (i * cardWidthIncludingPadding) + cardPadding,
                 baselineVertical,
                 cardWidth,
@@ -44,13 +46,13 @@ class HeroSelectionView(heroSelection: HeroSelection) : ViewBase() {
         // Draw the background
         sb.draw(backgroundTexture, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
 
-        for (view in heroViews)
+        for (view in heroCardViews)
             view.render(sb)
     }
 
     override fun dispose() {
         backgroundTexture.dispose()
-        for (view in heroViews)
+        for (view in heroCardViews)
             view.dispose()
     }
 }

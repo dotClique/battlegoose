@@ -2,9 +2,6 @@ package se.battlegoo.battlegoose.utilities
 
 import com.badlogic.gdx.graphics.Texture
 
-
-data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
-
 /**
  * Scale the texture-dimensions to fit within the given targetWidth and targetHeight.
  * Returns a Quad-value with a=Width and b=Height within the given constraints, while maintaining
