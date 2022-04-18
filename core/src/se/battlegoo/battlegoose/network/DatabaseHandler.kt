@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.network
 
-import pl.mk5.gdx.fireapp.GdxFIRAuth
+import pl.mk5.gdx.fireapp.GdxFIRAuth // ktlint-disable import-ordering
 import pl.mk5.gdx.fireapp.GdxFIRDatabase
 import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
 import pl.mk5.gdx.fireapp.promises.ListenerPromise
