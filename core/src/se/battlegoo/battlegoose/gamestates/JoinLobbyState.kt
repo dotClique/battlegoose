@@ -1,51 +1,54 @@
 package se.battlegoo.battlegoose.gamestates
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {
-    private val background = Texture("placeholder.png")
 
-    private val title: BitmapFont = BitmapFont()
-    private val titleText = "JOIN LOBBY"
-    private val layoutTitle = GlyphLayout(title, titleText)
+    var joinLobbyView = JoinLobbyView()
 
-    private val goBack: BitmapFont = BitmapFont()
-    private val goBackText = "Press anywhere to return to main menu..."
-    private val layoutGoBack = GlyphLayout(goBack, goBackText)
+    private var waitingTimer: Float = 0f
+    private val letterSpawnTime: Float = 1f
+    private var letterCount: Int = 0
+
+    var joined = false
 
     private fun handleInput() {
-        if (Gdx.input.justTouched())
-            GameStateManager.push(MainMenuState())
+        joinLobbyView.handleInput()
+        if (joinLobbyView.backToMainMenu()) {
+            GameStateManager.goBack()
+        }
+        if (!joined) {
+            // Check for valid jobby id and successful join
+            /*
+            MultiplayerService.tryJoinLobby(joinLobbyView.getJoinLobbyId()) {
+                val logger = Logger("Join Lobby").error(it.toString())
+            }
+             */
+        }
     }
 
     override fun update(dt: Float) {
         handleInput()
+        // Dynamic 'waiting for opponent' message
+        if (joined) {
+            waitingTimer += dt
+            if (letterCount >= 4f) {
+                joinLobbyView.resetWaitingText()
+                letterCount = 0
+            } else if (waitingTimer > letterSpawnTime) {
+                joinLobbyView.updateWaitingText()
+                waitingTimer -= letterSpawnTime
+                letterCount++
+            }
+        }
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
-
-        title.data.setScale(5f)
-        title.draw(
-            sb, titleText, (Game.WIDTH / 2f) - (layoutTitle.width * 5f / 2f),
-            (Game.HEIGHT * 0.9f) + layoutTitle.height * 3f
-        )
-
-        goBack.data.setScale(3f)
-        goBack.draw(
-            sb, goBackText, Game.WIDTH / 20f - (layoutGoBack.width / 3f),
-            Game.HEIGHT / 20f + layoutGoBack.height * 3f
-        )
+        joinLobbyView.render(sb)
     }
 
     override fun dispose() {
-        background.dispose()
-        title.dispose()
-        goBack.dispose()
+        joinLobbyView.dispose()
     }
 }
