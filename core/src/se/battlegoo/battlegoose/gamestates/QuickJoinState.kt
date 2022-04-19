@@ -6,18 +6,25 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.network.MultiplayerService
 
 class QuickJoinState : GameState() {
 
     private val background = Texture("placeholder.png")
 
     private val title: BitmapFont = BitmapFont()
-    private val titleText = "QUICK JOIN"
+    private var titleText = "QUICK JOIN"
     private val layoutTitle = GlyphLayout(title, titleText)
 
     private val goBack: BitmapFont = BitmapFont()
     private val goBackText = "Press anywhere to return to main menu..."
     private val layoutGoBack = GlyphLayout(goBack, goBackText)
+
+    init {
+        MultiplayerService.tryRequestOpponent() {
+            titleText = it.toString()
+        }
+    }
 
     private fun handleInput() {
         if (Gdx.input.justTouched())
