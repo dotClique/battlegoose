@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.Texture
  * may be used to center the texture horizontally, vertically or both. To center within targetWidth,
  * add horizontalMargin to the x-position. Likewise for targetHeight/verticalMargin.
  */
-fun fitScale(texture: Texture, targetWidth: Float, targetHeight: Float): Quad<Float, Float, Float, Float> {
+fun fitScale(texture: Texture, targetWidth: Float, targetHeight: Float):
+    Quad<Float, Float, Float, Float> {
+
     val targetRatio = targetWidth / targetHeight
     val originRatio = texture.width.toFloat() / texture.height.toFloat()
 
@@ -27,3 +29,5 @@ fun fitScale(texture: Texture, targetWidth: Float, targetHeight: Float): Quad<Fl
         else -> Quad(targetWidth, targetHeight, 0f, 0f)
     }
 }
+
+data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)

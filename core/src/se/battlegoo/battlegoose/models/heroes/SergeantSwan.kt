@@ -1,10 +1,10 @@
 package se.battlegoo.battlegoose.models.heroes
 
-import se.battlegoo.battlegoose.models.spells.AdrenalinBoostSpell
+import se.battlegoo.battlegoose.models.spells.AdrenalineBoostSpell
 
 class SergeantSwan : Hero(
     HeroStats(),
-    AdrenalinBoostSpell(),
+    AdrenalineBoostSpell(),
     "Sergeant Swan",
     "The Sergeant has a fabulous backstory, which " +
         "unfortunately cannot fit in this description.",

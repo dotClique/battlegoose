@@ -12,7 +12,13 @@ class MainMenuState :
     private var mainMenuView = MainMenuView(
         onClickCreateLobby = { GameStateManager.push(CreateLobbyState()) },
 //        onClickJoinLobby = { GameStateManager.push(JoinLobbyState()) },
-        onClickJoinLobby = { GameStateManager.push(HeroSelectionState(arrayOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross()))) },
+        onClickJoinLobby = {
+            GameStateManager.push(
+                HeroSelectionState(
+                    arrayOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross())
+                )
+            )
+        },
 //        onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
         onClickQuickJoin = { GameStateManager.push(BattleState()) },
         onClickLeaderboard = { GameStateManager.push(LeaderboardState()) }

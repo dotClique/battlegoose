@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
@@ -16,12 +18,16 @@ import se.battlegoo.battlegoose.utilities.fitScale
 class HeroCardView(
     x: Float,
     y: Float,
-    width: Float,
-    height: Float,
+    maxWidth: Float,
+    maxHeight: Float,
+    stage: Stage?,
     private val heroSelection: HeroSelection,
     private val hero: Hero,
-    private val onClick: (hero: Hero) -> Unit
+    private val onClickCard: (hero: Hero) -> Unit,
+    private val onClickInfo: (hero: Hero) -> Unit
 ) : ViewBase() {
+
+    private val stage: Stage = stage ?: Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroCard.png")
     private val heroTexture: Texture = Texture(hero.texturePath)
@@ -29,18 +35,18 @@ class HeroCardView(
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
 
-    private val skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
-    private val textTable: Table = Table(skin)
-    private val nameLabel: Label = Label(hero.name, skin)
-    private val descriptionLabel: Label = Label(hero.description, skin)
-    private val spellTitleLabel: Label = Label(hero.spell.title, skin)
-    private val spellDescriptionLabel: Label = Label(hero.spell.description, skin)
-//    private val statsLabel: Label = Label(
-//        "Action points: ${hero.baseStats.actionPoints}", skin)
+    private val mainSkin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
+    private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
+
+    private val textTable: Table = Table(mainSkin)
+    private val nameLabel: Label = Label(hero.name, mainSkin)
+    private val descriptionLabel: Label = Label(hero.description, textSkin)
+
+    private val infoButton: TextButton = TextButton("Info", mainSkin)
 
     init {
         val (backgroundScaledWidth, backgroundScaledHeight, backgroundOffsetX, backgroundOffsetY) =
-            fitScale(backgroundTexture, width, height)
+            fitScale(backgroundTexture, maxWidth, maxHeight)
         backgroundSprite.setPosition(x + backgroundOffsetX, y + backgroundOffsetY)
         backgroundSprite.setSize(backgroundScaledWidth, backgroundScaledHeight)
 
@@ -70,20 +76,7 @@ class HeroCardView(
         nameLabel.wrap = true
 
         descriptionLabel.setFontScale(fontScale)
-        descriptionLabel.color = Color.BLACK
         descriptionLabel.wrap = true
-
-        spellTitleLabel.setFontScale(fontScale * 1.2f)
-        spellTitleLabel.color = Color.BLACK
-        spellTitleLabel.wrap = true
-
-        spellDescriptionLabel.setFontScale(fontScale)
-        spellDescriptionLabel.color = Color.BLACK
-        spellDescriptionLabel.wrap = true
-
-//        statsLabel.setFontScale(fontScale)
-//        statsLabel.color = Color.BLACK
-//        statsLabel.wrap = true
 
         // Add and position all text elements
         textTable.row().width(heroImageWidth)
@@ -91,14 +84,16 @@ class HeroCardView(
         textTable.row().width(heroImageWidth)
         textTable.add(descriptionLabel)
         textTable.row().width(heroImageWidth).spaceTop(lineHeight / 2)
-        textTable.add(spellTitleLabel)
-        textTable.row().width(heroImageWidth)
-        textTable.add(spellDescriptionLabel)
-//        textTable.row().width(heroImageWidth).spaceTop(lineHeight / 2)
-//        textTable.add(statsLabel)
+
+        infoButton.label.setFontScale(fontScale * 2f)
+        infoButton.setSize(heroImageWidth, lineHeight * 3f)
+        infoButton.setPosition(heroBaselineX, heroBaselineY - textHeight)
+
+        this.stage.addActor(infoButton)
+        Gdx.input.inputProcessor = this.stage
     }
 
-    private fun isPressed(): Boolean {
+    private fun cardIsPressed(): Boolean {
         return backgroundSprite.boundingRectangle.contains(
             Game.unproject(
                 Gdx.input.x.toFloat(),
@@ -108,8 +103,10 @@ class HeroCardView(
     }
 
     override fun registerInput() {
-        if (Gdx.input.justTouched() && isPressed()) {
-            onClick(hero)
+        if (Gdx.input.justTouched() && infoButton.isPressed) {
+            onClickInfo(hero)
+        } else if (Gdx.input.justTouched() && cardIsPressed()) {
+            onClickCard(hero)
         }
     }
 
@@ -122,11 +119,13 @@ class HeroCardView(
         backgroundSprite.draw(sb)
         heroSprite.draw(sb)
         textTable.draw(sb, 1f)
+        stage.draw()
     }
 
     override fun dispose() {
         backgroundTexture.dispose()
         heroTexture.dispose()
-        skin.dispose()
+        mainSkin.dispose()
+        textSkin.dispose()
     }
 }
