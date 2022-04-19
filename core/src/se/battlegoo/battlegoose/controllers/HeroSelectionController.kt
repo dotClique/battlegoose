@@ -11,14 +11,10 @@ class HeroSelectionController(
     private val heroSelection: HeroSelection
 ) : ControllerBase(
     view
-), OnClickHeroSelectionCardListener, OnClickHeroSelectionInfoListener, OnClickHeroSelectionInfoExitListener, OnClickHeroSelectionBackListener, OnClickHeroSelectionContinueListener {
+), IHeroSelectionViewController {
 
     init {
-        view.registerOnClickHeroSelectionCardListener(this)
-        view.registerOnClickHeroSelectionInfoListener(this)
-        view.registerOnClickHeroSelectionInfoExitListener(this)
-        view.registerOnClickHeroSelectionBackListener(this)
-        view.registerOnClickHeroSelectionContinueListener(this)
+        view.registerController(this)
     }
 
     override fun update(dt: Float) {
@@ -29,7 +25,7 @@ class HeroSelectionController(
         heroSelection.selectHero(hero)
     }
 
-    override fun onClickHeroSelectionInfo(hero: Hero) {
+    override fun onClickHeroSelectionInfoOpen(hero: Hero) {
         view.showHeroDetails(hero)
     }
 

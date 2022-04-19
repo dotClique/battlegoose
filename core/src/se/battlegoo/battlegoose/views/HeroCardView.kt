@@ -23,8 +23,8 @@ class HeroCardView(
     private val parentStage: Stage?,
     private val heroSelection: HeroSelection,
     private val hero: Hero,
-    onClickCard: (hero: Hero) -> Unit,
-    onClickInfo: (hero: Hero) -> Unit
+    private val onClickCard: (hero: Hero) -> Unit,
+    private val onClickInfo: (hero: Hero) -> Unit
 ) : ViewBase() {
 
     companion object {
@@ -64,9 +64,6 @@ class HeroCardView(
     private val descriptionLabel: Label = Label(hero.description, textSkin)
 
     private val infoButton: TextButton = TextButton("Info", mainSkin)
-
-    private val onClickCardListeners: MutableList<(hero: Hero) -> Unit> = arrayListOf(onClickCard)
-    private val onClickInfoListeners: MutableList<(hero: Hero) -> Unit> = arrayListOf(onClickInfo)
 
     init {
         val (backgroundScaledWidth, backgroundScaledHeight, backgroundOffsetX, backgroundOffsetY) =
@@ -128,18 +125,15 @@ class HeroCardView(
 
     override fun registerInput() {
         if (Gdx.input.justTouched() && infoButton.isPressed) {
-            onClickInfoListeners.forEach { it(hero) }
+            onClickInfo(hero)
         } else if (Gdx.input.justTouched() && cardIsPressed()) {
-            onClickCardListeners.forEach { it(hero) }
+            onClickCard(hero)
         }
     }
 
     override fun render(sb: SpriteBatch) {
-        if (heroSelection.selectedHero == hero) {
-            backgroundSprite.color = Color.LIGHT_GRAY
-        } else {
-            backgroundSprite.color = Color.WHITE
-        }
+        backgroundSprite.color =
+            if (heroSelection.selectedHero == hero) Color.LIGHT_GRAY else Color.WHITE
         backgroundSprite.draw(sb)
         heroSprite.draw(sb)
         textTable.draw(sb, 1f)

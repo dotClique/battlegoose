@@ -27,6 +27,8 @@ class HeroSelectionView(
         private const val FONT_BUTTON_SCALE = 2f
     }
 
+    private var controller: IHeroSelectionViewController? = null
+
     private val stage: Stage = Stage(Game.viewPort)
     private val skin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
 
@@ -36,17 +38,6 @@ class HeroSelectionView(
 
     private val backButton = TextButton("Back", skin)
     private val continueButton = TextButton("Continue", skin)
-
-    private val onClickHeroSelectionCardListeners:
-        MutableList<OnClickHeroSelectionCardListener> = arrayListOf()
-    private val onClickHeroSelectionInfoListeners:
-        MutableList<OnClickHeroSelectionInfoListener> = arrayListOf()
-    private val onClickHeroSelectionInfoExitListeners:
-        MutableList<OnClickHeroSelectionInfoExitListener> = arrayListOf()
-    private val onClickHeroSelectionBackListeners:
-        MutableList<OnClickHeroSelectionBackListener> = arrayListOf()
-    private val onClickHeroSelectionContinueListeners:
-        MutableList<OnClickHeroSelectionContinueListener> = arrayListOf()
 
     init {
         // ###
@@ -86,7 +77,7 @@ class HeroSelectionView(
                 heroSelection,
                 heroSelection.getHero(i),
                 this::onClickHeroCard,
-                this::onClickHeroInfo
+                this::onClickHeroInfoOpen
             )
         }
 
@@ -101,18 +92,6 @@ class HeroSelectionView(
         Gdx.input.inputProcessor = stage
         stage.addActor(backButton)
         stage.addActor(continueButton)
-    }
-
-    private fun onClickHeroCard(hero: Hero) {
-        onClickHeroSelectionCardListeners.forEach { it.onClickHeroSelectionCard(hero) }
-    }
-
-    private fun onClickHeroInfo(hero: Hero) {
-        onClickHeroSelectionInfoListeners.forEach { it.onClickHeroSelectionInfo(hero) }
-    }
-
-    private fun onClickHeroInfoExit() {
-        onClickHeroSelectionInfoExitListeners.forEach { it.onClickHeroSelectionInfoExit() }
     }
 
     fun showHeroDetails(hero: Hero?) {
@@ -138,9 +117,9 @@ class HeroSelectionView(
             heroDetailsView != null ->
                 heroDetailsView?.registerInput()
             Gdx.input.justTouched() && backButton.isPressed ->
-                onClickHeroSelectionBackListeners.forEach { it.onClickHeroSelectionBack() }
+                onClickBack()
             Gdx.input.justTouched() && continueButton.isPressed ->
-                onClickHeroSelectionContinueListeners.forEach { it.onClickHeroSelectionContinue() }
+                onClickContinue()
             else -> {
                 for (heroCardView in heroCardViews)
                     heroCardView.registerInput()
@@ -166,43 +145,38 @@ class HeroSelectionView(
         skin.dispose()
     }
 
-    fun registerOnClickHeroSelectionCardListener(listener: OnClickHeroSelectionCardListener) {
-        onClickHeroSelectionCardListeners.add(listener)
+    fun registerController(controller: IHeroSelectionViewController)
+    {
+        if (this.controller == null)
+            this.controller = controller
+        else
+            Gdx.app.error("#PREREG", "Controller already registered")
     }
 
-    fun registerOnClickHeroSelectionInfoListener(listener: OnClickHeroSelectionInfoListener) {
-        onClickHeroSelectionInfoListeners.add(listener)
+    private fun onClickHeroCard(hero: Hero) {
+        controller?.onClickHeroSelectionCard(hero)
     }
 
-    fun registerOnClickHeroSelectionInfoExitListener(listener: OnClickHeroSelectionInfoExitListener) {
-        onClickHeroSelectionInfoExitListeners.add(listener)
+    private fun onClickHeroInfoOpen(hero: Hero) {
+        controller?.onClickHeroSelectionInfoOpen(hero)
     }
 
-    fun registerOnClickHeroSelectionBackListener(listener: OnClickHeroSelectionBackListener) {
-        onClickHeroSelectionBackListeners.add(listener)
+    private fun onClickHeroInfoExit() {
+        controller?.onClickHeroSelectionInfoExit()
     }
 
-    fun registerOnClickHeroSelectionContinueListener(listener: OnClickHeroSelectionContinueListener) {
-        onClickHeroSelectionContinueListeners.add(listener)
+    private fun onClickBack(){
+        controller?.onClickHeroSelectionBack()
+    }
+    private fun onClickContinue() {
+        controller?.onClickHeroSelectionContinue()
     }
 }
 
-interface OnClickHeroSelectionCardListener {
+interface IHeroSelectionViewController {
     fun onClickHeroSelectionCard(hero: Hero)
-}
-
-interface OnClickHeroSelectionInfoExitListener {
+    fun onClickHeroSelectionInfoOpen(hero: Hero)
     fun onClickHeroSelectionInfoExit()
-}
-
-interface OnClickHeroSelectionInfoListener {
-    fun onClickHeroSelectionInfo(hero: Hero)
-}
-
-interface OnClickHeroSelectionBackListener {
     fun onClickHeroSelectionBack()
-}
-
-interface OnClickHeroSelectionContinueListener {
     fun onClickHeroSelectionContinue()
 }
