@@ -35,8 +35,6 @@ class CreateLobbyView : ViewBase() {
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
 
-    private var created: Boolean = false
-
     init {
         Gdx.input.inputProcessor = stage
 
@@ -45,17 +43,9 @@ class CreateLobbyView : ViewBase() {
         lobbyIdTextField.width = Game.WIDTH / 5f
         lobbyIdTextField.isDisabled = true
         textFieldStyle.font.data.setScale(2.6f)
-        lobbyIdTextField.text = "abcdef" // Insert random lobby id generated here
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 2
-
-        createButton.width = Menu.BUTTON_WIDTH / 1.3f
-        createButton.height *= 2
-        createButton.setPosition(
-            Game.WIDTH / 2f + lobbyIdTextField.width * 0.56f,
-            Game.HEIGHT / 1.75f
-        )
 
         waitingLabel.setPosition(
             Game.WIDTH / 2f - waitingLabel.width * 1.3f,
@@ -72,25 +62,16 @@ class CreateLobbyView : ViewBase() {
         return mainMenuButton.isPressed
     }
 
-    fun handleInput() {
-        if (createButton.isPressed) {
-            created = true
-        }
-        /*
-        mainMenuButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                GameStateManager.goBack()
-            }
-        })
-         */
-    }
-
     fun resetWaitingText() {
         waitingLabel.setText("Waiting for opponent")
     }
 
     fun updateWaitingText() {
         waitingLabel.setText("${waitingLabel.text}.")
+    }
+
+    fun setGeneratedLobbyId(lobbyId: String) {
+        lobbyIdTextField.text = lobbyId
     }
 
     override fun render(sb: SpriteBatch) {
@@ -123,12 +104,8 @@ class CreateLobbyView : ViewBase() {
         lobbyIdLabel.draw(sb, 1f)
         lobbyIdTextField.draw(sb, 1f)
 
-        if (!created) {
-            createButton.draw(sb, 1f)
-        } else {
-            waitingLabel.draw(sb, 1f)
-            lobbyInfoLabel.draw(sb, 1f)
-        }
+        waitingLabel.draw(sb, 1f)
+        lobbyInfoLabel.draw(sb, 1f)
 
         mainMenuButton.draw(sb, 1f)
     }
