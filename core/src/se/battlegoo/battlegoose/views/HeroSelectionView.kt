@@ -19,10 +19,14 @@ class HeroSelectionView(
 ) : ViewBase() {
 
     companion object {
-        const val MAX_WINDOW_WIDTH = Game.WIDTH * 0.9f
-        const val MAX_WINDOW_HEIGHT = Game.HEIGHT * 0.9f
-        const val MIN_PADDING = 5f
-        const val MAX_HERO_WIDTH = 500f
+        private const val MAX_WINDOW_WIDTH = Game.WIDTH * 0.90f
+        private const val MAX_WINDOW_HEIGHT = Game.HEIGHT * 0.90f
+        private const val MAX_WINDOW_TOP = Game.HEIGHT * 0.95f
+        private const val MIN_PADDING = 5f
+        private const val MAX_HERO_WIDTH = 500f
+
+        private const val CARD_PADDING_BETWEEN = 0.04f
+        private const val FONT_BUTTON_SCALE = 2f
     }
 
     private val stage: Stage = Stage(Game.viewPort)
@@ -40,24 +44,27 @@ class HeroSelectionView(
         // # Calculate sizes, padding etc.
         // ###
 
-        // Buttons
+        // Cards size
+        val cardWidthIncludingPadding =
+            min(MAX_WINDOW_WIDTH / heroSelection.heroCount, MAX_HERO_WIDTH)
+        val cardPadding = max(CARD_PADDING_BETWEEN * cardWidthIncludingPadding, MIN_PADDING)
+        val cardWidth = cardWidthIncludingPadding - 2 * cardPadding
+        val cardHeight = min(cardWidth / HeroCardView.CARD_ASPECT_RATIO, MAX_WINDOW_HEIGHT)
+
+        // Button size
         val buttonWidth = Game.WIDTH / 6f
         val buttonsHeight = Game.HEIGHT / 10f
 
-        // Cards
-        val cardWidthIncludingPadding =
-            min(MAX_WINDOW_WIDTH / heroSelection.heroCount, MAX_HERO_WIDTH)
-        val cardPadding = max(0.04f * cardWidthIncludingPadding, MIN_PADDING)
-        val cardWidth = cardWidthIncludingPadding - 2 * cardPadding
-        val cardHeight = min(1.7f * cardWidth, MAX_WINDOW_HEIGHT)
+        // Cards position
         var baselineVertical = (Game.HEIGHT / 2) - (cardHeight / 2) + buttonsHeight
-        if (baselineVertical + cardHeight > Game.HEIGHT * 0.95f)
-            baselineVertical -= (baselineVertical + cardHeight) - Game.HEIGHT * 0.95f
+        baselineVertical -=
+            max((baselineVertical + cardHeight) - Game.HEIGHT * MAX_WINDOW_TOP, 0f)
         val totalWidth = heroSelection.heroCount * cardWidthIncludingPadding
         val baselineHorizontal = (Game.WIDTH / 2) - (totalWidth / 2)
 
-        val buttonBaselineX = Game.WIDTH / 2f - buttonWidth
-        val buttonsBaselineY = baselineVertical / 2f - buttonsHeight / 2f
+        // Button position
+        val buttonBaselineX = Game.WIDTH / 2 - buttonWidth
+        val buttonsBaselineY = baselineVertical / 2 - buttonsHeight / 2
 
         // Init the views
         heroCardViews = Array(heroSelection.heroCount) { i ->
@@ -84,11 +91,11 @@ class HeroSelectionView(
             }
         }
 
-        backButton.label.setFontScale(2f)
+        backButton.label.setFontScale(FONT_BUTTON_SCALE)
         backButton.setPosition(buttonBaselineX, buttonsBaselineY)
         backButton.setSize(buttonWidth, buttonsHeight)
 
-        continueButton.label.setFontScale(2f)
+        continueButton.label.setFontScale(FONT_BUTTON_SCALE)
         continueButton.setPosition(Game.WIDTH - buttonBaselineX - buttonWidth, buttonsBaselineY)
         continueButton.setSize(buttonWidth, buttonsHeight)
 

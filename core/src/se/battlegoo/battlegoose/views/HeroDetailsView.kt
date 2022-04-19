@@ -22,6 +22,27 @@ class HeroDetailsView(
     private val onExit: () -> Unit
 ) : ViewBase() {
 
+    companion object {
+        // Relative values in percentage (0f - 1f) to place elements on the background
+        private const val CARD_IMAGE_MARGIN_LEFT = 0.18f
+        private const val CARD_IMAGE_MARGIN_DOWN = 0.65f
+        private const val CARD_IMAGE_WIDTH = 0.64f
+        private const val CARD_IMAGE_HEIGHT = 0.30f
+        private const val CARD_TEXT_LINE_HEIGHT = 0.04f
+        private const val CARD_TEXT_BOX_WIDTH = 0.85f
+        private const val CARD_TEXT_BOX_HEIGHT = 0.60f
+
+        // Font scale multipliers
+        private const val FONT_SCALE_MULTIPLIER = 0.033f // Multiplied with lineHeight
+        private const val FONT_MAIN_SCALE = 2f // Used for scaling main font
+        private const val FONT_BODY_SCALE = 1.2f // Used for scaling body text font
+
+        // Specific multipliers
+        private const val FONT_MAIN_SPELL_HEADER_SCALE = 0.8f
+        private const val FONT_BODY_SPELL_NAME_SCALE = 1.2f
+        private const val TABLE_COLUMN_SPELL_TITLE_WIDTH = 0.3f
+    }
+
     private val stage: Stage = Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroDetails.png")
@@ -37,7 +58,7 @@ class HeroDetailsView(
     private val nameLabel = Label(hero.name, mainSkin)
     private val descriptionLabel = Label(hero.description, textSkin)
     private val spellHeaderLabel = Label("Spell:", mainSkin)
-    private val spellTitleLabel = Label(hero.spell.title, textSkin)
+    private val spellNameLabel = Label(hero.spell.title, textSkin)
     private val spellDescriptionLabel = Label(
         "${hero.spell.description}\n${hero.spell.cooldown} turns cooldown.", textSkin
     )
@@ -49,10 +70,10 @@ class HeroDetailsView(
         backgroundSprite.setSize(backgroundScaledWidth, backgroundScaledHeight)
 
         // Define position and size based on the background-image
-        val heroBaselineX = x + backgroundOffsetX + backgroundScaledWidth * 0.18f
-        val heroBaselineY = y + backgroundOffsetY + backgroundScaledHeight * 0.65f
-        val heroImageWidth = backgroundScaledWidth * 0.64f
-        val heroImageHeight = backgroundScaledHeight * 0.30f
+        val heroBaselineX = x + backgroundOffsetX + backgroundScaledWidth * CARD_IMAGE_MARGIN_LEFT
+        val heroBaselineY = y + backgroundOffsetY + backgroundScaledHeight * CARD_IMAGE_MARGIN_DOWN
+        val heroImageWidth = backgroundScaledWidth * CARD_IMAGE_WIDTH
+        val heroImageHeight = backgroundScaledHeight * CARD_IMAGE_HEIGHT
 
         // Ignore heroOffsetY as we want this image to render from the baseline
         val (heroScaledWidth, heroScaledHeight, heroOffsetX, _) =
@@ -61,37 +82,35 @@ class HeroDetailsView(
         heroSprite.setSize(heroScaledWidth, heroScaledHeight)
 
         // Define size-values for text
-        val lineHeight = backgroundScaledHeight * 0.04f
-        val textWidth = backgroundScaledWidth * 0.85f
-        val textHeight = backgroundScaledHeight * 0.60f - lineHeight
+        val lineHeight = backgroundScaledHeight * CARD_TEXT_LINE_HEIGHT
+        val textWidth = backgroundScaledWidth * CARD_TEXT_BOX_WIDTH
+        val textHeight = backgroundScaledHeight * CARD_TEXT_BOX_HEIGHT - lineHeight
+        // Use heroImageWidth to find midline, then use textWidth to find left starting point
         val textBaselineX = heroBaselineX + (heroImageWidth / 2) - (textWidth / 2)
 
-        val fontScale = lineHeight * 0.033f
-        val skinFontScale = fontScale * 2f
-        val labelFontScale = fontScale * 1.2f
+        val fontScale = lineHeight * FONT_SCALE_MULTIPLIER
+        val headerFontScale = fontScale * FONT_MAIN_SCALE
+        val bodyFontScale = fontScale * FONT_BODY_SCALE
 
         textTable.setSize(textWidth, textHeight)
         textTable.setPosition(textBaselineX, heroBaselineY - textHeight - (lineHeight / 2))
         textTable.left().top() // Align content from top left
 
-        nameLabel.setFontScale(skinFontScale)
+        nameLabel.setFontScale(headerFontScale)
         nameLabel.color = Color.BLACK
         nameLabel.wrap = true
 
-        descriptionLabel.setFontScale(labelFontScale)
-        descriptionLabel.color = Color.BLACK
+        descriptionLabel.setFontScale(bodyFontScale)
         descriptionLabel.wrap = true
 
-        spellHeaderLabel.setFontScale(skinFontScale * 0.8f)
+        spellHeaderLabel.setFontScale(headerFontScale * FONT_MAIN_SPELL_HEADER_SCALE)
         spellHeaderLabel.color = Color.BLACK
         spellHeaderLabel.wrap = true
 
-        spellTitleLabel.setFontScale(labelFontScale * 1.2f)
-        spellTitleLabel.color = Color.BLACK
-        spellTitleLabel.wrap = true
+        spellNameLabel.setFontScale(bodyFontScale * FONT_BODY_SPELL_NAME_SCALE)
+        spellNameLabel.wrap = true
 
-        spellDescriptionLabel.setFontScale(labelFontScale)
-        spellDescriptionLabel.color = Color.BLACK
+        spellDescriptionLabel.setFontScale(bodyFontScale)
         spellDescriptionLabel.wrap = true
 
         // Set default values for table cells
@@ -101,8 +120,8 @@ class HeroDetailsView(
         textTable.row()
         textTable.add(descriptionLabel).width(textWidth)
         textTable.row().spaceTop(lineHeight / 2).colspan(1)
-        textTable.add(spellHeaderLabel).width(textWidth * 0.3f)
-        textTable.add(spellTitleLabel).expandX()
+        textTable.add(spellHeaderLabel).width(textWidth * TABLE_COLUMN_SPELL_TITLE_WIDTH)
+        textTable.add(spellNameLabel).expandX()
         textTable.row().width(textWidth)
         textTable.add(spellDescriptionLabel)
 
