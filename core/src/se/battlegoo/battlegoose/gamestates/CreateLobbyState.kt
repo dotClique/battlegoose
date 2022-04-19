@@ -7,22 +7,16 @@ import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyState : GameState() {
 
-    private var cam: OrthographicCamera = OrthographicCamera()
-
     private var timer: Float = 0f
     private val spawn: Float = 1f
     private var counter: Float = 0f
-
-    init {
-        cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
-    }
 
     private val createLobbyView: CreateLobbyView = CreateLobbyView()
 
     private fun handleInput() {
         createLobbyView.handleInput()
         if (createLobbyView.backToMainMenu()) {
-            GameStateManager.push(MainMenuState())
+            GameStateManager.goBack()
         }
     }
 
