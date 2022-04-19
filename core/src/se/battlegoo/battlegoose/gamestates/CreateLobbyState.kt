@@ -15,6 +15,8 @@ class CreateLobbyState : GameState() {
 
     var completed = false
 
+    private var lobbyId: String? = null
+
     private fun handleInput() {
         if (createLobbyView.backToMainMenu()) {
             GameStateManager.goBack()
@@ -23,8 +25,8 @@ class CreateLobbyState : GameState() {
             completed = true
             MultiplayerService.tryCreateLobby() {
                 val logger = Logger("Create Lobby").error(it.toString())
-                val lobbyId = it.lobbyID
-                createLobbyView.setGeneratedLobbyId(lobbyId)
+                lobbyId = it.lobbyID
+                createLobbyView.setGeneratedLobbyId(lobbyId!!)
             }
         }
     }
