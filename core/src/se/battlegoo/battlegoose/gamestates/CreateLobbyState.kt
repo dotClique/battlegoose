@@ -1,15 +1,13 @@
 package se.battlegoo.battlegoose.gamestates
 
-import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyState : GameState() {
 
-    private var timer: Float = 0f
-    private val spawn: Float = 1f
-    private var counter: Float = 0f
+    private var waitingTimer: Float = 0f
+    private val letterSpawnTime: Float = 1f
+    private var letterCount: Int = 0
 
     private val createLobbyView: CreateLobbyView = CreateLobbyView()
 
@@ -23,14 +21,14 @@ class CreateLobbyState : GameState() {
     override fun update(dt: Float) {
         handleInput()
         // Dynamic 'waiting for opponent' message
-        timer += dt
-        if (counter >= 4f) {
+        waitingTimer += dt
+        if (letterCount >= 4f) {
             createLobbyView.resetWaitingText()
-            counter -= 4f
-        } else if (timer > spawn) {
+            letterCount = 0
+        } else if (waitingTimer > letterSpawnTime) {
             createLobbyView.updateWaitingText()
-            timer -= spawn
-            counter += 1f
+            waitingTimer -= letterSpawnTime
+            letterCount++
         }
     }
 
