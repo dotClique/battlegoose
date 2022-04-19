@@ -18,10 +18,6 @@ class UnitView(
         }
 
     var focused: Boolean = false
-        set(value) {
-            sprite.setFlip(sprite.isFlipX, value)
-            field = value
-        }
 
     init {
         sprite.flip(facingDirection == FacingDirection.LEFT, false)
