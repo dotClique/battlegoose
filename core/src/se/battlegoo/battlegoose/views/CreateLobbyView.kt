@@ -57,6 +57,11 @@ class CreateLobbyView : ViewBase() {
             Game.WIDTH / 2f - waiting.width * 1.3f,
             Game.HEIGHT * 0.8f
         )
+
+        stage.addActor(textField)
+        stage.addActor(mainMenuButton)
+        stage.addActor(create)
+        stage.addActor(label)
     }
 
     fun backToMainMenu(): Boolean {
@@ -85,11 +90,6 @@ class CreateLobbyView : ViewBase() {
     }
 
     override fun render(sb: SpriteBatch) {
-        stage.addActor(textField)
-        stage.addActor(mainMenuButton)
-        stage.addActor(create)
-        stage.addActor(label)
-
         textField.setPosition(
             Game.WIDTH / 2f - textField.width / 2f,
             Game.HEIGHT / 1.7f
