@@ -34,7 +34,8 @@ class BattleMapController(
         tileHexRadius * (1.5f * mapSize.y + 0.5f)
     )
 
-    private val tileControllers = arrayListOf<BattleMapTileController>()
+    private val tileControllers: Array<Array<BattleMapTileController?>> =
+        Array(mapSize.y) { arrayOfNulls<BattleMapTileController?>(mapSize.x) }
     private val obstacleViews = arrayListOf<ObstacleView>()
     private val unitControllers = hashMapOf<UnitModel, UnitController>()
 
@@ -42,11 +43,9 @@ class BattleMapController(
         for (y in 0 until mapSize.y) {
             for (x in 0 until mapSize.x - (y % 2)) {
                 val gridPos = GridVector(x, y)
-                tileControllers.add(
-                    BattleMapTileController(
-                        tileView = BattleMapTileView(tileHexRadius, toPixelPos(gridPos)),
-                        onTileClick = { selectTile(gridPos, it) }
-                    )
+                tileControllers[gridPos.y][gridPos.x] = BattleMapTileController(
+                    tileView = BattleMapTileView(tileHexRadius, toPixelPos(gridPos)),
+                    onTileClick = { selectTile(gridPos, it) }
                 )
             }
         }
@@ -85,8 +84,10 @@ class BattleMapController(
         if (unit?.hero == hero) {
             unitControllers[unit]?.let { unitController ->
                 val oldSelected = tileController.selected
-                for (tc in tileControllers) {
-                    tc.selected = false
+                for (tRow in tileControllers) {
+                    for (tc in tRow) {
+                        tc?.selected = false
+                    }
                 }
                 for (uc in unitControllers.values) {
                     uc.selected = false
@@ -98,8 +99,10 @@ class BattleMapController(
     }
 
     override fun update(dt: Float) {
-        for (tc in tileControllers) {
-            tc.update(dt)
+        for (tRow in tileControllers) {
+            for (tc in tRow) {
+                tc?.update(dt)
+            }
         }
         for (uc in unitControllers.values) {
             uc.update(dt)
@@ -108,8 +111,10 @@ class BattleMapController(
 
     override fun render(sb: SpriteBatch) {
         super.render(sb)
-        for (tc in tileControllers) {
-            tc.render(sb)
+        for (tRow in tileControllers) {
+            for (tc in tRow) {
+                tc?.render(sb)
+            }
         }
         for (ov in obstacleViews) {
             ov.render(sb)
@@ -121,8 +126,10 @@ class BattleMapController(
 
     override fun dispose() {
         super.dispose()
-        for (tc in tileControllers) {
-            tc.dispose()
+        for (tRow in tileControllers) {
+            for (tc in tRow) {
+                tc?.dispose()
+            }
         }
         for (ov in obstacleViews) {
             ov.dispose()
