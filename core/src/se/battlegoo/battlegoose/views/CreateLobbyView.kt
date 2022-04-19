@@ -19,14 +19,14 @@ class CreateLobbyView : ViewBase() {
     private var stage = Stage(Game.viewPort)
 
     private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
-    private var textField: TextField = TextField("", skin)
+    private var lobbyIdTextField: TextField = TextField("", skin)
     private var textFieldStyle = skin.get(TextFieldStyle::class.java)
 
-    private val title: Label = Label("Create Lobby", skin)
-    private var label: Label = Label("Lobby ID: ", skin)
+    private val titleLabel: Label = Label("Create Lobby", skin)
+    private var lobbyIdLabel: Label = Label("Lobby ID: ", skin)
     private var mainMenuButton: TextButton = TextButton("Main Menu", skin)
-    private var create: TextButton = TextButton("Create", skin)
-    private var waiting: Label = Label("Waiting for opponent", skin)
+    private var createButton: TextButton = TextButton("Create", skin)
+    private var waitingLabel: Label = Label("Waiting for opponent", skin)
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -36,32 +36,32 @@ class CreateLobbyView : ViewBase() {
     init {
         Gdx.input.inputProcessor = stage
 
-        textField.alignment = Align.center
-        textField.height = Game.HEIGHT / 12f
-        textField.width = Game.WIDTH / 5f
-        textField.isDisabled = true
+        lobbyIdTextField.alignment = Align.center
+        lobbyIdTextField.height = Game.HEIGHT / 12f
+        lobbyIdTextField.width = Game.WIDTH / 5f
+        lobbyIdTextField.isDisabled = true
         textFieldStyle.font.data.setScale(2.6f)
-        textField.text = "abcdef" // Insert random lobby id generated here
+        lobbyIdTextField.text = "abcdef" // Insert random lobby id generated here
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 2
 
-        create.width = Menu.BUTTON_WIDTH / 1.3f
-        create.height *= 2
-        create.setPosition(
-            Game.WIDTH / 2f + textField.width * 0.56f,
+        createButton.width = Menu.BUTTON_WIDTH / 1.3f
+        createButton.height *= 2
+        createButton.setPosition(
+            Game.WIDTH / 2f + lobbyIdTextField.width * 0.56f,
             Game.HEIGHT / 1.75f
         )
 
-        waiting.setPosition(
-            Game.WIDTH / 2f - waiting.width * 1.3f,
+        waitingLabel.setPosition(
+            Game.WIDTH / 2f - waitingLabel.width * 1.3f,
             Game.HEIGHT * 0.8f
         )
 
-        stage.addActor(textField)
+        stage.addActor(lobbyIdTextField)
         stage.addActor(mainMenuButton)
-        stage.addActor(create)
-        stage.addActor(label)
+        stage.addActor(createButton)
+        stage.addActor(lobbyIdLabel)
     }
 
     fun backToMainMenu(): Boolean {
@@ -69,7 +69,7 @@ class CreateLobbyView : ViewBase() {
     }
 
     fun handleInput() {
-        if (create.isPressed) {
+        if (createButton.isPressed) {
             created = true
         }
         /*
@@ -82,27 +82,27 @@ class CreateLobbyView : ViewBase() {
     }
 
     fun resetWaitingText() {
-        waiting.setText("Waiting for opponent")
+        waitingLabel.setText("Waiting for opponent")
     }
 
     fun updateWaitingText() {
-        waiting.setText("${waiting.text}.")
+        waitingLabel.setText("${waitingLabel.text}.")
     }
 
     override fun render(sb: SpriteBatch) {
-        textField.setPosition(
-            Game.WIDTH / 2f - textField.width / 2f,
+        lobbyIdTextField.setPosition(
+            Game.WIDTH / 2f - lobbyIdTextField.width / 2f,
             Game.HEIGHT / 1.7f
         )
 
-        title.setFontScale(5f)
-        title.setPosition(
-            (Game.WIDTH / 2f) - (title.width * 5f / 2f),
+        titleLabel.setFontScale(5f)
+        titleLabel.setPosition(
+            (Game.WIDTH / 2f) - (titleLabel.width * 5f / 2f),
             Game.HEIGHT * 0.9f
         )
 
-        label.setPosition(
-            Game.WIDTH / 2f - textField.width * 1.3f,
+        lobbyIdLabel.setPosition(
+            Game.WIDTH / 2f - lobbyIdTextField.width * 1.3f,
             Game.HEIGHT / 1.6f
         )
 
@@ -110,14 +110,14 @@ class CreateLobbyView : ViewBase() {
 
         sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
 
-        title.draw(sb, 1f)
-        label.draw(sb, 1f)
-        textField.draw(sb, 1f)
+        titleLabel.draw(sb, 1f)
+        lobbyIdLabel.draw(sb, 1f)
+        lobbyIdTextField.draw(sb, 1f)
 
         if (!created) {
-            create.draw(sb, 1f)
+            createButton.draw(sb, 1f)
         } else {
-            waiting.draw(sb, 1f)
+            waitingLabel.draw(sb, 1f)
         }
 
         mainMenuButton.draw(sb, 1f)
