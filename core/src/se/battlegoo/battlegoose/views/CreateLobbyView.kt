@@ -16,7 +16,7 @@ class CreateLobbyView : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
 
-    private var stage = Stage()
+    private var stage = Stage(Game.viewPort)
 
     private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
     private var textField: TextField = TextField("", skin)
