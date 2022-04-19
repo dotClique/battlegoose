@@ -23,8 +23,8 @@ class HeroCardView(
     private val parentStage: Stage?,
     private val heroSelection: HeroSelection,
     private val hero: Hero,
-    private val onClickCard: (hero: Hero) -> Unit,
-    private val onClickInfo: (hero: Hero) -> Unit
+    onClickCard: (hero: Hero) -> Unit,
+    onClickInfo: (hero: Hero) -> Unit
 ) : ViewBase() {
 
     companion object {
@@ -64,6 +64,9 @@ class HeroCardView(
     private val descriptionLabel: Label = Label(hero.description, textSkin)
 
     private val infoButton: TextButton = TextButton("Info", mainSkin)
+
+    private val onClickCardListeners: MutableList<(hero: Hero) -> Unit> = arrayListOf(onClickCard)
+    private val onClickInfoListeners: MutableList<(hero: Hero) -> Unit> = arrayListOf(onClickInfo)
 
     init {
         val (backgroundScaledWidth, backgroundScaledHeight, backgroundOffsetX, backgroundOffsetY) =
@@ -125,9 +128,9 @@ class HeroCardView(
 
     override fun registerInput() {
         if (Gdx.input.justTouched() && infoButton.isPressed) {
-            onClickInfo(hero)
+            onClickInfoListeners.forEach { it(hero) }
         } else if (Gdx.input.justTouched() && cardIsPressed()) {
-            onClickCard(hero)
+            onClickCardListeners.forEach { it(hero) }
         }
     }
 

@@ -7,15 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import kotlin.math.max
 import kotlin.math.min
 
 class HeroSelectionView(
-    heroSelection: HeroSelection,
-    onClickHeroCard: (hero: Hero) -> Unit
+    heroSelection: HeroSelection
 ) : ViewBase() {
 
     companion object {
@@ -38,6 +36,17 @@ class HeroSelectionView(
 
     private val backButton = TextButton("Back", skin)
     private val continueButton = TextButton("Continue", skin)
+
+    private val onClickHeroSelectionCardListeners:
+        MutableList<OnClickHeroSelectionCardListener> = arrayListOf()
+    private val onClickHeroSelectionInfoListeners:
+        MutableList<OnClickHeroSelectionInfoListener> = arrayListOf()
+    private val onClickHeroSelectionInfoExitListeners:
+        MutableList<OnClickHeroSelectionInfoExitListener> = arrayListOf()
+    private val onClickHeroSelectionBackListeners:
+        MutableList<OnClickHeroSelectionBackListener> = arrayListOf()
+    private val onClickHeroSelectionContinueListeners:
+        MutableList<OnClickHeroSelectionContinueListener> = arrayListOf()
 
     init {
         // ###
@@ -76,19 +85,9 @@ class HeroSelectionView(
                 stage,
                 heroSelection,
                 heroSelection.getHero(i),
-                onClickHeroCard
-            ) {
-                // TODO: Move this!
-                heroDetailsView = HeroDetailsView(
-                    (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
-                    (Game.HEIGHT / 2) - (MAX_WINDOW_HEIGHT / 2),
-                    MAX_WINDOW_WIDTH,
-                    MAX_WINDOW_HEIGHT,
-                    it,
-                    this::exitDetailsView
-                )
-                Gdx.input.inputProcessor = null
-            }
+                this::onClickHeroCard,
+                this::onClickHeroInfo
+            )
         }
 
         backButton.label.setFontScale(FONT_BUTTON_SCALE)
@@ -104,10 +103,34 @@ class HeroSelectionView(
         stage.addActor(continueButton)
     }
 
-    private fun exitDetailsView() {
-        heroDetailsView?.dispose()
-        heroDetailsView = null
-        Gdx.input.inputProcessor = stage
+    private fun onClickHeroCard(hero: Hero) {
+        onClickHeroSelectionCardListeners.forEach { it.onClickHeroSelectionCard(hero) }
+    }
+
+    private fun onClickHeroInfo(hero: Hero) {
+        onClickHeroSelectionInfoListeners.forEach { it.onClickHeroSelectionInfo(hero) }
+    }
+
+    private fun onClickHeroInfoExit() {
+        onClickHeroSelectionInfoExitListeners.forEach { it.onClickHeroSelectionInfoExit() }
+    }
+
+    fun showHeroDetails(hero: Hero?) {
+        hero?.let {
+            heroDetailsView = HeroDetailsView(
+                (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
+                (Game.HEIGHT / 2) - (MAX_WINDOW_HEIGHT / 2),
+                MAX_WINDOW_WIDTH,
+                MAX_WINDOW_HEIGHT,
+                hero,
+                this::onClickHeroInfoExit
+            )
+            Gdx.input.inputProcessor = null
+        } ?: run {
+            heroDetailsView?.dispose()
+            heroDetailsView = null
+            Gdx.input.inputProcessor = stage
+        }
     }
 
     override fun registerInput() {
@@ -115,10 +138,9 @@ class HeroSelectionView(
             heroDetailsView != null ->
                 heroDetailsView?.registerInput()
             Gdx.input.justTouched() && backButton.isPressed ->
-                GameStateManager.goBack()
+                onClickHeroSelectionBackListeners.forEach { it.onClickHeroSelectionBack() }
             Gdx.input.justTouched() && continueButton.isPressed ->
-                // TODO: Implement next step
-                Gdx.app.log("#INFO", "Should be proceeding!")
+                onClickHeroSelectionContinueListeners.forEach { it.onClickHeroSelectionContinue() }
             else -> {
                 for (heroCardView in heroCardViews)
                     heroCardView.registerInput()
@@ -128,7 +150,7 @@ class HeroSelectionView(
 
     override fun render(sb: SpriteBatch) {
         // Draw the background
-        sb.draw(backgroundTexture, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
+        sb.draw(backgroundTexture, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
         stage.draw()
         for (view in heroCardViews)
@@ -143,4 +165,44 @@ class HeroSelectionView(
         heroDetailsView?.dispose()
         skin.dispose()
     }
+
+    fun registerOnClickHeroSelectionCardListener(listener: OnClickHeroSelectionCardListener) {
+        onClickHeroSelectionCardListeners.add(listener)
+    }
+
+    fun registerOnClickHeroSelectionInfoListener(listener: OnClickHeroSelectionInfoListener) {
+        onClickHeroSelectionInfoListeners.add(listener)
+    }
+
+    fun registerOnClickHeroSelectionInfoExitListener(listener: OnClickHeroSelectionInfoExitListener) {
+        onClickHeroSelectionInfoExitListeners.add(listener)
+    }
+
+    fun registerOnClickHeroSelectionBackListener(listener: OnClickHeroSelectionBackListener) {
+        onClickHeroSelectionBackListeners.add(listener)
+    }
+
+    fun registerOnClickHeroSelectionContinueListener(listener: OnClickHeroSelectionContinueListener) {
+        onClickHeroSelectionContinueListeners.add(listener)
+    }
+}
+
+interface OnClickHeroSelectionCardListener {
+    fun onClickHeroSelectionCard(hero: Hero)
+}
+
+interface OnClickHeroSelectionInfoExitListener {
+    fun onClickHeroSelectionInfoExit()
+}
+
+interface OnClickHeroSelectionInfoListener {
+    fun onClickHeroSelectionInfo(hero: Hero)
+}
+
+interface OnClickHeroSelectionBackListener {
+    fun onClickHeroSelectionBack()
+}
+
+interface OnClickHeroSelectionContinueListener {
+    fun onClickHeroSelectionContinue()
 }
