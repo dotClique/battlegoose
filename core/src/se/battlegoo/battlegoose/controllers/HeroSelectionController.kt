@@ -4,14 +4,16 @@ import com.badlogic.gdx.Gdx
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
-import se.battlegoo.battlegoose.views.*
+import se.battlegoo.battlegoose.views.HeroSelectionView
+import se.battlegoo.battlegoose.views.IHeroSelectionViewController
 
 class HeroSelectionController(
     private val view: HeroSelectionView,
     private val heroSelection: HeroSelection
 ) : ControllerBase(
     view
-), IHeroSelectionViewController {
+),
+    IHeroSelectionViewController {
 
     init {
         view.registerController(this)
@@ -39,7 +41,10 @@ class HeroSelectionController(
     }
 
     override fun onClickHeroSelectionContinue() {
-        Gdx.app.log("#TODO", "Continue not implemented yet. " +
-            "Currently selected: [${heroSelection.selectedHero.name}]")
+        Gdx.app.log(
+            "#TODO",
+            "Continue not implemented yet. " +
+                "Currently selected: [${heroSelection.selectedHero.name}]"
+        )
     }
 }

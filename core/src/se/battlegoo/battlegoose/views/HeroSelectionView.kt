@@ -145,8 +145,7 @@ class HeroSelectionView(
         skin.dispose()
     }
 
-    fun registerController(controller: IHeroSelectionViewController)
-    {
+    fun registerController(controller: IHeroSelectionViewController) {
         if (this.controller == null)
             this.controller = controller
         else
@@ -165,7 +164,7 @@ class HeroSelectionView(
         controller?.onClickHeroSelectionInfoExit()
     }
 
-    private fun onClickBack(){
+    private fun onClickBack() {
         controller?.onClickHeroSelectionBack()
     }
     private fun onClickContinue() {
