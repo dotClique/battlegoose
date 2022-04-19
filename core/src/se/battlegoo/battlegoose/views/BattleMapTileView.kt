@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.gridmath.isPointInsideHexagon
 import kotlin.math.sqrt
 
 class BattleMapTileView(
@@ -21,10 +22,14 @@ class BattleMapTileView(
     private val textureFocused = Texture("tileAccentLight.png")
     private val sprite = Sprite(if (focused) textureFocused else texture)
 
-    private val clickHandler: ClickableView = ClickableImpl { sprite.boundingRectangle }
+    private val tileSize = ScreenVector(tileHexRadius * sqrt(3f), tileHexRadius * 2)
+
+    private val clickHandler: ClickableView = ClickableImpl { clickPos ->
+        isPointInsideHexagon(clickPos, pos, tileSize)
+    }
 
     init {
-        sprite.setSize(tileHexRadius * sqrt(3f), tileHexRadius * 2)
+        sprite.setSize(tileSize.x, tileSize.y)
         sprite.setPosition(pos.x, pos.y)
     }
 
