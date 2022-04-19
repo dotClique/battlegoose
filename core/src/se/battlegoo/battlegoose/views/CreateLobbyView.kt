@@ -38,17 +38,20 @@ class CreateLobbyView : ViewBase() {
     init {
         Gdx.input.inputProcessor = stage
 
+        titleLabel.setAlignment(Align.center)
+        lobbyIdLabel.setAlignment(Align.center)
+        lobbyInfoLabel.setAlignment(Align.center)
+
         lobbyIdTextField.alignment = Align.center
         lobbyIdTextField.height = Game.HEIGHT / 12f
         lobbyIdTextField.width = Game.WIDTH / 5f
         lobbyIdTextField.isDisabled = true
-        //textFieldStyle.font.data.setScale(2.6f)
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
-        mainMenuButton.height *= 2
+        mainMenuButton.height *= 1.5f
 
         waitingLabel.setPosition(
-            Game.WIDTH / 2f - waitingLabel.width * 1.2f,
+            Game.WIDTH / 2f - waitingLabel.width / 2f,
             Game.HEIGHT * 0.8f
         )
 
@@ -82,17 +85,17 @@ class CreateLobbyView : ViewBase() {
 
         titleLabel.setFontScale(5f)
         titleLabel.setPosition(
-            (Game.WIDTH / 2f) - (titleLabel.width * 5f / 2f),
+            (Game.WIDTH / 2f) - titleLabel.width / 2f,
             Game.HEIGHT * 0.9f
         )
 
         lobbyIdLabel.setPosition(
-            Game.WIDTH / 2f - lobbyIdTextField.width * 1.3f,
-            Game.HEIGHT / 1.6f
+            Game.WIDTH / 2f - lobbyIdTextField.width * 1.1f,
+            Game.HEIGHT / 1.66f
         )
 
         lobbyInfoLabel.setPosition(
-            (Game.WIDTH / 2f) - (lobbyInfoLabel.width * 1.3f),
+            (Game.WIDTH / 2f) - (lobbyInfoLabel.width / 2f),
             Game.HEIGHT * 0.5f
         )
 
@@ -105,7 +108,8 @@ class CreateLobbyView : ViewBase() {
         lobbyIdTextField.draw(sb, 1f)
 
         waitingLabel.draw(sb, 1f)
-        if(lobbyIdTextField.text != "") {
+
+        if (lobbyIdTextField.text != "") {
             lobbyInfoLabel.draw(sb, 1f)
         }
 
