@@ -26,7 +26,7 @@ class CreateLobbyView : ViewBase() {
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val createButton: TextButton = TextButton("Create", skin)
-    private val waitingLabel: Label = Label("Waiting for opponent", skin)
+    private val waitingLabel: Label = Label("Creating lobby", skin)
     private val lobbyInfoLabel: Label = Label(
         "Ask your friend to enter this code for the game to begin",
         skin
@@ -42,13 +42,13 @@ class CreateLobbyView : ViewBase() {
         lobbyIdTextField.height = Game.HEIGHT / 12f
         lobbyIdTextField.width = Game.WIDTH / 5f
         lobbyIdTextField.isDisabled = true
-        textFieldStyle.font.data.setScale(2.6f)
+        //textFieldStyle.font.data.setScale(2.6f)
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 2
 
         waitingLabel.setPosition(
-            Game.WIDTH / 2f - waitingLabel.width * 1.3f,
+            Game.WIDTH / 2f - waitingLabel.width * 1.2f,
             Game.HEIGHT * 0.8f
         )
 
@@ -63,7 +63,7 @@ class CreateLobbyView : ViewBase() {
     }
 
     fun resetWaitingText() {
-        waitingLabel.setText("Waiting for opponent")
+        waitingLabel.setText("Creating lobby")
     }
 
     fun updateWaitingText() {
@@ -105,7 +105,9 @@ class CreateLobbyView : ViewBase() {
         lobbyIdTextField.draw(sb, 1f)
 
         waitingLabel.draw(sb, 1f)
-        lobbyInfoLabel.draw(sb, 1f)
+        if(lobbyIdTextField.text != "") {
+            lobbyInfoLabel.draw(sb, 1f)
+        }
 
         mainMenuButton.draw(sb, 1f)
     }
