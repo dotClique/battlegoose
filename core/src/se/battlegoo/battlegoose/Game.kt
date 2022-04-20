@@ -6,13 +6,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.Logger
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.gamestates.MainMenuState
-import se.battlegoo.battlegoose.network.MultiplayerService
-import se.battlegoo.battlegoose.network.RandomOpponentStatus
 
 class Game : ApplicationAdapter() {
     private lateinit var batch: SpriteBatch

@@ -1,51 +1,57 @@
 package se.battlegoo.battlegoose.gamestates
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.Game
+import com.badlogic.gdx.utils.Logger
+import se.battlegoo.battlegoose.network.MultiplayerService
+import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {
-    private val background = Texture("placeholder.png")
 
-    private val title: BitmapFont = BitmapFont()
-    private val titleText = "JOIN LOBBY"
-    private val layoutTitle = GlyphLayout(title, titleText)
+    private val joinLobbyView = JoinLobbyView(
+        onClickMainMenu = this::goBack,
+        onJoinLobby = { lobbyID ->
+            MultiplayerService.tryJoinLobby(lobbyID) {
+                Logger("Join Lobby status", Logger.INFO).info(it.toString())
+            }
+        }
+    )
 
-    private val goBack: BitmapFont = BitmapFont()
-    private val goBackText = "Press anywhere to return to main menu..."
-    private val layoutGoBack = GlyphLayout(goBack, goBackText)
+    private var waitingTimer: Float = 0f
+    private val letterSpawnTime: Float = 1f
+    private var letterCount: Int = 0
+
+    private var joined = false
+
+    private fun goBack() {
+        GameStateManager.goBack()
+    }
 
     private fun handleInput() {
-        if (Gdx.input.justTouched())
-            GameStateManager.push(MainMenuState())
+        joinLobbyView.registerInput()
+        joinLobbyView.handleInput()
     }
 
     override fun update(dt: Float) {
         handleInput()
+        // Dynamic 'waiting for opponent' message
+        if (joined) {
+            waitingTimer += dt
+            if (letterCount >= 4f) {
+                joinLobbyView.resetWaitingText()
+                letterCount = 0
+            } else if (waitingTimer > letterSpawnTime) {
+                joinLobbyView.updateWaitingText()
+                waitingTimer -= letterSpawnTime
+                letterCount++
+            }
+        }
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-
-        title.data.setScale(5f)
-        title.draw(
-            sb, titleText, (Game.WIDTH / 2f) - (layoutTitle.width * 5f / 2f),
-            (Game.HEIGHT * 0.9f) + layoutTitle.height * 3f
-        )
-
-        goBack.data.setScale(3f)
-        goBack.draw(
-            sb, goBackText, Game.WIDTH / 20f - (layoutGoBack.width / 3f),
-            Game.HEIGHT / 20f + layoutGoBack.height * 3f
-        )
+        joinLobbyView.render(sb)
     }
 
     override fun dispose() {
-        background.dispose()
-        title.dispose()
-        goBack.dispose()
+        joinLobbyView.dispose()
     }
 }

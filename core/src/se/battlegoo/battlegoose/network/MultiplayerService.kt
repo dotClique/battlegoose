@@ -1,15 +1,15 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
-import java.util.LinkedList
-import java.util.function.Consumer
 import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
-import se.battlegoo.battlegoose.datamodels.RandomOpponentData
-import java.util.Date
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
+import se.battlegoo.battlegoose.datamodels.RandomOpponentData
+import java.util.Date
+import java.util.LinkedList
+import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -187,7 +187,6 @@ object MultiplayerService {
                 }
             }
         }
-
     }
 
     fun tryJoinLobby(lobbyID: String, listener: Consumer<LobbyStatus>) {
@@ -208,7 +207,14 @@ object MultiplayerService {
                     joinLobby(lobbyID, userID).then<Void> {
                         joinBattle(lobbyID)
                         listener.accept(
-                            LobbyStatus.Ready(LobbyData(lobbyID, lobby.hostID, userID, lobby.shouldStart))
+                            LobbyStatus.Ready(
+                                LobbyData(
+                                    lobbyID,
+                                    lobby.hostID,
+                                    userID,
+                                    lobby.shouldStart
+                                )
+                            )
                         )
                     }
                 }

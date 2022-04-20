@@ -1,59 +1,62 @@
 package se.battlegoo.battlegoose.gamestates
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.Game
+import com.badlogic.gdx.utils.Logger
+import se.battlegoo.battlegoose.network.MultiplayerService
+import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyState : GameState() {
 
-    private var cam: OrthographicCamera = OrthographicCamera()
+    private var waitingTimer: Float = 0f
+    private val letterSpawnTime: Float = 1f
+    private var letterCount: Int = 0
 
-    init {
-        cam.setToOrtho(false, Game.WIDTH, Game.HEIGHT)
+    private val createLobbyView: CreateLobbyView = CreateLobbyView(
+        this::goBack
+    )
+
+    private var createLobbyCompleted = false
+
+    private var lobbyId: String? = null
+        set(value) {
+            field = value
+            value?.let(createLobbyView::setGeneratedLobbyId)
+        }
+
+    private fun goBack() {
+        GameStateManager.goBack()
     }
 
-    private val background = Texture("placeholder.png")
-
-    private val title: BitmapFont = BitmapFont()
-    private val titleText = "CREATE LOBBY"
-    private val layoutTitle = GlyphLayout(title, titleText)
-
-    private val goBack: BitmapFont = BitmapFont()
-    private val goBackText = "Press anywhere to return to main menu..."
-    private val layoutGoBack = GlyphLayout(goBack, goBackText)
-
     private fun handleInput() {
-        if (Gdx.input.justTouched())
-            GameStateManager.push(MainMenuState())
+        createLobbyView.registerInput()
+        if (!createLobbyCompleted) {
+            createLobbyCompleted = true
+            MultiplayerService.tryCreateLobby {
+                Logger("Created lobby", Logger.INFO).info(it.toString())
+                lobbyId = it.lobbyID
+            }
+        }
     }
 
     override fun update(dt: Float) {
         handleInput()
+        // Dynamic 'waiting for opponent' message
+        waitingTimer += dt
+        if (letterCount >= 4f) {
+            createLobbyView.resetWaitingText()
+            letterCount = 0
+        } else if (waitingTimer > letterSpawnTime) {
+            createLobbyView.updateWaitingText()
+            waitingTimer -= letterSpawnTime
+            letterCount++
+        }
     }
 
     override fun render(sb: SpriteBatch) {
-        sb.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-
-        title.data.setScale(5f)
-        title.draw(
-            sb, titleText, (cam.viewportWidth / 2f) - (layoutTitle.width * 5f / 2f),
-            (cam.viewportHeight * 0.9f) + layoutTitle.height * 3f
-        )
-
-        goBack.data.setScale(3f)
-        goBack.draw(
-            sb, goBackText, cam.viewportWidth / 20f - (layoutGoBack.width / 3f),
-            cam.viewportHeight / 20f + layoutGoBack.height * 3f
-        )
+        createLobbyView.render(sb)
     }
 
     override fun dispose() {
-        background.dispose()
-        title.dispose()
-        goBack.dispose()
+        createLobbyView.dispose()
     }
 }

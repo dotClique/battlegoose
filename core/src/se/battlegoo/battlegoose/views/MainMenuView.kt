@@ -11,35 +11,27 @@ class MainMenuView(
     onClickLeaderboard: () -> Unit
 ) : ViewBase() {
 
-    companion object {
-        const val BOTTOM_SPACING = 80f // y-axis offset for menu screen options
-        const val SPACER = 50f // spacer between menu screen option
-
-        // width of main menu buttons
-        const val BUTTON_WIDTH = ((Game.WIDTH - 5 * SPACER) / 4).toInt()
-    }
-
     private val background = Texture("menuBackgroundGoose.png")
 
-    private val x0: Float = SPACER
-    private val y0: Float = BOTTOM_SPACING
+    private val x0: Float = Menu.SPACER
+    private val y0: Float = Menu.BOTTOM_SPACING
 
     // Button icons background by Icons8
     private val createLobbyBtn = ButtonView(
         "createLobbyBtn.png",
-        x0, y0, BUTTON_WIDTH, onClickCreateLobby
+        x0, y0, Menu.BUTTON_WIDTH, onClickCreateLobby
     )
     private val joinLobbyBtn = ButtonView(
         "joinLobbyBtn.png",
-        x0 + BUTTON_WIDTH + SPACER, y0, BUTTON_WIDTH, onClickJoinLobby
+        x0 + Menu.BUTTON_WIDTH + Menu.SPACER, y0, Menu.BUTTON_WIDTH, onClickJoinLobby
     )
     private val quickJoinBtn = ButtonView(
         "quickJoinBtn.png",
-        x0 + 2 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH, onClickQuickJoin
+        x0 + 2 * (Menu.BUTTON_WIDTH + Menu.SPACER), y0, Menu.BUTTON_WIDTH, onClickQuickJoin
     )
     private val leaderboardBtn = ButtonView(
         "leaderboardBtn.png",
-        x0 + 3 * (BUTTON_WIDTH + SPACER), y0, BUTTON_WIDTH, onClickLeaderboard
+        x0 + 3 * (Menu.BUTTON_WIDTH + Menu.SPACER), y0, Menu.BUTTON_WIDTH, onClickLeaderboard
     )
 
     override fun registerInput() {
