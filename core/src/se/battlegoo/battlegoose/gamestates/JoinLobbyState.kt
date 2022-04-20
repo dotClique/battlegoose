@@ -5,19 +5,23 @@ import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {
 
-    var joinLobbyView = JoinLobbyView()
+    var joinLobbyView = JoinLobbyView(
+        this::goBack
+    )
 
     private var waitingTimer: Float = 0f
     private val letterSpawnTime: Float = 1f
     private var letterCount: Int = 0
 
-    var joined = false
+    private var joined = false
+
+    private fun goBack() {
+        GameStateManager.goBack()
+    }
 
     private fun handleInput() {
+        joinLobbyView.registerInput()
         joinLobbyView.handleInput()
-        if (joinLobbyView.backToMainMenu()) {
-            GameStateManager.goBack()
-        }
         /*
         if (!joined) {
             // Check for valid jobby id and successful join

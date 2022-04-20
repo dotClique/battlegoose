@@ -12,7 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
-class JoinLobbyView : ViewBase() {
+class JoinLobbyView(
+    private val onClickMainMenu: () -> Unit
+) : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
 
@@ -65,17 +67,6 @@ class JoinLobbyView : ViewBase() {
         stage.addActor(lobbyIdLabel)
     }
 
-    fun backToMainMenu(): Boolean {
-        return mainMenuButton.isPressed
-    }
-
-    fun handleInput() {
-        if (joinButton.isPressed) {
-            lobbyIdTextField.isDisabled = true
-            joined = true
-        }
-    }
-
     fun getJoinLobbyId(): String {
         return lobbyIdTextField.text
     }
@@ -86,6 +77,19 @@ class JoinLobbyView : ViewBase() {
 
     fun updateWaitingText() {
         waitingLabel.setText("${waitingLabel.text}.")
+    }
+
+    override fun registerInput() {
+        if (Gdx.input.justTouched() && mainMenuButton.isPressed) {
+            onClickMainMenu()
+        }
+    }
+
+    fun handleInput() {
+        if (joinButton.isPressed) {
+            lobbyIdTextField.isDisabled = true
+            joined = true
+        }
     }
 
     override fun render(sb: SpriteBatch) {

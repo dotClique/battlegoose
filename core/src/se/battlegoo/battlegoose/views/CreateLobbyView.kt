@@ -63,10 +63,6 @@ class CreateLobbyView(
         stage.addActor(lobbyIdLabel)
     }
 
-    fun backToMainMenu(): Boolean {
-        return mainMenuButton.isPressed
-    }
-
     fun resetWaitingText() {
         waitingLabel.setText("Creating lobby")
     }
