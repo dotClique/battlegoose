@@ -26,7 +26,7 @@ class JoinLobbyView : ViewBase() {
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val joinButton: TextButton = TextButton("Join", skin)
-    private val waitingLabel: Label = Label("Waiting for opponent", skin)
+    private val waitingLabel: Label = Label("", skin)
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -36,23 +36,26 @@ class JoinLobbyView : ViewBase() {
     init {
         Gdx.input.inputProcessor = stage
 
+        titleLabel.setAlignment(Align.center)
+        lobbyIdLabel.setAlignment(Align.center)
+
         lobbyIdTextField.alignment = Align.center
         lobbyIdTextField.height = Game.HEIGHT / 12f
         lobbyIdTextField.width = Game.WIDTH / 5f
-        textFieldStyle.font.data.setScale(2.6f)
+        // textFieldStyle.font.data.setScale(2.6f)
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
-        mainMenuButton.height *= 2
+        mainMenuButton.height *= 1.5f
 
         joinButton.width = Menu.BUTTON_WIDTH / 1.3f
-        joinButton.height *= 2
+        joinButton.height *= 1.5f
         joinButton.setPosition(
             Game.WIDTH / 2f + lobbyIdTextField.width * 0.56f,
             Game.HEIGHT / 1.75f
         )
 
         waitingLabel.setPosition(
-            Game.WIDTH / 2f - waitingLabel.width * 1.3f,
+            Game.WIDTH / 2f - waitingLabel.width / 2f,
             Game.HEIGHT * 0.8f
         )
 
@@ -93,13 +96,13 @@ class JoinLobbyView : ViewBase() {
 
         titleLabel.setFontScale(5f)
         titleLabel.setPosition(
-            (Game.WIDTH / 2f) - (titleLabel.width * 5f / 2f),
+            (Game.WIDTH / 2f) - (titleLabel.width / 2f),
             Game.HEIGHT * 0.9f
         )
 
         lobbyIdLabel.setPosition(
-            Game.WIDTH / 2f - lobbyIdTextField.width * 1.3f,
-            Game.HEIGHT / 1.6f
+            Game.WIDTH / 2f - lobbyIdTextField.width * 1.1f,
+            Game.HEIGHT / 1.66f
         )
 
         mainMenuButton.setPosition(x0, y0)

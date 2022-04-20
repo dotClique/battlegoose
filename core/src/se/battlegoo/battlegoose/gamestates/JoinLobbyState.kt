@@ -18,14 +18,14 @@ class JoinLobbyState : GameState() {
         if (joinLobbyView.backToMainMenu()) {
             GameStateManager.goBack()
         }
+        /*
         if (!joined) {
             // Check for valid jobby id and successful join
-            /*
             MultiplayerService.tryJoinLobby(joinLobbyView.getJoinLobbyId()) {
                 val logger = Logger("Join Lobby").error(it.toString())
             }
-             */
         }
+         */
     }
 
     override fun update(dt: Float) {
