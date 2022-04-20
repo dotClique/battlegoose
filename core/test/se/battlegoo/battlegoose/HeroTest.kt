@@ -5,14 +5,18 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 import se.battlegoo.battlegoose.models.Action
 import se.battlegoo.battlegoose.models.heroes.Hero
+import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.HeroStatsModifier
-import se.battlegoo.battlegoose.models.spells.AdrenalinBoostSpell
+import se.battlegoo.battlegoose.models.spells.AdrenalineBoostSpell
 
 class HeroTest {
     @Test
     fun testHero() {
-        val hero = object : Hero(HeroStats(2), AdrenalinBoostSpell(), "", "") {}
+        val hero = object : Hero(
+            HeroStats(2), AdrenalineBoostSpell(), "",
+            "", HeroSprite.SERGEANT_SWAN
+        ) {}
         assertEquals(2, hero.currentStats.actionPoints)
         assertEquals(2, hero.baseStats.actionPoints)
         hero.applyStatsModifier(HeroStatsModifier { it.copy(actionPoints = it.actionPoints - 1) })
@@ -31,7 +35,10 @@ class HeroTest {
 
     @Test
     fun testHeroNotAllowedToPerformActionCostingMoreThanCurrentActionPoints() {
-        val hero = object : Hero(HeroStats(2), AdrenalinBoostSpell(), "", "") {}
+        val hero = object : Hero(
+            HeroStats(2), AdrenalineBoostSpell(), "",
+            "", HeroSprite.SERGEANT_SWAN
+        ) {}
         assertEquals("Wrong initial number of APs", 2, hero.currentStats.actionPoints)
         assertThrows(
             "Hero::performAction failed to error when costing more than current action points",

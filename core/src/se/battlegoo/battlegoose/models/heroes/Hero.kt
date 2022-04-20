@@ -7,7 +7,8 @@ abstract class Hero(
     val baseStats: HeroStats,
     val spell: Spell,
     val name: String,
-    val description: String
+    val description: String,
+    val heroSprite: HeroSprite
 ) {
     var currentStats: HeroStats = baseStats
         private set
@@ -32,4 +33,10 @@ abstract class Hero(
     fun applyStatsModifier(modifier: HeroStatsModifier) {
         currentStats = modifier.apply(currentStats)
     }
+}
+
+enum class HeroSprite {
+    SERGEANT_SWAN,
+    MAJOR_MALLARD,
+    ADMIRAL_ALBATROSS
 }

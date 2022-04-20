@@ -3,7 +3,7 @@ package se.battlegoo.battlegoose.models.spells
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.heroes.HeroStatsModifier
 
-class AdrenalinBoostActiveSpell(baseSpell: AdrenalinBoostSpell) :
+class AdrenalineBoostActiveSpell(baseSpell: AdrenalineBoostSpell) :
     ActiveSpell(3, baseSpell) {
 
     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {

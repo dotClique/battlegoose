@@ -10,7 +10,7 @@ import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.Obstacle
-import se.battlegoo.battlegoose.models.heroes.SeargentSwan
+import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 import se.battlegoo.battlegoose.views.BattleMapView
@@ -27,8 +27,8 @@ class BattleState : GameState() {
     )
 
     private val battle = Battle(
-        SeargentSwan(),
-        SeargentSwan(),
+        SergeantSwan(),
+        SergeantSwan(),
         BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
     )
 

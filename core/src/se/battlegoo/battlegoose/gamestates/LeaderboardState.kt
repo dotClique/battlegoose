@@ -10,6 +10,7 @@ import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.LeaderboardEntry
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.views.Fonts
+import se.battlegoo.battlegoose.views.Skins
 
 class LeaderboardState : GameState() {
 
@@ -19,7 +20,7 @@ class LeaderboardState : GameState() {
     }
 
     private val background = Texture("placeholder.png")
-    private val skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
+    private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
     private val title: BitmapFont = BitmapFont()
     private val titleText = "LEADERBOARD"

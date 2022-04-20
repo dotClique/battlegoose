@@ -8,7 +8,8 @@ import se.battlegoo.battlegoose.views.JoinLobbyView
 class JoinLobbyState : GameState() {
 
     private val joinLobbyView = JoinLobbyView(
-        onClickMainMenu = this::goBack,
+        // onClickMainMenu = this::goBack,
+        onClickMainMenu = { GameStateManager.replace(HeroSelectionState()) },
         onJoinLobby = { lobbyID ->
             MultiplayerService.tryJoinLobby(lobbyID) {
                 Logger("Join Lobby status", Logger.INFO).info(it.toString())

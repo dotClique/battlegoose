@@ -57,7 +57,7 @@ Each spell can affect anything in the game state and has a cooldown which denote
 
 Each Hero has 1 spell.
 
-- Admiral Albatraoz (spell: Bird-52)
+- Admiral Albatross (spell: Bird-52)
 - Sergeant Swan (spell: Ephemeral Allegiance)
 - Major Mallard (spell: Adrenaline Shot)
 

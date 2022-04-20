@@ -7,25 +7,29 @@ import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
+import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.models.heroes.HeroStats
-import se.battlegoo.battlegoose.models.heroes.SeargentSwan
+import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
-import se.battlegoo.battlegoose.models.spells.AdrenalinBoostSpell
+import se.battlegoo.battlegoose.models.spells.AdrenalineBoostSpell
 import se.battlegoo.battlegoose.models.spells.Spell
 
 class SpellTest {
     @Test
     fun testAdrenalinBoostSpell() {
-        val hero = object : Hero(HeroStats(1), AdrenalinBoostSpell(), "", "") {}
+        val hero = object : Hero(
+            HeroStats(1), AdrenalineBoostSpell(), "",
+            "", HeroSprite.SERGEANT_SWAN
+        ) {}
         val battle = Battle(
             hero,
-            SeargentSwan(),
+            SergeantSwan(),
             BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
         )
         val spell = hero.spell.cast()
         assertTrue(
             "ActiveSpell saved parent spell instance incorrect",
-            spell.baseSpell is AdrenalinBoostSpell
+            spell.baseSpell is AdrenalineBoostSpell
         )
         assertEquals(
             "Wrong inital number of action points",
@@ -55,12 +59,12 @@ class SpellTest {
     @Test
     fun testActiveSpellCallsImplementationCorrectNumberOfTimes() {
         val battle = Battle(
-            SeargentSwan(),
-            SeargentSwan(),
+            SergeantSwan(),
+            SergeantSwan(),
             BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
         )
         var counter = 0
-        val spell = object : Spell("test", "t2") {
+        val spell = object : Spell("test", "t2", 2) {
             override fun cast(): ActiveSpell {
                 return object : ActiveSpell(5, this) {
                     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
