@@ -7,20 +7,37 @@ import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.gridmath.isPointInsideHexagon
 import kotlin.math.sqrt
 
+enum class BattleMapTileState {
+    NORMAL,
+    FOCUSED,
+    MOVE_TARGET,
+    ATTACK_TARGET
+}
+
 class BattleMapTileView(
     tileHexRadius: Float,
     pos: ScreenVector
 ) : ViewBase(), ClickableView {
 
-    var focused: Boolean = false
+    private val texture = Texture("tileDark.png")
+    private val textureFocused = Texture("tileAccentDark.png")
+    private val textureMoveTarget = Texture("tileMoveDark.png")
+    private val textureAttackTarget = Texture("tileAttackDark.png")
+
+    private fun textureByState(state: BattleMapTileState): Texture = when (state) {
+        BattleMapTileState.NORMAL -> texture
+        BattleMapTileState.FOCUSED -> textureFocused
+        BattleMapTileState.MOVE_TARGET -> textureMoveTarget
+        BattleMapTileState.ATTACK_TARGET -> textureAttackTarget
+    }
+
+    var state: BattleMapTileState = BattleMapTileState.NORMAL
         set(value) {
-            sprite.texture = if (value) textureFocused else texture
+            sprite.texture = textureByState(value)
             field = value
         }
 
-    private val texture = Texture("tileDark.png")
-    private val textureFocused = Texture("tileAccentLight.png")
-    private val sprite = Sprite(if (focused) textureFocused else texture)
+    private val sprite = Sprite(textureByState(state))
 
     private val tileSize = ScreenVector(tileHexRadius * sqrt(3f), tileHexRadius * 2)
 
