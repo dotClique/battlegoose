@@ -19,7 +19,7 @@ class MainMenuState :
 
     private var changeUsernameController = ChangeUsernameController(
         ChangeUsernameView(
-            Game.WIDTH - 700f, Game.HEIGHT.toFloat() - 100f,
+            Game.WIDTH - 700f, Game.HEIGHT - 100f,
             700f, 100f
         )
     )

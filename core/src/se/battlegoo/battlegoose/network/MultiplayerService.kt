@@ -25,7 +25,8 @@ object MultiplayerService {
     private fun joinLobby(lobbyID: String, userID: String, callback: () -> Unit) {
         databaseHandler.setValue(
             "${DataPaths.LOBBIES}/$lobbyID/${LobbyData::otherPlayerID.name}",
-            userID, callback = callback
+            userID,
+            callback = callback
         )
     }
 
@@ -120,7 +121,8 @@ object MultiplayerService {
         queue.pop()
         databaseHandler.setValue(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
-            queue, callback = callback
+            queue,
+            callback = callback
         )
     }
 
@@ -185,15 +187,15 @@ object MultiplayerService {
         databaseHandler.getUserID { userID ->
             databaseHandler.readReferenceValue<LobbyData>(
                 "${DataPaths.LOBBIES}/$lobbyID",
-                consumer = Consumer { lobby ->
+                consumer = { lobby ->
                     if (lobby == null) {
                         listener.accept(LobbyStatus.DoesNotExist)
-                        return@Consumer
+                        return@readReferenceValue
                     }
 
                     if (userCanJoinLobby(userID, lobby)) {
                         listener.accept(LobbyStatus.Full)
-                        return@Consumer
+                        return@readReferenceValue
                     }
 
                     joinLobby(lobbyID, userID) {
@@ -275,9 +277,10 @@ object MultiplayerService {
             battleID ?: return Logger("ulrik").error("No battleID") // TODO: Handle error
         databaseHandler.readReferenceValue<BattleData>(
             "${DataPaths.BATTLES}/$battleDataID"
-        ) Consumer@{
+        ) {
             if (it == null)
-                return@Consumer Logger("ulrik").error("BattleData is null") // TODO: Error
+            // TODO: Error
+                return@readReferenceValue Logger("ulrik").error("BattleData is null")
             databaseHandler.setValue(
                 "${DataPaths.BATTLES}/$battleDataID/${BattleData::actions.name}",
                 it.actions + listOf(action)
@@ -289,7 +292,7 @@ object MultiplayerService {
         databaseHandler.listenListValue<ActionData>(
             "${DataPaths.BATTLES}/$battleID/${BattleData::actions.name}",
             listenerCancelerConsumer = battleListenerCancelers::add
-        ) { updatedActionData, actionListenerCanceler ->
+        ) { updatedActionData, _ ->
             if (updatedActionData == null) return@listenListValue
             actionListBuffer = if (actionListBuffer == null || lastReadActionIndex == -1) {
                 updatedActionData
