@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.Gdx
-import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.views.HeroSelectionView
@@ -9,11 +8,9 @@ import se.battlegoo.battlegoose.views.IHeroSelectionViewController
 
 class HeroSelectionController(
     private val view: HeroSelectionView,
-    private val heroSelection: HeroSelection
-) : ControllerBase(
-    view
-),
-    IHeroSelectionViewController {
+    private val heroSelection: HeroSelection,
+    private val onClickBack: () -> Unit
+) : ControllerBase(view), IHeroSelectionViewController {
 
     init {
         view.registerController(this)
@@ -36,8 +33,7 @@ class HeroSelectionController(
     }
 
     override fun onClickHeroSelectionBack() {
-        view.dispose()
-        GameStateManager.goBack()
+        onClickBack()
     }
 
     override fun onClickHeroSelectionContinue() {

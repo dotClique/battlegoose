@@ -1,9 +1,8 @@
 package se.battlegoo.battlegoose.models.heroes
 
-class HeroSelection(private val heroes: Array<Hero>) {
+class HeroSelection(private val heroes: List<Hero>) {
     var selected: Int = 0
-    val heroCount: Int
-        get() = heroes.size
+    val heroCount: Int by heroes::size
     val selectedHero: Hero
         get() = heroes[selected]
 

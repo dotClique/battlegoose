@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import kotlin.math.max
@@ -33,7 +34,7 @@ class HeroSelectionView(
     private val skin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
 
     private val backgroundTexture = Texture("menuBackground.jpg")
-    private val heroCardViews: Array<HeroCardView>
+    private val heroCardViews: List<HeroCardView>
     private var heroDetailsView: HeroDetailsView? = null
 
     private val backButton = TextButton("Back", skin)
@@ -48,31 +49,46 @@ class HeroSelectionView(
         val cardWidthIncludingPadding =
             min(MAX_WINDOW_WIDTH / heroSelection.heroCount, MAX_HERO_WIDTH)
         val cardPadding = max(CARD_PADDING_BETWEEN * cardWidthIncludingPadding, MIN_PADDING)
-        val cardWidth = cardWidthIncludingPadding - 2 * cardPadding
-        val cardHeight = min(cardWidth / HeroCardView.CARD_ASPECT_RATIO, MAX_WINDOW_HEIGHT)
+
+        val _cardWidth = cardWidthIncludingPadding - 2 * cardPadding
+        val cardSize = ScreenVector(
+            _cardWidth,
+            min(_cardWidth / HeroCardView.CARD_ASPECT_RATIO, MAX_WINDOW_HEIGHT)
+        )
 
         // Button size
-        val buttonWidth = Game.WIDTH / 6f
-        val buttonsHeight = Game.HEIGHT / 10f
+        val buttonSize = ScreenVector(
+            Game.WIDTH / 6f,
+            Game.HEIGHT / 10f
+        )
 
         // Cards position
-        var baselineVertical = (Game.HEIGHT / 2) - (cardHeight / 2) + buttonsHeight
-        baselineVertical -=
-            max((baselineVertical + cardHeight) - Game.HEIGHT * MAX_WINDOW_TOP, 0f)
+        var _baselineVertical = (Game.HEIGHT / 2) - (cardSize.y / 2) + buttonSize.y
+        _baselineVertical -=
+            max((_baselineVertical + cardSize.y) - Game.HEIGHT * MAX_WINDOW_TOP, 0f)
         val totalWidth = heroSelection.heroCount * cardWidthIncludingPadding
-        val baselineHorizontal = (Game.WIDTH / 2) - (totalWidth / 2)
+        val cardBaseline = ScreenVector(
+            (Game.WIDTH / 2) - (totalWidth / 2),
+            _baselineVertical
+        )
 
         // Button position
-        val buttonBaselineX = Game.WIDTH / 2 - buttonWidth
-        val buttonsBaselineY = baselineVertical / 2 - buttonsHeight / 2
+        val buttonBaseline = ScreenVector(
+            Game.WIDTH / 2 - buttonSize.x,
+            cardBaseline.y / 2 - buttonSize.y / 2
+        )
 
         // Init the views
-        heroCardViews = Array(heroSelection.heroCount) { i ->
+        heroCardViews = List(heroSelection.heroCount) { i ->
             HeroCardView(
-                baselineHorizontal + (i * cardWidthIncludingPadding) + cardPadding,
-                baselineVertical,
-                cardWidth,
-                cardHeight,
+                ScreenVector(
+                    cardBaseline.x + (i * cardWidthIncludingPadding) + cardPadding,
+                    cardBaseline.y
+                ),
+                ScreenVector(
+                    cardSize.x,
+                    cardSize.y
+                ),
                 stage,
                 heroSelection,
                 heroSelection.getHero(i),
@@ -82,12 +98,12 @@ class HeroSelectionView(
         }
 
         backButton.label.setFontScale(FONT_BUTTON_SCALE)
-        backButton.setPosition(buttonBaselineX, buttonsBaselineY)
-        backButton.setSize(buttonWidth, buttonsHeight)
+        backButton.setPosition(buttonBaseline.x, buttonBaseline.y)
+        backButton.setSize(buttonSize.x, buttonSize.y)
 
         continueButton.label.setFontScale(FONT_BUTTON_SCALE)
-        continueButton.setPosition(Game.WIDTH - buttonBaselineX - buttonWidth, buttonsBaselineY)
-        continueButton.setSize(buttonWidth, buttonsHeight)
+        continueButton.setPosition(Game.WIDTH - buttonBaseline.x - buttonSize.x, buttonBaseline.y)
+        continueButton.setSize(buttonSize.x, buttonSize.y)
 
         Gdx.input.inputProcessor = stage
         stage.addActor(backButton)
@@ -97,10 +113,14 @@ class HeroSelectionView(
     fun showHeroDetails(hero: Hero?) {
         hero?.let {
             heroDetailsView = HeroDetailsView(
-                (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
-                (Game.HEIGHT / 2) - (MAX_WINDOW_HEIGHT / 2),
-                MAX_WINDOW_WIDTH,
-                MAX_WINDOW_HEIGHT,
+                ScreenVector(
+                    (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
+                    (Game.HEIGHT / 2) - (MAX_WINDOW_HEIGHT / 2),
+                ),
+                ScreenVector(
+                    MAX_WINDOW_WIDTH,
+                    MAX_WINDOW_HEIGHT,
+                ),
                 hero,
                 this::onClickHeroInfoExit
             )
@@ -120,10 +140,7 @@ class HeroSelectionView(
                 onClickBack()
             Gdx.input.justTouched() && continueButton.isPressed ->
                 onClickContinue()
-            else -> {
-                for (heroCardView in heroCardViews)
-                    heroCardView.registerInput()
-            }
+            else -> heroCardViews.forEach { it.registerInput() }
         }
     }
 
@@ -167,6 +184,7 @@ class HeroSelectionView(
     private fun onClickBack() {
         controller?.onClickHeroSelectionBack()
     }
+
     private fun onClickContinue() {
         controller?.onClickHeroSelectionContinue()
     }
