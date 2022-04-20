@@ -7,8 +7,8 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.models.heroes.MajorMallard
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
-import se.battlegoo.battlegoose.views.HeroData
 import se.battlegoo.battlegoose.views.HeroSelectionView
+import se.battlegoo.battlegoose.views.HeroSelectionViewModel
 
 class HeroSelectionState : GameState() {
 
@@ -16,8 +16,9 @@ class HeroSelectionState : GameState() {
     private val heroSelection = HeroSelection(heroes)
     private val heroSelectionView = HeroSelectionView(
         heroes.map {
-            HeroData(
-                it.heroId, it.name, it.description, it.texturePath, it.spell.title,
+            HeroSelectionViewModel(
+                it::class.java.name,
+                it.name, it.description, it.heroSprite, it.spell.title,
                 it.spell.description, it.spell.cooldown
             )
         },

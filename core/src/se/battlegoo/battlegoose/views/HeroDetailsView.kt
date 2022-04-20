@@ -11,12 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.utilities.fitScale
 
 class HeroDetailsView(
     position: ScreenVector,
     maxSize: ScreenVector,
-    heroDetailsData: HeroDetailsData,
+    heroDetailsViewModel: HeroDetailsViewModel,
     private val onExit: () -> Unit
 ) : ViewBase() {
 
@@ -47,7 +48,13 @@ class HeroDetailsView(
     private val stage: Stage = Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroDetails.png")
-    private val heroTexture: Texture = Texture(heroDetailsData.texturePath)
+    private val heroTexture: Texture = Texture(
+        when (heroDetailsViewModel.heroSprite) {
+            HeroSprite.SERGEANT_SWAN -> "heroes/sergeantSwan.png"
+            HeroSprite.MAJOR_MALLARD -> "heroes/majorMallard.png"
+            HeroSprite.ADMIRAL_ALBATROSS -> "heroes/admiralAlbatross.png"
+        }
+    )
 
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
@@ -56,12 +63,13 @@ class HeroDetailsView(
     private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel = Label(heroDetailsData.name, mainSkin)
-    private val descriptionLabel = Label(heroDetailsData.description, textSkin)
+    private val nameLabel = Label(heroDetailsViewModel.name, mainSkin)
+    private val descriptionLabel = Label(heroDetailsViewModel.description, textSkin)
     private val spellHeaderLabel = Label("Spell:", mainSkin)
-    private val spellNameLabel = Label(heroDetailsData.spellName, textSkin)
+    private val spellNameLabel = Label(heroDetailsViewModel.spellName, textSkin)
     private val spellDescriptionLabel = Label(
-        "${heroDetailsData.spellDescription}\n${heroDetailsData.spellCooldown} turns cooldown.",
+        "${heroDetailsViewModel.spellDescription}\n" +
+            "${heroDetailsViewModel.spellCooldown} turns cooldown.",
         textSkin
     )
 
@@ -157,11 +165,11 @@ class HeroDetailsView(
     }
 }
 
-data class HeroDetailsData(
-    val id: Int,
+data class HeroDetailsViewModel(
+    val id: String,
     val name: String,
     val description: String,
-    val texturePath: String,
+    val heroSprite: HeroSprite,
     val spellName: String,
     val spellDescription: String,
     val spellCooldown: Int

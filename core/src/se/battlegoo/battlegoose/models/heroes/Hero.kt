@@ -4,19 +4,12 @@ import se.battlegoo.battlegoose.models.Action
 import se.battlegoo.battlegoose.models.spells.Spell
 
 abstract class Hero(
-    val heroId: Int,
     val baseStats: HeroStats,
     val spell: Spell,
     val name: String,
     val description: String,
-    heroSprite: HeroSprite
+    val heroSprite: HeroSprite
 ) {
-    val texturePath: String = when (heroSprite) {
-        HeroSprite.SERGEANT_SWAN -> "heroes/sergeant_swan.png"
-        HeroSprite.MAJOR_MALLARD -> "heroes/major_mallard.png"
-        HeroSprite.ADMIRAL_ALBATROSS -> "heroes/admiral_albatross.png"
-    }
-
     var currentStats: HeroStats = baseStats
         private set
 

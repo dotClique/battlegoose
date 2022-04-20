@@ -2,9 +2,9 @@ package se.battlegoo.battlegoose.models.heroes
 
 class HeroSelection(heroes: Collection<Hero>) {
 
-    private val heroesMap: Map<Int, Hero>
+    private val heroesMap: Map<String, Hero>
 
-    var selected: Int = heroes.first().heroId
+    var selected: String = heroes.first()::class.java.name
         set(value) {
             if (heroesMap.containsKey(value))
                 field = value
@@ -19,10 +19,6 @@ class HeroSelection(heroes: Collection<Hero>) {
         if (heroes.isEmpty())
             throw IllegalArgumentException("At least 1 hero must be provided!")
 
-        val heroesTempMap = HashMap<Int, Hero>(heroes.size)
-        heroes.forEach {
-            heroesTempMap[it.heroId] = it
-        }
-        heroesMap = heroesTempMap.toMap()
+        heroesMap = heroes.associateBy { it::class.java.name }
     }
 }

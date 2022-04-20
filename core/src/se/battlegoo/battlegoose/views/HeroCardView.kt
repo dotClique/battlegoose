@@ -12,16 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.utilities.fitScale
 
 class HeroCardView(
     position: ScreenVector,
     maxSize: ScreenVector,
     private val parentStage: Stage?,
-    private val heroCard: HeroCard,
+    private val heroCardViewModel: HeroCardViewModel,
     var selected: Boolean,
-    private val onClickCard: (heroId: Int) -> Unit,
-    private val onClickInfo: (heroId: Int) -> Unit
+    private val onClickCard: (heroId: String) -> Unit,
+    private val onClickInfo: (heroId: String) -> Unit
 ) : ViewBase() {
 
     companion object {
@@ -53,7 +54,13 @@ class HeroCardView(
     private val stage: Stage = parentStage ?: Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroCard.png")
-    private val heroTexture: Texture = Texture(heroCard.texturePath)
+    private val heroTexture: Texture = Texture(
+        when (heroCardViewModel.heroSprite) {
+            HeroSprite.SERGEANT_SWAN -> "heroes/sergeantSwan.png"
+            HeroSprite.MAJOR_MALLARD -> "heroes/majorMallard.png"
+            HeroSprite.ADMIRAL_ALBATROSS -> "heroes/admiralAlbatross.png"
+        }
+    )
 
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
@@ -62,8 +69,8 @@ class HeroCardView(
     private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel: Label = Label(heroCard.name, mainSkin)
-    private val descriptionLabel: Label = Label(heroCard.description, textSkin)
+    private val nameLabel: Label = Label(heroCardViewModel.name, mainSkin)
+    private val descriptionLabel: Label = Label(heroCardViewModel.description, textSkin)
 
     private val infoButton: TextButton = TextButton("Info", mainSkin)
 
@@ -132,9 +139,9 @@ class HeroCardView(
     override fun registerInput() {
         if (Gdx.input.justTouched()) {
             if (infoButton.isPressed) {
-                onClickInfo(heroCard.id)
+                onClickInfo(heroCardViewModel.id)
             } else if (cardIsPressed()) {
-                onClickCard(heroCard.id)
+                onClickCard(heroCardViewModel.id)
             }
         }
     }
@@ -157,4 +164,9 @@ class HeroCardView(
     }
 }
 
-data class HeroCard(val id: Int, val name: String, val description: String, val texturePath: String)
+data class HeroCardViewModel(
+    val id: String,
+    val name: String,
+    val description: String,
+    val heroSprite: HeroSprite
+)

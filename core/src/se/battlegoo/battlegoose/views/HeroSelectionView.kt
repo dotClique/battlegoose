@@ -8,12 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import kotlin.math.max
 import kotlin.math.min
 
 class HeroSelectionView(
-    private val heroes: Collection<HeroData>,
-    private var selectedHeroId: Int
+    private val heroes: Collection<HeroSelectionViewModel>,
+    private var selectedHeroId: String
 ) : ViewBase() {
 
     companion object {
@@ -33,7 +34,7 @@ class HeroSelectionView(
     private val skin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
 
     private val backgroundTexture = Texture("menuBackground.jpg")
-    private val heroCardViews: Map<Int, HeroCardView>
+    private val heroCardViews: Map<String, HeroCardView>
     private var heroDetailsView: HeroDetailsView? = null
 
     private val backButton = TextButton("Back", skin)
@@ -80,7 +81,7 @@ class HeroSelectionView(
 
         // Init the views
         var counter = 0
-        val heroCardViewsMap = HashMap<Int, HeroCardView>(heroCount)
+        val heroCardViewsMap = HashMap<String, HeroCardView>(heroCount)
         heroes.forEach {
             heroCardViewsMap[it.id] = HeroCardView(
                 ScreenVector(
@@ -92,7 +93,7 @@ class HeroSelectionView(
                     cardSize.y
                 ),
                 stage,
-                HeroCard(it.id, it.name, it.description, it.texturePath),
+                HeroCardViewModel(it.id, it.name, it.description, it.heroSprite),
                 it.id == selectedHeroId,
                 this::onClickHeroCard,
                 this::onClickHeroInfoOpen
@@ -113,14 +114,14 @@ class HeroSelectionView(
         stage.addActor(continueButton)
     }
 
-    fun selectHero(heroId: Int) {
+    fun selectHero(heroId: String) {
         this.selectedHeroId = heroId
         heroCardViews.forEach {
             it.value.selected = it.key == selectedHeroId
         }
     }
 
-    fun showHeroDetails(heroId: Int?) {
+    fun showHeroDetails(heroId: String?) {
         val heroData = heroes.firstOrNull { it.id == heroId }
         heroData?.let {
             heroDetailsView = HeroDetailsView(
@@ -132,8 +133,8 @@ class HeroSelectionView(
                     MAX_WINDOW_WIDTH,
                     MAX_WINDOW_HEIGHT,
                 ),
-                HeroDetailsData(
-                    it.id, it.name, it.description, it.texturePath,
+                HeroDetailsViewModel(
+                    it.id, it.name, it.description, it.heroSprite,
                     it.spellName, it.spellDescription, it.spellCooldown
                 ),
                 this::onClickHeroInfoExit
@@ -185,11 +186,11 @@ class HeroSelectionView(
             Gdx.app.error("#PREREG", "Controller already registered")
     }
 
-    private fun onClickHeroCard(heroId: Int) {
+    private fun onClickHeroCard(heroId: String) {
         controller?.onClickHeroSelectionCard(heroId)
     }
 
-    private fun onClickHeroInfoOpen(heroId: Int) {
+    private fun onClickHeroInfoOpen(heroId: String) {
         controller?.onClickHeroSelectionInfoOpen(heroId)
     }
 
@@ -207,18 +208,18 @@ class HeroSelectionView(
 }
 
 interface IHeroSelectionViewController {
-    fun onClickHeroSelectionCard(heroId: Int)
-    fun onClickHeroSelectionInfoOpen(heroId: Int)
+    fun onClickHeroSelectionCard(heroId: String)
+    fun onClickHeroSelectionInfoOpen(heroId: String)
     fun onClickHeroSelectionInfoExit()
     fun onClickHeroSelectionBack()
     fun onClickHeroSelectionContinue()
 }
 
-data class HeroData(
-    val id: Int,
+data class HeroSelectionViewModel(
+    val id: String,
     val name: String,
     val description: String,
-    val texturePath: String,
+    val heroSprite: HeroSprite,
     val spellName: String,
     val spellDescription: String,
     val spellCooldown: Int

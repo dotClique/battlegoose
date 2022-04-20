@@ -19,12 +19,12 @@ class HeroSelectionController(
         view.registerInput()
     }
 
-    override fun onClickHeroSelectionCard(heroId: Int) {
+    override fun onClickHeroSelectionCard(heroId: String) {
         heroSelection.selected = heroId
         view.selectHero(heroSelection.selected)
     }
 
-    override fun onClickHeroSelectionInfoOpen(heroId: Int) {
+    override fun onClickHeroSelectionInfoOpen(heroId: String) {
         view.showHeroDetails(heroId)
     }
 
