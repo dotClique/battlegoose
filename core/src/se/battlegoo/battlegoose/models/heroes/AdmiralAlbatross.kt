@@ -7,5 +7,5 @@ class AdmiralAlbatross : Hero(
     AdrenalineBoostSpell(),
     "Admiral Albatross",
     "\"I'm an Albatross!\"",
-    "heroes/admiral_albatross.png"
+    HeroSprite.ADMIRAL_ALBATROSS
 )

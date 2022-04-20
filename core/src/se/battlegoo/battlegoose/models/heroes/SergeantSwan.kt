@@ -8,5 +8,5 @@ class SergeantSwan : Hero(
     "Sergeant Swan",
     "The Sergeant has a fabulous backstory, which " +
         "unfortunately cannot fit in this description.",
-    "heroes/sergeant_swan.png"
+    HeroSprite.SERGEANT_SWAN
 )

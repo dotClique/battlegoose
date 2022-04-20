@@ -7,5 +7,5 @@ class MajorMallard : Hero(
     AdrenalineBoostSpell(),
     "Major Mallard",
     "Mallard, Mallard!",
-    "heroes/major_mallard.png"
+    HeroSprite.MAJOR_MALLARD
 )

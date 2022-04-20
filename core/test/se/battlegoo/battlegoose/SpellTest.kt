@@ -7,6 +7,7 @@ import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
+import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
@@ -16,7 +17,7 @@ import se.battlegoo.battlegoose.models.spells.Spell
 class SpellTest {
     @Test
     fun testAdrenalinBoostSpell() {
-        val hero = object : Hero(HeroStats(1), AdrenalineBoostSpell(), "", "", "") {}
+        val hero = object : Hero(HeroStats(1), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
         val battle = Battle(
             hero,
             SergeantSwan(),
