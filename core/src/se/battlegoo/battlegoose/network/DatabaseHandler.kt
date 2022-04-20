@@ -277,7 +277,7 @@ class DatabaseHandler {
                 parseSpellData(actionData),
                 actionPointCost
             )
-            ActionData.Pass::class -> ActionData.Pass(playerID, actionPointCost)
+            ActionData.Pass::class -> ActionData.Pass(playerID)
             ActionData.Forfeit::class -> ActionData.Forfeit(playerID)
             else -> throw NotImplementedError("The action class $actionType has no deserializer")
         }

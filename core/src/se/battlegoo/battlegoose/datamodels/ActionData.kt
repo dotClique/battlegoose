@@ -31,9 +31,10 @@ sealed class ActionData {
     ) : ActionData()
 
     data class Pass(
-        override val playerID: String,
-        override val actionPointCost: Int
-    ) : ActionData()
+        override val playerID: String
+    ) : ActionData() {
+        override val actionPointCost: Int = 0
+    }
 
     data class Forfeit(
         override val playerID: String
