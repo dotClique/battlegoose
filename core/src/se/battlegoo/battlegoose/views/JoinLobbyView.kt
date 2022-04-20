@@ -12,7 +12,8 @@ import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
 class JoinLobbyView(
-    private val onClickMainMenu: () -> Unit
+    private val onClickMainMenu: () -> Unit,
+    private val onJoinLobby: (String) -> Unit
 ) : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
@@ -32,6 +33,10 @@ class JoinLobbyView(
     private val y0: Float = Menu.BOTTOM_SPACING
 
     private var joined: Boolean = false
+        set(value) {
+            field = value
+            lobbyIdTextField.isDisabled = !value
+        }
 
     init {
         Gdx.input.inputProcessor = stage
@@ -78,14 +83,19 @@ class JoinLobbyView(
     }
 
     override fun registerInput() {
-        if (Gdx.input.justTouched() && mainMenuButton.isPressed) {
-            onClickMainMenu()
+        if (Gdx.input.justTouched()) {
+            when {
+                mainMenuButton.isPressed -> onClickMainMenu()
+                joinButton.isPressed -> {
+                    onJoinLobby(lobbyIdTextField.text.uppercase())
+                    joined = true
+                }
+            }
         }
     }
 
     fun handleInput() {
         if (joinButton.isPressed) {
-            lobbyIdTextField.isDisabled = true
             joined = true
         }
     }

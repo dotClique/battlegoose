@@ -1,12 +1,19 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.utils.Logger
+import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {
 
-    var joinLobbyView = JoinLobbyView(
-        this::goBack
+    private val joinLobbyView = JoinLobbyView(
+        onClickMainMenu = this::goBack,
+        onJoinLobby = { lobbyID ->
+            MultiplayerService.tryJoinLobby(lobbyID) {
+                Logger("Join Lobby status", Logger.INFO).info(it.toString())
+            }
+        }
     )
 
     private var waitingTimer: Float = 0f
@@ -22,14 +29,6 @@ class JoinLobbyState : GameState() {
     private fun handleInput() {
         joinLobbyView.registerInput()
         joinLobbyView.handleInput()
-        /*
-        if (!joined) {
-            // Check for valid jobby id and successful join
-            MultiplayerService.tryJoinLobby(joinLobbyView.getJoinLobbyId()) {
-                val logger = Logger("Join Lobby").error(it.toString())
-            }
-        }
-         */
     }
 
     override fun update(dt: Float) {
