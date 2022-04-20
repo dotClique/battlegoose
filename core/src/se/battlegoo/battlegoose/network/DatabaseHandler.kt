@@ -6,9 +6,12 @@ import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
 import pl.mk5.gdx.fireapp.promises.Promise
+import se.battlegoo.battlegoose.GridVector
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
+import se.battlegoo.battlegoose.datamodels.SpellData
+import se.battlegoo.battlegoose.models.spells.Spell
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
@@ -130,7 +133,12 @@ class DatabaseHandler {
             BattleData::class ->
                 readDataClass(
                     databasePath, fail, consumer,
-                    this::convertToBattle as ConversionFunc<T>
+                    ::convertToBattle as ConversionFunc<T>
+                )
+            ActionData::class ->
+                readDataClass(
+                    databasePath, fail, consumer,
+                    ::convertToActionData as ConversionFunc<T>
                 )
         }
     }
@@ -223,12 +231,12 @@ class DatabaseHandler {
         return LobbyData(lobbyID, hostID, otherPlayerID, shouldStart)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun convertToBattle(battleData: Map<String, Any>): BattleData {
         val battleID = battleData[BattleData::battleID.name] as String
         val hostID = battleData[BattleData::hostID.name] as String
         val otherPlayerID = battleData[BattleData::otherPlayerID.name] as String
 
-        @Suppress("UNCHECKED_CAST")
         val actionsRaw = battleData[BattleData::actions.name] as List<Map<String, Any>>?
         val actions: List<ActionData> = actionsRaw
             ?.map(::convertToActionData)
@@ -236,10 +244,62 @@ class DatabaseHandler {
         return BattleData(battleID, hostID, otherPlayerID, actions)
     }
 
-    private fun convertToActionData(actionData: Map<String, Any>): ActionData {
-        return ActionData(
-            actionData[ActionData::action.name] as String,
-            actionData[ActionData::playerID.name] as String
+    @Suppress("UNCHECKED_CAST")
+    fun convertToActionData(actionData: Map<String, Any>): ActionData {
+        val playerID = actionData[ActionData::playerID.name] as String
+        val actionType = actionData[ActionData::actionType.name] as String
+        val actionPointCost = (actionData[ActionData::actionPointCost.name] as Long).toInt()
+        // Parse a string like "se.battlegoo.battlegoose.ActionData$MoveUnit" into a KClass
+        // MUST have a branch for each subclass of ActionData
+        return when (Class.forName(actionType).kotlin) {
+            ActionData.MoveUnit::class -> ActionData.MoveUnit(
+                playerID,
+                parseGridVector(
+                    actionData[ActionData.MoveUnit::fromPosition.name] as Map<String, Any>
+                ),
+                parseGridVector(
+                    actionData[ActionData.MoveUnit::toPosition.name] as Map<String, Any>
+                ),
+                actionPointCost
+            )
+            ActionData.AttackUnit::class -> ActionData.AttackUnit(
+                playerID,
+                parseGridVector(
+                    actionData[ActionData.AttackUnit::attackerPosition.name] as Map<String, Any>
+                ),
+                parseGridVector(
+                    actionData[ActionData.AttackUnit::targetPosition.name] as Map<String, Any>
+                ),
+                actionPointCost
+            )
+            ActionData.CastSpell::class -> ActionData.CastSpell(
+                playerID,
+                parseSpellData(actionData),
+                actionPointCost
+            )
+            ActionData.Pass::class -> ActionData.Pass(playerID)
+            ActionData.Forfeit::class -> ActionData.Forfeit(playerID)
+            else -> throw NotImplementedError("The action class $actionType has no deserializer")
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun parseSpellData(actionData: Map<String, Any>): SpellData<Spell> {
+        val spellData = actionData[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
+        val spellType = spellData[SpellData<*>::spellType.name] as String
+        // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineBoostSpellData" into a
+        // KClass
+        // MUST have a branch for each subclass of SpellData
+        return when (Class.forName(spellType).kotlin) {
+            SpellData.AdrenalinBoostSpellData::class -> SpellData.AdrenalinBoostSpellData
+            else -> throw NotImplementedError("The spell class $spellType has no deserializer")
+        }
+    }
+
+    private fun parseGridVector(data: Map<String, Any>): GridVector {
+        return GridVector(
+            (data[GridVector::x.name] as Long).toInt(),
+            (data[GridVector::y.name] as Long).toInt()
         )
     }
 
