@@ -63,7 +63,7 @@ class BattleMapController(
     }
 
     private fun isEnemyUnitAt(pos: GridVector): Boolean {
-        return model.getUnit(pos)?.let { it.hero != hero } ?: false
+        return model.getUnit(pos)?.let { it.allegiance != hero } ?: false
     }
 
     fun addUnit(controller: UnitController, pos: GridVector) {
@@ -131,7 +131,7 @@ class BattleMapController(
 
     private fun showMoveAndAttackOptions(pos: GridVector, tileController: BattleMapTileController) {
         val unit = model.getUnit(pos)
-        if (unit?.hero == hero) {
+        if (unit?.allegiance == hero) {
             unitControllers[unit]?.let { unitController ->
                 clearTileStates()
                 for (mPos in findMoveTargets(pos, unit)) {

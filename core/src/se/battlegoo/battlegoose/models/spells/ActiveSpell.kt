@@ -3,7 +3,6 @@ package se.battlegoo.battlegoose.models.spells
 import se.battlegoo.battlegoose.models.Battle
 
 abstract class ActiveSpell(
-    val duration: Int,
     val baseSpell: Spell
 ) {
     private var turnsSinceCast: Int = 0
@@ -11,11 +10,11 @@ abstract class ActiveSpell(
         private set
 
     fun apply(battle: Battle) {
-        if (turnsSinceCast in 0 until duration) {
+        if (turnsSinceCast in 0 until baseSpell.duration) {
             applyImplementation(battle, turnsSinceCast)
             turnsSinceCast++
         }
-        if (turnsSinceCast >= duration) {
+        if (turnsSinceCast >= baseSpell.duration) {
             finished = true
         }
     }

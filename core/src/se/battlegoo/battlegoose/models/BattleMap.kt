@@ -9,7 +9,7 @@ import se.battlegoo.battlegoose.models.units.UnitModel
 class BattleMap(
     val backgroundPath: BattleMapBackground,
     val gridSize: GridVector
-) {
+) : Iterable<GridVector> {
     private val units: Array<Array<UnitModel?>> =
         Array(gridSize.y) { arrayOfNulls<UnitModel?>(gridSize.x) }
     private val obstacles: Array<Array<Obstacle?>> =
@@ -101,4 +101,12 @@ class BattleMap(
     fun getObstacle(pos: GridVector): Obstacle? = obstacles[pos.y][pos.x]
 
     fun isObstacleAt(pos: GridVector): Boolean = getObstacle(pos) != null
+
+    override fun iterator(): Iterator<GridVector> {
+        return (0 until gridSize.y).map { y ->
+            (0 until gridSize.x - 1).map { x ->
+                GridVector(x, y)
+            }
+        }.flatten().iterator()
+    }
 }

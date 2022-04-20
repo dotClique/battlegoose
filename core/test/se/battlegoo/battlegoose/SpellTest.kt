@@ -12,7 +12,12 @@ import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
 import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
+import se.battlegoo.battlegoose.models.spells.EphemeralAllegianceSpell
 import se.battlegoo.battlegoose.models.spells.Spell
+import se.battlegoo.battlegoose.models.units.DelinquentDuck
+import se.battlegoo.battlegoose.models.units.GuardGoose
+import se.battlegoo.battlegoose.models.units.PrivatePenguin
+import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 
 class SpellTest {
     @Test
@@ -36,7 +41,7 @@ class SpellTest {
             1,
             hero.currentStats.actionPoints
         )
-        for (i in 1..spell.duration) {
+        for (i in 1..spell.baseSpell.duration) {
             spell.apply(battle)
             assertEquals(
                 "Wrong number of action points after $i applications", 2,
@@ -44,7 +49,7 @@ class SpellTest {
             )
             hero.nextTurn()
         }
-        assertTrue("Spell not finished after 3 turns", spell.finished)
+        assertTrue("Spell not finished after ${spell.baseSpell.duration} turns", spell.finished)
         for (i in 1..4) {
             spell.apply(battle)
             assertEquals(
@@ -57,6 +62,113 @@ class SpellTest {
     }
 
     @Test
+    fun testEphemeralAllegianceSpell() {
+        val hero1 = object : Hero(
+            HeroStats(1), EphemeralAllegianceSpell(), "", "", HeroSprite.SERGEANT_SWAN
+        ) {}
+        val hero2 = SergeantSwan()
+        val battle = Battle(
+            hero1, hero2, BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+        )
+        val unit1Team1 = GuardGoose(hero1)
+        val unit2Team1 = PrivatePenguin(hero1)
+        val unit1Team2 = SpitfireSeagull(hero2)
+        val unit2Team2 = DelinquentDuck(hero2)
+
+        battle.battleMap.placeUnit(unit1Team1, GridVector(1, 1))
+        battle.battleMap.placeUnit(unit2Team1, GridVector(1, 2))
+        battle.battleMap.placeUnit(unit1Team2, GridVector(2, 1))
+        battle.battleMap.placeUnit(unit2Team2, GridVector(2, 2))
+
+        assertEquals(
+            "Hero 1 should have exactly 2 units with allegiance to them",
+            2,
+            battle.battleMap.count { battle.battleMap.getUnit(it)?.allegiance == hero1 }
+        )
+        assertEquals(
+            "Hero 2 should have exactly 2 units with allegiance to them",
+            2,
+            battle.battleMap.count { battle.battleMap.getUnit(it)?.allegiance == hero2 }
+        )
+        assertEquals(
+            "Hero 1 should have ownership of exactly 2 units",
+            2,
+            battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero1 }
+        )
+        assertEquals(
+            "Hero 2 should have ownership of exactly 2 units",
+            2,
+            battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
+        )
+
+        val spell = hero1.spell.cast()
+        assertTrue(
+            "ActiveSpell save parent spell instance incorrectly",
+            spell.baseSpell is EphemeralAllegianceSpell
+        )
+
+        for (i in 1 until spell.baseSpell.duration - 1) {
+            spell.apply(battle)
+            assertEquals(
+                "Hero 1 should have 3 units with allegiance to them",
+                3,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.allegiance == hero1 }
+            )
+            assertEquals(
+                "Hero 2 should have 1 unit with allegiance to them",
+                1,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.allegiance == hero2 }
+            )
+            assertEquals(
+                "Hero 1 should maintain ownership of only 2 units",
+                2,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero1 }
+            )
+            assertEquals(
+                "Hero 2 should maintain ownership of 2 units",
+                2,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
+            )
+        }
+        assertTrue(
+            "Spell finished too early, after only ${spell.baseSpell.duration - 2} turns",
+            !spell.finished
+        )
+        spell.apply(battle)
+        assertTrue(
+            "Spell finished too early, after only ${spell.baseSpell.duration - 1} turns",
+            !spell.finished
+        )
+        spell.apply(battle)
+        assertTrue("Spell not finished after ${spell.baseSpell.duration} turns", spell.finished)
+        for (i in 1 until 5) {
+            spell.apply(battle)
+
+            assertEquals(
+                "Hero 1 should have exactly 2 units with allegiance to them",
+                2,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.allegiance == hero1 }
+            )
+            assertEquals(
+                "Hero 2 should have exactly 2 units with allegiance to them",
+                2,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.allegiance == hero2 }
+            )
+            assertEquals(
+                "Hero 1 should have ownership of exactly 2 units",
+                2,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero1 }
+            )
+            assertEquals(
+                "Hero 2 should have ownership of exactly 2 units",
+                2,
+                battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
+            )
+            assertTrue("Spell stopped being finished", spell.finished)
+        }
+    }
+
+    @Test
     fun testActiveSpellCallsImplementationCorrectNumberOfTimes() {
         val battle = Battle(
             SergeantSwan(),
@@ -64,9 +176,10 @@ class SpellTest {
             BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
         )
         var counter = 0
-        val spell = object : Spell("test", "t2", 2) {
+        val testDuration = 5
+        val spell = object : Spell("test", "t2", testDuration, 2) {
             override fun cast(): ActiveSpell {
-                return object : ActiveSpell(5, this) {
+                return object : ActiveSpell(this) {
                     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
                         counter += 1
                     }
@@ -75,7 +188,7 @@ class SpellTest {
         }
         val activeSpell = spell.cast()
         assertEquals("Spell::cast called apply by itself", 0, counter)
-        for (i in 1..5) {
+        for (i in 1..testDuration) {
             activeSpell.apply(battle)
             assertEquals("applyImplementation was not called $i times by apply", i, counter)
         }
