@@ -31,7 +31,7 @@ class SpellTest {
         val battle = Battle(
             hero,
             SergeantSwan(),
-            BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
         )
         val spell = hero.spell.cast()
         assertTrue(
@@ -70,7 +70,7 @@ class SpellTest {
         ) {}
         val hero2 = SergeantSwan()
         val battle = Battle(
-            hero1, hero2, BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+            hero1, hero2, BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
         )
 
         battle.battleMap.placeUnit(GuardGoose(hero1), GridVector(1, 1))
@@ -175,7 +175,7 @@ class SpellTest {
         val battle = Battle(
             hero,
             SergeantSwan(),
-            BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
         )
 
         val unit1Team1 = GuardGoose(battle.hero1)
@@ -255,7 +255,7 @@ class SpellTest {
         val battle = Battle(
             SergeantSwan(),
             SergeantSwan(),
-            BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
         )
         var counter = 0
         val testDuration = 5

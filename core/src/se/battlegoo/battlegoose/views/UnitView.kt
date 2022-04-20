@@ -5,8 +5,10 @@ class UnitView(
     textureStartFacingDirection: FacingDirection
 ) : SpriteViewBase(
     when (unitSprite) {
-        UnitSprite.PRIVATE_PENGUIN -> "penguin.png"
-        UnitSprite.SPITFIRE_SEAGULL -> "goose.png"
+        UnitSprite.PRIVATE_PENGUIN -> "units/penguin.png"
+        UnitSprite.SPITFIRE_SEAGULL -> "units/seagull.png"
+        UnitSprite.DELINQUENT_DUCK -> "units/duck.png"
+        UnitSprite.GUARD_GOOSE -> "units/guardGoose.png"
     }
 ) {
 
