@@ -31,7 +31,7 @@ class HeroSelectionView(
     private var controller: IHeroSelectionViewController? = null
 
     private val stage: Stage = Stage(Game.viewPort)
-    private val skin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
+    private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
     private val backgroundTexture = Texture("menuBackground.jpg")
     private val heroCardViews: Map<String, HeroCardView>

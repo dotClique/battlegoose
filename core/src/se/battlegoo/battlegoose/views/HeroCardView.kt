@@ -65,12 +65,18 @@ class HeroCardView(
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
 
-    private val mainSkin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
-    private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
+    private val mainSkin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
+    private val headerLabelStyle: Label.LabelStyle = Label.LabelStyle(
+        mainSkin.getFont(Fonts.STAR_SOLDIER.identifier), Color.BLACK
+    )
+    private val textSkin: Skin = Skin(Gdx.files.internal(Skins.PLAIN_JAMES.filepath))
+    private val bodyLabelStyle: Label.LabelStyle = Label.LabelStyle(
+        textSkin.getFont(Fonts.PLAIN_JAMES.identifier), Color.BLACK
+    )
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel: Label = Label(heroCardViewModel.name, mainSkin)
-    private val descriptionLabel: Label = Label(heroCardViewModel.description, textSkin)
+    private val nameLabel: Label = Label(heroCardViewModel.name, headerLabelStyle)
+    private val descriptionLabel: Label = Label(heroCardViewModel.description, bodyLabelStyle)
 
     private val infoButton: TextButton = TextButton("Info", mainSkin)
 

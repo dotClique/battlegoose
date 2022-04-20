@@ -20,7 +20,7 @@ class ChangeUsernameView(
         private const val MAX_USERNAME_LENGTH = 15
     }
 
-    private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
+    private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private val textField: TextField = TextField("", skin)
     private val saveButton = ButtonView("acceptBtn.png", x, y, height.toInt()) {
         textField.onscreenKeyboard.show(false)

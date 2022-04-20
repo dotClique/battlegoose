@@ -52,14 +52,14 @@ cursor
   orig: 2, 2
   offset: 0, 0
   index: -1
-font-export
+star-soldier-font-export
   rotate: false
   xy: 550, 835
   size: 129, 130
   orig: 129, 130
   offset: 0, 0
   index: -1
-font-title-export
+star-soldier-font-title-export
   rotate: false
   xy: 1, 463
   size: 547, 560

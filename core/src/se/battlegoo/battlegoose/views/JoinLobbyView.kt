@@ -20,7 +20,7 @@ class JoinLobbyView(
 
     private var stage = Stage(Game.viewPort)
 
-    private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
+    private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)
 
     private val titleLabel: Label = Label("Join Lobby", skin)

@@ -1,10 +1,10 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	font: {
-		file: font-export.fnt
+		file: plain-james-font-export.fnt
 	}
 	title: {
-		file: font-title-export.fnt
+		file: plain-james-font-title-export.fnt
 	}
 }
 com.badlogic.gdx.graphics.Color: {

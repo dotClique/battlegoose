@@ -5,7 +5,6 @@ import pl.mk5.gdx.fireapp.GdxFIRDatabase
 import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
-import pl.mk5.gdx.fireapp.promises.ListenerPromise
 import pl.mk5.gdx.fireapp.promises.Promise
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData

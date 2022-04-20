@@ -27,14 +27,14 @@ cursor
   orig: 4, 7
   offset: 0, 0
   index: -1
-font-export
+plain-james-font-export
   rotate: false
   xy: 264, 368
   size: 142, 143
   orig: 142, 143
   offset: 0, 0
   index: -1
-font-title-export
+plain-james-font-title-export
   rotate: false
   xy: 1, 246
   size: 261, 265

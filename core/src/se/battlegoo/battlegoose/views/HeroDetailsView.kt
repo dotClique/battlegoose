@@ -59,18 +59,24 @@ class HeroDetailsView(
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
 
-    private val mainSkin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
-    private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
+    private val mainSkin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
+    private val headerLabelStyle: Label.LabelStyle = Label.LabelStyle(
+        mainSkin.getFont(Fonts.STAR_SOLDIER.identifier), Color.BLACK
+    )
+    private val textSkin: Skin = Skin(Gdx.files.internal(Skins.PLAIN_JAMES.filepath))
+    private val bodyLabelStyle: Label.LabelStyle = Label.LabelStyle(
+        textSkin.getFont(Fonts.PLAIN_JAMES.identifier), Color.BLACK
+    )
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel = Label(heroDetailsViewModel.name, mainSkin)
-    private val descriptionLabel = Label(heroDetailsViewModel.description, textSkin)
-    private val spellHeaderLabel = Label("Spell:", mainSkin)
-    private val spellNameLabel = Label(heroDetailsViewModel.spellName, textSkin)
+    private val nameLabel = Label(heroDetailsViewModel.name, headerLabelStyle)
+    private val descriptionLabel = Label(heroDetailsViewModel.description, bodyLabelStyle)
+    private val spellHeaderLabel = Label("Spell:", headerLabelStyle)
+    private val spellNameLabel = Label(heroDetailsViewModel.spellName, bodyLabelStyle)
     private val spellDescriptionLabel = Label(
         "${heroDetailsViewModel.spellDescription}\n" +
             "${heroDetailsViewModel.spellCooldown} turns cooldown.",
-        textSkin
+        bodyLabelStyle
     )
 
     init {

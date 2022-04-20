@@ -1,11 +1,13 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	font: {
-		file: font-export.fnt
+	star-soldier-font: {
+		file: star-soldier-font-export.fnt
+        scaledSize: 25
 	}
-	title: {
-		file: font-title-export.fnt
-	}
+	star-soldier-title-font: {
+		file: star-soldier-font-title-export.fnt
+        scaledSize: 40
+    }
 }
 com.badlogic.gdx.graphics.Color: {
 	black: {
@@ -53,7 +55,7 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	default: {
 		checkboxOn: check
 		checkboxOff: check-off
-		font: font
+		font: star-soldier-font
 		fontColor: white
 		downFontColor: sky-blue
 		checkedFontColor: sky-blue
@@ -61,7 +63,7 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 	radio: {
 		checkboxOn: radio
 		checkboxOff: radio-off
-		font: font
+		font: star-soldier-font
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
@@ -85,12 +87,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 	default: {
-		font: font
+		font: star-soldier-font
 		up: button
 		down: button-selected
 	}
 	toggle: {
-		font: font
+		font: star-soldier-font
 		up: button
 		down: button-selected
 		checked: button-selected
@@ -98,15 +100,15 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 	default: {
-		font: font
+		font: star-soldier-font
 	}
 	title: {
-		font: title
+		font: star-soldier-title-font
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: {
-		font: font
+		font: star-soldier-font
 		fontColorSelected: sky-blue
 		fontColorUnselected: white
 		selection: selection
@@ -135,7 +137,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
-		font: font
+		font: star-soldier-font
 		fontColor: white
 		background: select-box
 		scrollStyle: list
@@ -164,12 +166,12 @@ com.badlogic.gdx.scenes.scene2d.ui.SplitPane$SplitPaneStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
-		font: font
+		font: star-soldier-font
 		up: button
 		down: button-selected
 	}
 	toggle: {
-		font: font
+		font: star-soldier-font
 		up: button
 		down: button-selected
 		checked: button-selected
@@ -177,7 +179,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {
-		font: font
+		font: star-soldier-font
 		fontColor: black
 		background: textfield
 		cursor: cursor
@@ -199,23 +201,23 @@ com.badlogic.gdx.scenes.scene2d.ui.Tree$TreeStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	default: {
 		background: window
-		titleFont: font
+		titleFont: star-soldier-font
 		titleFontColor: black
 	}
 	dialog: {
 		background: window
-		titleFont: font
+		titleFont: star-soldier-font
 		titleFontColor: black
 		stageBackground: dark-blue
 	}
 	special: {
 		background: window-special
-		titleFont: font
+		titleFont: star-soldier-font
 		titleFontColor: black
 	}
 	special-dialog: {
 		background: window-special
-		titleFont: font
+		titleFont: star-soldier-font
 		titleFontColor: black
 		stageBackground: dark-blue
 	}
