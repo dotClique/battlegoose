@@ -1,8 +1,5 @@
 package se.battlegoo.battlegoose.utils
 
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.Logger
-import java.util.UUID
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 
@@ -11,29 +8,28 @@ typealias CallBtnFunc = (((() -> Unit)?) -> Unit)?
 object Modal {
 
     private fun createModal(modal: ModalClass): CallBtnFunc {
-        val uuid = UUID.randomUUID().toString()
-        GameStateManager.overlay += 1
-        return { func -> callModalBtnFunc(uuid, func) }
+        GameStateManager.addOverlay()
+        modal.show()
+        return { callModalBtnFunc(it) }
     }
 
-    private fun callModalBtnFunc(uuid: String, func: (() -> Unit)?) {
+    private fun callModalBtnFunc(func: (() -> Unit)?) {
         func?.invoke()
-        GameStateManager.overlay -= 1
+        GameStateManager.removeOverlay()
     }
 
     fun error(title: String, text: String, onOk: (() -> Unit)? = null) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(ModalClass(title, text, ModalType.Error {
             callFuncCall?.invoke(onOk)
-        }))
+        }, Game.stage, Game.skin))
     }
 
     fun info(title: String, text: String, onOk: (() -> Unit)? = null) {
-        Logger("ulrik").error("Info called")
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(ModalClass(title, text, ModalType.Info {
             callFuncCall?.invoke(onOk)
-        }))
+        }, Game.stage, Game.skin))
     }
 
     fun warning(
@@ -45,9 +41,12 @@ object Modal {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(
             ModalClass(
-                title, text, ModalType.Warning(
+                title, text,
+                stage = Game.stage,
+                skin = Game.skin,
+                type = ModalType.Warning(
                     onYes = { callFuncCall?.invoke(onYes) },
-                    onNo = { callFuncCall?.invoke(onNo) })
+                    onNo = { callFuncCall?.invoke(onNo) }),
             )
         )
     }
@@ -61,9 +60,12 @@ object Modal {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(
             ModalClass(
-                title, text, ModalType.Question(
+                title, text,
+                stage = Game.stage,
+                skin = Game.skin,
+                type = ModalType.Question(
                     onYes = { callFuncCall?.invoke(onYes) },
-                    onNo = { callFuncCall?.invoke(onNo) })
+                    onNo = { callFuncCall?.invoke(onNo) }),
             )
         )
     }

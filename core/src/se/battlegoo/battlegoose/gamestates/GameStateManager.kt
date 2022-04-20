@@ -7,7 +7,7 @@ import se.battlegoo.battlegoose.utils.ModalClass
 
 object GameStateManager {
     private val states: Deque<GameState> = ConcurrentLinkedDeque()
-    var overlay = 0
+    private var overlay = 0
 
     fun push(state: GameState) {
         states.push(state)
@@ -36,4 +36,14 @@ object GameStateManager {
     fun render(sb: SpriteBatch) {
         states.peek().render(sb)
     }
+
+    fun addOverlay(){
+      overlay += 1
+    }
+
+    fun removeOverlay() {
+        if (overlay <= 0) return
+        overlay -= 1
+    }
+
 }
