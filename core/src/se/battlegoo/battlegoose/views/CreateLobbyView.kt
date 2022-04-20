@@ -12,7 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
-class CreateLobbyView : ViewBase() {
+class CreateLobbyView(
+    private val onClickMainMenu: () -> Unit
+) : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
 
@@ -75,6 +77,12 @@ class CreateLobbyView : ViewBase() {
 
     fun setGeneratedLobbyId(lobbyId: String) {
         lobbyIdTextField.text = lobbyId
+    }
+
+    override fun registerInput() {
+        if (Gdx.input.justTouched() && mainMenuButton.isPressed) {
+            onClickMainMenu()
+        }
     }
 
     override fun render(sb: SpriteBatch) {
