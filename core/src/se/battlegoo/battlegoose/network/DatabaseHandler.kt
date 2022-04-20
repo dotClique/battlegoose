@@ -231,12 +231,12 @@ class DatabaseHandler {
         return LobbyData(lobbyID, hostID, otherPlayerID, shouldStart)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun convertToBattle(battleData: Map<String, Any>): BattleData {
         val battleID = battleData[BattleData::battleID.name] as String
         val hostID = battleData[BattleData::hostID.name] as String
         val otherPlayerID = battleData[BattleData::otherPlayerID.name] as String
 
-        @Suppress("UNCHECKED_CAST")
         val actionsRaw = battleData[BattleData::actions.name] as List<Map<String, Any>>?
         val actions: List<ActionData> = actionsRaw
             ?.map(::convertToActionData)
@@ -244,30 +244,30 @@ class DatabaseHandler {
         return BattleData(battleID, hostID, otherPlayerID, actions)
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun convertToActionData(actionData: Map<String, Any>): ActionData {
         val playerID = actionData[ActionData::playerID.name] as String
         val actionType = actionData[ActionData::actionType.name] as String
         val actionPointCost = (actionData[ActionData::actionPointCost.name] as Long).toInt()
-        @Suppress("UNCHECKED_CAST")
         // Parse a string like "se.battlegoo.battlegoose.ActionData$MoveUnit" into a KClass
         // MUST have a branch for each subclass of ActionData
         return when (Class.forName(actionType).kotlin) {
             ActionData.MoveUnit::class -> ActionData.MoveUnit(
                 playerID,
-                @Suppress("UNCHECKED_CAST") parseGridVector(
+                parseGridVector(
                     actionData[ActionData.MoveUnit::fromPosition.name] as Map<String, Any>
                 ),
-                @Suppress("UNCHECKED_CAST") parseGridVector(
+                parseGridVector(
                     actionData[ActionData.MoveUnit::toPosition.name] as Map<String, Any>
                 ),
                 actionPointCost
             )
             ActionData.AttackUnit::class -> ActionData.AttackUnit(
                 playerID,
-                @Suppress("UNCHECKED_CAST") parseGridVector(
+                parseGridVector(
                     actionData[ActionData.AttackUnit::attackerPosition.name] as Map<String, Any>
                 ),
-                @Suppress("UNCHECKED_CAST") parseGridVector(
+                parseGridVector(
                     actionData[ActionData.AttackUnit::targetPosition.name] as Map<String, Any>
                 ),
                 actionPointCost
@@ -283,8 +283,8 @@ class DatabaseHandler {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun parseSpellData(actionData: Map<String, Any>): SpellData<Spell> {
-        @Suppress("UNCHECKED_CAST")
         val spellData = actionData[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
         val spellType = spellData[SpellData<*>::spellType.name] as String
         // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineBoostSpellData" into a
