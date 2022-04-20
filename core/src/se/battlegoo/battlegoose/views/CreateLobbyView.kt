@@ -17,7 +17,7 @@ class CreateLobbyView(
 
     private val background = Texture("menuBackground.jpg")
 
-    private var stage = Stage(Game.viewPort)
+    private var stage = Stage(Game.viewPort, Game.batch)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)

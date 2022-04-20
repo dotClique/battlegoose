@@ -3,9 +3,11 @@ package se.battlegoo.battlegoose.gamestates
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import java.util.Deque
 import java.util.concurrent.ConcurrentLinkedDeque
+import se.battlegoo.battlegoose.utils.ModalClass
 
 object GameStateManager {
     private val states: Deque<GameState> = ConcurrentLinkedDeque()
+    var overlay = 0
 
     fun push(state: GameState) {
         states.push(state)
@@ -16,7 +18,9 @@ object GameStateManager {
             return null
         }
         states.peek().dispose()
-        return states.pop()
+        val popped = states.pop()
+        states.peek().initialize()
+        return popped
     }
 
     fun replace(state: GameState) {
@@ -25,7 +29,8 @@ object GameStateManager {
     }
 
     fun update(dt: Float) {
-        states.peek().update(dt)
+        if (overlay == 0)
+            states.peek().update(dt)
     }
 
     fun render(sb: SpriteBatch) {
