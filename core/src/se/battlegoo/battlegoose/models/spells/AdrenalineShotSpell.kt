@@ -1,12 +1,12 @@
 package se.battlegoo.battlegoose.models.spells
 
-class AdrenalineBoostSpell : Spell(
-    "Adrenaline Boost",
+class AdrenalineShotSpell : Spell(
+    "Adrenaline Shot",
     "Get an extra action point every turn for the following 3 turns.",
     9
 ) {
 
     override fun cast(): ActiveSpell {
-        return AdrenalineBoostActiveSpell(this)
+        return AdrenalineShotActiveSpell(this)
     }
 }

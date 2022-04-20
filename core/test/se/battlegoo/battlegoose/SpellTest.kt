@@ -11,14 +11,14 @@ import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
-import se.battlegoo.battlegoose.models.spells.AdrenalineBoostSpell
+import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
 import se.battlegoo.battlegoose.models.spells.Spell
 
 class SpellTest {
     @Test
-    fun testAdrenalinBoostSpell() {
+    fun testAdrenalineShotSpell() {
         val hero = object : Hero(
-            HeroStats(1), AdrenalineBoostSpell(), "",
+            HeroStats(1), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN
         ) {}
         val battle = Battle(
@@ -29,7 +29,7 @@ class SpellTest {
         val spell = hero.spell.cast()
         assertTrue(
             "ActiveSpell saved parent spell instance incorrect",
-            spell.baseSpell is AdrenalineBoostSpell
+            spell.baseSpell is AdrenalineShotSpell
         )
         assertEquals(
             "Wrong inital number of action points",
