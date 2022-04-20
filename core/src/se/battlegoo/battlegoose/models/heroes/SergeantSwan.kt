@@ -3,6 +3,7 @@ package se.battlegoo.battlegoose.models.heroes
 import se.battlegoo.battlegoose.models.spells.AdrenalineBoostSpell
 
 class SergeantSwan : Hero(
+    1,
     HeroStats(),
     AdrenalineBoostSpell(),
     "Sergeant Swan",

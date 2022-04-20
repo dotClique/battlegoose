@@ -12,18 +12,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
-import se.battlegoo.battlegoose.models.heroes.Hero
-import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.utilities.fitScale
 
 class HeroCardView(
     position: ScreenVector,
     maxSize: ScreenVector,
     private val parentStage: Stage?,
-    private val heroSelection: HeroSelection,
-    private val hero: Hero,
-    private val onClickCard: (hero: Hero) -> Unit,
-    private val onClickInfo: (hero: Hero) -> Unit
+    private val heroCard: HeroCard,
+    var selected: Boolean,
+    private val onClickCard: (heroId: Int) -> Unit,
+    private val onClickInfo: (heroId: Int) -> Unit
 ) : ViewBase() {
 
     companion object {
@@ -50,7 +48,7 @@ class HeroCardView(
     private val stage: Stage = parentStage ?: Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroCard.png")
-    private val heroTexture: Texture = Texture(hero.texturePath)
+    private val heroTexture: Texture = Texture(heroCard.texturePath)
 
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
@@ -59,8 +57,8 @@ class HeroCardView(
     private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel: Label = Label(hero.name, mainSkin)
-    private val descriptionLabel: Label = Label(hero.description, textSkin)
+    private val nameLabel: Label = Label(heroCard.name, mainSkin)
+    private val descriptionLabel: Label = Label(heroCard.description, textSkin)
 
     private val infoButton: TextButton = TextButton("Info", mainSkin)
 
@@ -129,16 +127,16 @@ class HeroCardView(
     override fun registerInput() {
         if (Gdx.input.justTouched()) {
             if (infoButton.isPressed) {
-                onClickInfo(hero)
+                onClickInfo(heroCard.id)
             } else if (cardIsPressed()) {
-                onClickCard(hero)
+                onClickCard(heroCard.id)
             }
         }
     }
 
     override fun render(sb: SpriteBatch) {
         backgroundSprite.color =
-            if (heroSelection.selectedHero == hero) Color.LIGHT_GRAY else Color.WHITE
+            if (selected) Color.LIGHT_GRAY else Color.WHITE
         backgroundSprite.draw(sb)
         heroSprite.draw(sb)
         textTable.draw(sb, 1f)
@@ -153,3 +151,5 @@ class HeroCardView(
         parentStage ?: stage.dispose() // If no stage received from parent, dispose of local stage
     }
 }
+
+data class HeroCard(val id: Int, val name: String, val description: String, val texturePath: String)

@@ -8,13 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
-import se.battlegoo.battlegoose.models.heroes.Hero
-import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import kotlin.math.max
 import kotlin.math.min
 
 class HeroSelectionView(
-    heroSelection: HeroSelection
+    private val heroes: Collection<HeroData>,
+    private var selectedHeroId: Int
 ) : ViewBase() {
 
     companion object {
@@ -34,7 +33,7 @@ class HeroSelectionView(
     private val skin: Skin = Skin(Gdx.files.internal("skins/star-soldier/star-soldier-ui.json"))
 
     private val backgroundTexture = Texture("menuBackground.jpg")
-    private val heroCardViews: List<HeroCardView>
+    private val heroCardViews: Map<Int, HeroCardView>
     private var heroDetailsView: HeroDetailsView? = null
 
     private val backButton = TextButton("Back", skin)
@@ -46,8 +45,9 @@ class HeroSelectionView(
         // ###
 
         // Cards size
+        val heroCount = heroes.size
         val cardWidthIncludingPadding =
-            min(MAX_WINDOW_WIDTH / heroSelection.heroCount, MAX_HERO_WIDTH)
+            min(MAX_WINDOW_WIDTH / heroCount, MAX_HERO_WIDTH)
         val cardPadding = max(CARD_PADDING_BETWEEN * cardWidthIncludingPadding, MIN_PADDING)
 
         val _cardWidth = cardWidthIncludingPadding - 2 * cardPadding
@@ -66,7 +66,7 @@ class HeroSelectionView(
         var _baselineVertical = (Game.HEIGHT / 2) - (cardSize.y / 2) + buttonSize.y
         _baselineVertical -=
             max((_baselineVertical + cardSize.y) - Game.HEIGHT * MAX_WINDOW_TOP, 0f)
-        val totalWidth = heroSelection.heroCount * cardWidthIncludingPadding
+        val totalWidth = heroCount * cardWidthIncludingPadding
         val cardBaseline = ScreenVector(
             (Game.WIDTH / 2) - (totalWidth / 2),
             _baselineVertical
@@ -79,10 +79,12 @@ class HeroSelectionView(
         )
 
         // Init the views
-        heroCardViews = List(heroSelection.heroCount) { i ->
-            HeroCardView(
+        var counter = 0
+        val heroCardViewsMap = HashMap<Int, HeroCardView>(heroCount)
+        heroes.forEach {
+            heroCardViewsMap[it.id] = HeroCardView(
                 ScreenVector(
-                    cardBaseline.x + (i * cardWidthIncludingPadding) + cardPadding,
+                    cardBaseline.x + (counter++ * cardWidthIncludingPadding) + cardPadding,
                     cardBaseline.y
                 ),
                 ScreenVector(
@@ -90,12 +92,13 @@ class HeroSelectionView(
                     cardSize.y
                 ),
                 stage,
-                heroSelection,
-                heroSelection.getHero(i),
+                HeroCard(it.id, it.name, it.description, it.texturePath),
+                it.id == selectedHeroId,
                 this::onClickHeroCard,
                 this::onClickHeroInfoOpen
             )
         }
+        heroCardViews = heroCardViewsMap.toMap()
 
         backButton.label.setFontScale(FONT_BUTTON_SCALE)
         backButton.setPosition(buttonBaseline.x, buttonBaseline.y)
@@ -110,8 +113,16 @@ class HeroSelectionView(
         stage.addActor(continueButton)
     }
 
-    fun showHeroDetails(hero: Hero?) {
-        hero?.let {
+    fun selectHero(heroId: Int) {
+        this.selectedHeroId = heroId
+        heroCardViews.forEach {
+            it.value.selected = it.key == selectedHeroId
+        }
+    }
+
+    fun showHeroDetails(heroId: Int?) {
+        val heroData = heroes.firstOrNull { it.id == heroId }
+        heroData?.let {
             heroDetailsView = HeroDetailsView(
                 ScreenVector(
                     (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
@@ -121,7 +132,10 @@ class HeroSelectionView(
                     MAX_WINDOW_WIDTH,
                     MAX_WINDOW_HEIGHT,
                 ),
-                hero,
+                HeroDetailsData(
+                    it.id, it.name, it.description, it.texturePath,
+                    it.spellName, it.spellDescription, it.spellCooldown
+                ),
                 this::onClickHeroInfoExit
             )
             Gdx.input.inputProcessor = null
@@ -140,7 +154,7 @@ class HeroSelectionView(
                 onClickBack()
             Gdx.input.justTouched() && continueButton.isPressed ->
                 onClickContinue()
-            else -> heroCardViews.forEach { it.registerInput() }
+            else -> heroCardViews.forEach { it.value.registerInput() }
         }
     }
 
@@ -149,15 +163,17 @@ class HeroSelectionView(
         sb.draw(backgroundTexture, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
         stage.draw()
-        for (view in heroCardViews)
-            view.render(sb)
+        heroCardViews.forEach {
+            it.value.render(sb)
+        }
         heroDetailsView?.render(sb)
     }
 
     override fun dispose() {
         backgroundTexture.dispose()
-        for (view in heroCardViews)
-            view.dispose()
+        heroCardViews.forEach {
+            it.value.dispose()
+        }
         heroDetailsView?.dispose()
         skin.dispose()
     }
@@ -169,12 +185,12 @@ class HeroSelectionView(
             Gdx.app.error("#PREREG", "Controller already registered")
     }
 
-    private fun onClickHeroCard(hero: Hero) {
-        controller?.onClickHeroSelectionCard(hero)
+    private fun onClickHeroCard(heroId: Int) {
+        controller?.onClickHeroSelectionCard(heroId)
     }
 
-    private fun onClickHeroInfoOpen(hero: Hero) {
-        controller?.onClickHeroSelectionInfoOpen(hero)
+    private fun onClickHeroInfoOpen(heroId: Int) {
+        controller?.onClickHeroSelectionInfoOpen(heroId)
     }
 
     private fun onClickHeroInfoExit() {
@@ -191,9 +207,19 @@ class HeroSelectionView(
 }
 
 interface IHeroSelectionViewController {
-    fun onClickHeroSelectionCard(hero: Hero)
-    fun onClickHeroSelectionInfoOpen(hero: Hero)
+    fun onClickHeroSelectionCard(heroId: Int)
+    fun onClickHeroSelectionInfoOpen(heroId: Int)
     fun onClickHeroSelectionInfoExit()
     fun onClickHeroSelectionBack()
     fun onClickHeroSelectionContinue()
 }
+
+data class HeroData(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val texturePath: String,
+    val spellName: String,
+    val spellDescription: String,
+    val spellCooldown: Int
+)

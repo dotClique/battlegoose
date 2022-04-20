@@ -4,6 +4,7 @@ import se.battlegoo.battlegoose.models.Action
 import se.battlegoo.battlegoose.models.spells.Spell
 
 abstract class Hero(
+    val heroId: Int,
     val baseStats: HeroStats,
     val spell: Spell,
     val name: String,

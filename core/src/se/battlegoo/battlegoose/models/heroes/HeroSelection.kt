@@ -1,22 +1,28 @@
 package se.battlegoo.battlegoose.models.heroes
 
-class HeroSelection(private val heroes: List<Hero>) {
-    var selected: Int = 0
-    val heroCount: Int by heroes::size
+class HeroSelection(heroes: Collection<Hero>) {
+
+    private val heroesMap: Map<Int, Hero>
+
+    var selected: Int = heroes.first().heroId
+        set(value) {
+            if (heroesMap.containsKey(value))
+                field = value
+            else
+                throw IllegalArgumentException("Tried to select non-existent hero")
+        }
+
     val selectedHero: Hero
-        get() = heroes[selected]
+        get() = heroesMap[selected]!!
 
     init {
-        if (heroCount == 0)
+        if (heroes.isEmpty())
             throw IllegalArgumentException("At least 1 hero must be provided!")
-    }
 
-    fun getHero(i: Int) = heroes[i]
-
-    fun selectHero(hero: Hero) {
-        val new = heroes.indexOf(hero)
-        if (new < 0)
-            throw IllegalArgumentException("Hero not found!")
-        selected = new
+        val heroesTempMap = HashMap<Int, Hero>(heroes.size)
+        heroes.forEach {
+            heroesTempMap[it.heroId] = it
+        }
+        heroesMap = heroesTempMap.toMap()
     }
 }

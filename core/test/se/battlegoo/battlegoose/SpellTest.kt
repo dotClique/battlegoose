@@ -17,7 +17,7 @@ import se.battlegoo.battlegoose.models.spells.Spell
 class SpellTest {
     @Test
     fun testAdrenalinBoostSpell() {
-        val hero = object : Hero(HeroStats(1), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
+        val hero = object : Hero(0, HeroStats(1), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
         val battle = Battle(
             hero,
             SergeantSwan(),

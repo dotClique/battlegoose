@@ -11,13 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
-import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.utilities.fitScale
 
 class HeroDetailsView(
     position: ScreenVector,
     maxSize: ScreenVector,
-    hero: Hero,
+    heroDetailsData: HeroDetailsData,
     private val onExit: () -> Unit
 ) : ViewBase() {
 
@@ -45,7 +44,7 @@ class HeroDetailsView(
     private val stage: Stage = Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroDetails.png")
-    private val heroTexture: Texture = Texture(hero.texturePath)
+    private val heroTexture: Texture = Texture(heroDetailsData.texturePath)
 
     private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Sprite = Sprite(heroTexture)
@@ -54,12 +53,13 @@ class HeroDetailsView(
     private val textSkin: Skin = Skin(Gdx.files.internal("skins/plain-james/plain-james-ui.json"))
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel = Label(hero.name, mainSkin)
-    private val descriptionLabel = Label(hero.description, textSkin)
+    private val nameLabel = Label(heroDetailsData.name, mainSkin)
+    private val descriptionLabel = Label(heroDetailsData.description, textSkin)
     private val spellHeaderLabel = Label("Spell:", mainSkin)
-    private val spellNameLabel = Label(hero.spell.title, textSkin)
+    private val spellNameLabel = Label(heroDetailsData.spellName, textSkin)
     private val spellDescriptionLabel = Label(
-        "${hero.spell.description}\n${hero.spell.cooldown} turns cooldown.", textSkin
+        "${heroDetailsData.spellDescription}\n${heroDetailsData.spellCooldown} turns cooldown.",
+        textSkin
     )
 
     init {
@@ -153,3 +153,13 @@ class HeroDetailsView(
         stage.dispose()
     }
 }
+
+data class HeroDetailsData(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val texturePath: String,
+    val spellName: String,
+    val spellDescription: String,
+    val spellCooldown: Int
+)

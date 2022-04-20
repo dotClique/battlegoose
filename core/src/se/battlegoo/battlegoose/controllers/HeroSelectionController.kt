@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.Gdx
-import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.views.HeroSelectionView
 import se.battlegoo.battlegoose.views.IHeroSelectionViewController
@@ -20,12 +19,13 @@ class HeroSelectionController(
         view.registerInput()
     }
 
-    override fun onClickHeroSelectionCard(hero: Hero) {
-        heroSelection.selectHero(hero)
+    override fun onClickHeroSelectionCard(heroId: Int) {
+        heroSelection.selected = heroId
+        view.selectHero(heroSelection.selected)
     }
 
-    override fun onClickHeroSelectionInfoOpen(hero: Hero) {
-        view.showHeroDetails(hero)
+    override fun onClickHeroSelectionInfoOpen(heroId: Int) {
+        view.showHeroDetails(heroId)
     }
 
     override fun onClickHeroSelectionInfoExit() {

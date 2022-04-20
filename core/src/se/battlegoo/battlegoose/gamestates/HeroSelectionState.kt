@@ -7,13 +7,22 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.models.heroes.MajorMallard
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
+import se.battlegoo.battlegoose.views.HeroData
 import se.battlegoo.battlegoose.views.HeroSelectionView
 
 class HeroSelectionState : GameState() {
 
     private val heroes: List<Hero> = listOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross())
     private val heroSelection = HeroSelection(heroes)
-    private val heroSelectionView = HeroSelectionView(heroSelection)
+    private val heroSelectionView = HeroSelectionView(
+        heroes.map {
+            HeroData(
+                it.heroId, it.name, it.description, it.texturePath, it.spell.title,
+                it.spell.description, it.spell.cooldown
+            )
+        },
+        heroSelection.selected
+    )
     private val controller = HeroSelectionController(heroSelectionView, heroSelection, this::goBack)
 
     private fun goBack() {

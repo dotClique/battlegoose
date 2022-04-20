@@ -13,7 +13,7 @@ import se.battlegoo.battlegoose.models.spells.AdrenalineBoostSpell
 class HeroTest {
     @Test
     fun testHero() {
-        val hero = object : Hero(HeroStats(2), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
+        val hero = object : Hero(0, HeroStats(2), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
         assertEquals(2, hero.currentStats.actionPoints)
         assertEquals(2, hero.baseStats.actionPoints)
         hero.applyStatsModifier(HeroStatsModifier { it.copy(actionPoints = it.actionPoints - 1) })
@@ -32,7 +32,7 @@ class HeroTest {
 
     @Test
     fun testHeroNotAllowedToPerformActionCostingMoreThanCurrentActionPoints() {
-        val hero = object : Hero(HeroStats(2), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
+        val hero = object : Hero(0, HeroStats(2), AdrenalineBoostSpell(), "", "", HeroSprite.SERGEANT_SWAN) {}
         assertEquals("Wrong initial number of APs", 2, hero.currentStats.actionPoints)
         assertThrows(
             "Hero::performAction failed to error when costing more than current action points",
