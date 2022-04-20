@@ -287,11 +287,11 @@ class DatabaseHandler {
     private fun parseSpellData(actionData: Map<String, Any>): SpellData<Spell> {
         val spellData = actionData[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
         val spellType = spellData[SpellData<*>::spellType.name] as String
-        // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineBoostSpellData" into a
+        // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineShotSpellData" into a
         // KClass
         // MUST have a branch for each subclass of SpellData
         return when (Class.forName(spellType).kotlin) {
-            SpellData.AdrenalinBoostSpellData::class -> SpellData.AdrenalinBoostSpellData
+            SpellData.AdrenalineShotSpellData::class -> SpellData.AdrenalineShotSpellData
             else -> throw NotImplementedError("The spell class $spellType has no deserializer")
         }
     }
