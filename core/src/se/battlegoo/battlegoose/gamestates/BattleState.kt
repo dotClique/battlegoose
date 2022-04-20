@@ -58,16 +58,20 @@ class BattleState : GameState() {
                 battleMapController.addUnit(controller, GridVector(x, y))
             }
         }
-        for (i in 0..Random.nextInt(2, 4)) {
-            var gPos: GridVector
-            do {
-                gPos = GridVector(
-                    Random.nextInt(1, battleMapController.mapSize.x - 2),
-                    Random.nextInt(0, battleMapController.mapSize.y)
-                )
-            } while (battle.battleMap.getObstacle(gPos) != null)
-            battleMapController.addObstacle(Obstacle.values().random(), gPos)
-        }
+
+        // Place obstacles randomly
+        (0 until battleMapController.mapSize.y)
+            .map { y ->
+                (2 until battleMapController.mapSize.x - 3)
+                    .map { x -> GridVector(x, y) }
+                    .filter { oPos ->
+                        battle.battleMap.let { !it.isObstacleAt(oPos) && !it.isUnitAt(oPos) }
+                    }
+            }
+            .flatten()
+            .shuffled()
+            .take(Random.nextInt(2, 5))
+            .forEach { battleMapController.addObstacle(Obstacle.values().random(), it) }
     }
 
     override fun update(dt: Float) = battleMapController.update(dt)
