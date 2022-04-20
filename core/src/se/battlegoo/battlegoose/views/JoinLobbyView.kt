@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
@@ -22,7 +21,6 @@ class JoinLobbyView(
 
     private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
     private var lobbyIdTextField: TextField = TextField("", skin)
-    private val textFieldStyle = skin.get(TextFieldStyle::class.java)
 
     private val titleLabel: Label = Label("Join Lobby", skin)
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
@@ -111,7 +109,7 @@ class JoinLobbyView(
 
         mainMenuButton.setPosition(x0, y0)
 
-        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
+        sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
         titleLabel.draw(sb, 1f)
         lobbyIdLabel.draw(sb, 1f)
@@ -129,5 +127,6 @@ class JoinLobbyView(
     override fun dispose() {
         background.dispose()
         stage.dispose()
+        skin.dispose()
     }
 }

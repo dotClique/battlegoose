@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
@@ -22,7 +21,6 @@ class CreateLobbyView(
 
     private var skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
     private var lobbyIdTextField: TextField = TextField("", skin)
-    private val textFieldStyle = skin.get(TextFieldStyle::class.java)
 
     private val titleLabel: Label = Label("Create Lobby", skin)
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
@@ -33,6 +31,8 @@ class CreateLobbyView(
         "Ask your friend to enter this code for the game to begin",
         skin
     )
+
+    private var waitingText = "Creating lobby"
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -64,7 +64,7 @@ class CreateLobbyView(
     }
 
     fun resetWaitingText() {
-        waitingLabel.setText("Creating lobby")
+        waitingLabel.setText(waitingText)
     }
 
     fun updateWaitingText() {
@@ -73,6 +73,7 @@ class CreateLobbyView(
 
     fun setGeneratedLobbyId(lobbyId: String) {
         lobbyIdTextField.text = lobbyId
+        waitingText = "Waiting for opponent"
     }
 
     override fun registerInput() {
@@ -105,7 +106,7 @@ class CreateLobbyView(
 
         mainMenuButton.setPosition(x0, y0)
 
-        sb.draw(background, 0f, 0f, Game.WIDTH.toFloat(), Game.HEIGHT.toFloat())
+        sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
         titleLabel.draw(sb, 1f)
         lobbyIdLabel.draw(sb, 1f)
@@ -123,5 +124,6 @@ class CreateLobbyView(
     override fun dispose() {
         background.dispose()
         stage.dispose()
+        skin.dispose()
     }
 }

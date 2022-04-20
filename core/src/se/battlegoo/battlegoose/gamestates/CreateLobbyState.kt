@@ -18,6 +18,10 @@ class CreateLobbyState : GameState() {
     private var createLobbyCompleted = false
 
     private var lobbyId: String? = null
+        set(value) {
+            field = value
+            value?.let(createLobbyView::setGeneratedLobbyId)
+        }
 
     private fun goBack() {
         GameStateManager.goBack()
@@ -27,10 +31,9 @@ class CreateLobbyState : GameState() {
         createLobbyView.registerInput()
         if (!createLobbyCompleted) {
             createLobbyCompleted = true
-            MultiplayerService.tryCreateLobby() {
-                val logger = Logger("Create Lobby").error(it.toString())
+            MultiplayerService.tryCreateLobby {
+                Logger("Created lobby", Logger.INFO).info(it.toString())
                 lobbyId = it.lobbyID
-                createLobbyView.setGeneratedLobbyId(lobbyId!!)
             }
         }
     }
