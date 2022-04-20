@@ -43,6 +43,11 @@ class HeroCardView(
         private const val FONT_HEADER_SCALE = 2f // Used for hero name
         private const val FONT_BUTTON_SCALE = 2f // Used for info button
         private const val BUTTON_HEIGHT_MULTIPLIER = 3f // Used for info button
+
+        // Color selection
+        private val COLOR_FONT_HEADER = Color.BLACK
+        private val COLOR_CARD_DEFAULT = Color.WHITE
+        private val COLOR_CARD_HIGHLIGHTED = Color.ORANGE
     }
 
     private val stage: Stage = parentStage ?: Stage(Game.viewPort)
@@ -94,7 +99,7 @@ class HeroCardView(
         textTable.left().top() // Align content from top left
 
         nameLabel.setFontScale(fontScale * FONT_HEADER_SCALE)
-        nameLabel.color = Color.BLACK
+        nameLabel.color = COLOR_FONT_HEADER
         nameLabel.wrap = true
 
         descriptionLabel.setFontScale(fontScale)
@@ -136,7 +141,7 @@ class HeroCardView(
 
     override fun render(sb: SpriteBatch) {
         backgroundSprite.color =
-            if (selected) Color.LIGHT_GRAY else Color.WHITE
+            if (selected) COLOR_CARD_HIGHLIGHTED else COLOR_CARD_DEFAULT
         backgroundSprite.draw(sb)
         heroSprite.draw(sb)
         textTable.draw(sb, 1f)

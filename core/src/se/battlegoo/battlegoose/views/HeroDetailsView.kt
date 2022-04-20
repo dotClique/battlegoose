@@ -39,6 +39,9 @@ class HeroDetailsView(
         private const val FONT_MAIN_SPELL_HEADER_SCALE = 0.8f
         private const val FONT_BODY_SPELL_NAME_SCALE = 1.2f
         private const val TABLE_COLUMN_SPELL_TITLE_WIDTH = 0.3f
+
+        // Color selection
+        private val COLOR_FONT_HEADER = Color.BLACK
     }
 
     private val stage: Stage = Stage(Game.viewPort)
@@ -102,14 +105,14 @@ class HeroDetailsView(
         textTable.left().top() // Align content from top left
 
         nameLabel.setFontScale(headerFontScale)
-        nameLabel.color = Color.BLACK
+        nameLabel.color = COLOR_FONT_HEADER
         nameLabel.wrap = true
 
         descriptionLabel.setFontScale(bodyFontScale)
         descriptionLabel.wrap = true
 
         spellHeaderLabel.setFontScale(headerFontScale * FONT_MAIN_SPELL_HEADER_SCALE)
-        spellHeaderLabel.color = Color.BLACK
+        spellHeaderLabel.color = COLOR_FONT_HEADER
         spellHeaderLabel.wrap = true
 
         spellNameLabel.setFontScale(bodyFontScale * FONT_BODY_SPELL_NAME_SCALE)
