@@ -26,8 +26,10 @@ open class UnitModel(
     fun takeAttackDamage(incomingDamage: Int) {
         applyModifier(fun(unitStats: UnitStats): UnitStats {
             return unitStats.copy(
-                health = unitStats.health - incomingDamage
-                    * (100.0f - currentStats.defense).roundToInt()
+                health = unitStats.health - (
+                    incomingDamage
+                        * (100.0f - currentStats.defense) / 100
+                    ).roundToInt()
             )
         })
     }
