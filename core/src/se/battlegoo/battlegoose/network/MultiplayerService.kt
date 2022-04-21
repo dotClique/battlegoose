@@ -6,7 +6,6 @@ import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
 import java.util.Date
-import java.util.LinkedList
 import java.util.function.Consumer
 
 object MultiplayerService {
@@ -52,7 +51,7 @@ object MultiplayerService {
 
     private fun purgeInactiveFromQueue(
         listener: Consumer<RandomOpponentStatus>,
-        purgedQueueConsumer: Consumer<Any?>
+        purgedQueueConsumer: Consumer<List<String>?>
     ) = databaseHandler.readPrimitiveValue<Long>(
         "${DataPaths.RANDOM_OPPONENT_DATA}/lastUpdated"
     ) { lastUpdated ->
@@ -66,29 +65,22 @@ object MultiplayerService {
 
         databaseHandler.setValue("${DataPaths.RANDOM_OPPONENT_DATA}/lastUpdated", now) {
             databaseHandler.setValue(
-                "${DataPaths.RANDOM_OPPONENT_QUEUE}", LinkedList<String>()
+                "${DataPaths.RANDOM_OPPONENT_QUEUE}", listOf<String>()
             ) {
                 listener.accept(RandomOpponentStatus.TIMEOUT_INACTIVE_PLAYER)
-                purgedQueueConsumer.accept(LinkedList<String>())
+                purgedQueueConsumer.accept(listOf())
             }
         }
     }
 
-    private fun getQueueFromQueueData(queueData: Any?): LinkedList<String> =
-        if (queueData !is List<*>)
-            LinkedList()
-        else
-            LinkedList(queueData.map { it as String })
-
     private fun addPlayerToQueue(
         userID: String,
-        queue: LinkedList<String>,
+        queue: List<String>,
         listener: Consumer<RandomOpponentStatus>
     ) {
         if (queue.contains(userID)) return
 
-        queue.add(userID)
-        databaseHandler.setValue(DataPaths.RANDOM_OPPONENT_QUEUE.toString(), queue) {
+        databaseHandler.setValue(DataPaths.RANDOM_OPPONENT_QUEUE.toString(), queue + userID) {
             listener.accept(RandomOpponentStatus.JOIN_QUEUE)
         }
     }
@@ -117,18 +109,17 @@ object MultiplayerService {
         )
     }
 
-    private fun popQueue(queue: LinkedList<String>, callback: () -> Unit) {
-        queue.pop()
+    private fun popQueue(queue: List<String>, callback: () -> Unit) {
         databaseHandler.setValue(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
-            queue,
+            queue.subList(0, queue.size - 1),
             callback = callback
         )
     }
 
     fun tryRequestOpponent(listener: Consumer<RandomOpponentStatus>) {
         var processing = false
-        databaseHandler.listenPrimitiveValue<Any>(
+        databaseHandler.listenPrimitiveValue<List<String>>(
             DataPaths.RANDOM_OPPONENT_QUEUE.toString(),
         ) { updatedQueueData, queueListenerCanceler ->
             if (processing) {
@@ -137,12 +128,12 @@ object MultiplayerService {
             processing = true
 
             purgeInactiveFromQueue(listener) { purgedQueue ->
-                val queue = getQueueFromQueueData(purgedQueue ?: updatedQueueData)
+                val queue = purgedQueue ?: updatedQueueData ?: listOf()
 
                 databaseHandler.getUserID { userID ->
                     addPlayerToQueue(userID, queue, listener)
 
-                    if (queue.peek() != userID) {
+                    if (queue.last() != userID) {
                         processing = false
                         listener.accept(RandomOpponentStatus.WAITING_IN_QUEUE)
                         return@getUserID
