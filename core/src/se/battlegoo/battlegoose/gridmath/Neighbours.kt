@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.gridmath
 
 import se.battlegoo.battlegoose.GridVector
 
-val neighbour_difference_lookup: Array<HashMap<Direction, GridVector>> = arrayOf(
+val NEIGHTBOUR_DIFFERENCE_LOOKUP: Array<HashMap<Direction, GridVector>> = arrayOf(
     // even row (with yDown=false)
     hashMapOf(
         Pair(Direction.EAST, GridVector(1, 0)),
@@ -25,7 +25,7 @@ val neighbour_difference_lookup: Array<HashMap<Direction, GridVector>> = arrayOf
 
 fun neighbours(pos: GridVector): HashMap<Direction, GridVector> {
     val neighbours = hashMapOf<Direction, GridVector>()
-    for ((direction, posDiff) in neighbour_difference_lookup[pos.y % 2]) {
+    for ((direction, posDiff) in NEIGHTBOUR_DIFFERENCE_LOOKUP[pos.y % 2]) {
         neighbours[direction] = GridVector(pos.x + posDiff.x, pos.y + posDiff.y)
     }
     return neighbours
