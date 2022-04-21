@@ -179,14 +179,14 @@ class SpellTest {
         )
 
         val unit1Team1 = GuardGoose(battle.hero1)
-        val unit2Team1 = GuardGoose(battle.hero1)
-        val unit1Team2 = GuardGoose(battle.hero2)
-        val unit2Team2 = GuardGoose(battle.hero2)
+        val unit2Team1 = PrivatePenguin(battle.hero1)
+        val unit1Team2 = SpitfireSeagull(battle.hero2)
+        val unit2Team2 = DelinquentDuck(battle.hero2)
 
         battle.battleMap.placeUnit(unit1Team1, GridVector(1, 1))
-        battle.battleMap.placeUnit(unit2Team1, GridVector(5, 2))
+        battle.battleMap.placeUnit(unit2Team1, GridVector(5, 1))
         battle.battleMap.placeUnit(unit1Team2, GridVector(2, 2))
-        battle.battleMap.placeUnit(unit2Team2, GridVector(6, 1))
+        battle.battleMap.placeUnit(unit2Team2, GridVector(4, 2))
 
         val spell = hero.spell.cast() as Bird52ActiveSpell
         assertTrue(

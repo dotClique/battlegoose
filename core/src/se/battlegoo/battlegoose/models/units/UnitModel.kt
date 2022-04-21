@@ -10,7 +10,6 @@ open class UnitModel(
     val description: String
 ) {
     var allegiance: Hero = owner
-        private set
 
     var currentStats: UnitStats = baseStats
         private set
@@ -47,11 +46,5 @@ open class UnitModel(
                     unitStats.maxHealth else unitStats.health + healAmount
             )
         })
-    }
-
-    open fun convert(hero: Hero): UnitModel {
-//        return UnitModel(hero, currentStats, name, description)
-        this.allegiance = hero
-        return this
     }
 }

@@ -49,7 +49,7 @@ Units do not move when they attack.
 
 Each spell can affect anything in the game state and has a cooldown which denotes how many turns you have to wait from the spell is cast until the spell can be used again.
 
-- Bird-52 (cooldown: 3): Deal 30 damage to all units in the middle 2 columns of the battlefield.
+- Bird-52 (cooldown: 3): Deal 30 damage to all units in the middle columns of the battlefield.
 - Adrenaline Shot (cooldown: 6): Increase your action points by 1 for the following 3 turns. Thus, the total actions points the next 3 turns is 2, unless there is another condition that affects the hero's action points.
 - Ephemeral Allegiance (cooldown: 5): One random unit the opponent controls joins your army and is now in your control for 3 turns. The position and stats of that unit stays the same.
 

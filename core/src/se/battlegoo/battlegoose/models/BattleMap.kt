@@ -104,7 +104,7 @@ class BattleMap(
 
     override fun iterator(): Iterator<GridVector> {
         return (0 until gridSize.y).map { y ->
-            (0 until gridSize.x - 1).map { x ->
+            (0 until gridSize.x - (y % 2)).map { x ->
                 GridVector(x, y)
             }
         }.flatten().iterator()
