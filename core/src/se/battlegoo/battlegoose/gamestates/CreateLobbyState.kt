@@ -12,7 +12,8 @@ class CreateLobbyState : GameState() {
     private var letterCount: Int = 0
 
     private val createLobbyView: CreateLobbyView = CreateLobbyView(
-        this::goBack
+        this::goBack,
+        stage
     )
 
     private var createLobbyCompleted = false

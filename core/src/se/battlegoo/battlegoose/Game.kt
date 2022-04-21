@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import se.battlegoo.battlegoose.gamestates.GameStateManager
@@ -22,6 +21,12 @@ class Game : ApplicationAdapter() {
         const val TITLE = "BattleGoose"
         val viewPort = FitViewport(WIDTH, HEIGHT)
         lateinit var stage: Stage
+            private set // use setStage
+
+        fun setGlobalStage(newStage: Stage) {
+            stage = newStage
+            Gdx.input.inputProcessor = newStage
+        }
 
         /**
          * Public function that scales Gdx values to Viewport values
@@ -55,6 +60,7 @@ class Game : ApplicationAdapter() {
 
     override fun dispose() {
         batch.dispose()
+        GameStateManager.dispose()
     }
 
     override fun resize(width: Int, height: Int) {

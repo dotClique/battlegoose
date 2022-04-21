@@ -16,7 +16,7 @@ class ModalClass(
     private val title: String,
     private val text: String,
     type: ModalType,
-    val stage: Stage,
+    private var stage: Stage,
     private val scale: Float = 1f
 ) {
 
@@ -24,10 +24,6 @@ class ModalClass(
     val clicks = HashMap<String, (() -> Unit)?>()
 
     private val dialog = object : Dialog("\t$title", skin) {
-
-        init {
-            setScale(scale)
-        }
 
         override fun getPrefHeight(): Float = Game.HEIGHT / 2
         override fun getPrefWidth(): Float = Game.WIDTH / 2
@@ -41,13 +37,17 @@ class ModalClass(
                 throw IllegalArgumentException(
                     "Object passed to Dialog result function is not in possible clicks."
                 )
-            clicks[`object`]?.let { it() }
+            hide()
+            cancel() // Cancel hide() call in onClick in Dialog
             skin.dispose()
+            remove() // Remove this dialog from the stage
+            clicks[`object`]?.let { it() }
         }
     }
 
 
     init {
+        dialog.setScale(scale)
         val dialogText = Label(text, skin)
         dialog.text(dialogText)
         dialog.isMovable = false
@@ -74,7 +74,6 @@ class ModalClass(
 
     fun show() {
         dialog.show(stage)
-        Gdx.input.inputProcessor = stage
         // Centre the dialog on the screen with respect to the scale
         dialog.setPosition(
             ((stage.width - dialog.width * scale) / 2).roundToInt().toFloat(),
@@ -91,6 +90,12 @@ class ModalClass(
             .height(dialog.prefHeight / 4.5f)
         dialog.setObject(button, uuid)
         clicks[uuid] = onClick
+    }
+
+    fun updateStage(newStage: Stage) {
+        this.stage = newStage
+        dialog.hide()
+        show()
     }
 
 }

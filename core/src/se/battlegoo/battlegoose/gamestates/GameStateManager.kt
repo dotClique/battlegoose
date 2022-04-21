@@ -1,31 +1,43 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.utils.Logger
 import java.util.Deque
 import java.util.concurrent.ConcurrentLinkedDeque
-import se.battlegoo.battlegoose.utils.ModalClass
+import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.utils.Modal
 
 object GameStateManager {
     private val states: Deque<GameState> = ConcurrentLinkedDeque()
     private var overlay = 0
 
+    private fun initializeStage(state: GameState) {
+        Game.setGlobalStage(state.stage)
+        Modal.changeStage(state.stage)
+    }
+
     fun push(state: GameState) {
         states.push(state)
+        initializeStage(state)
     }
+
 
     fun goBack(): GameState? {
         if (states.size <= 1) {
             return null
         }
-        states.peek().dispose()
+        states.peek().disposeState()
         val popped = states.pop()
-        states.peek().initialize()
+        initializeStage(states.peek())
         return popped
     }
 
     fun replace(state: GameState) {
-        goBack()
-        push(state)
+        if (states.size <= 1) return
+        states.peek().disposeState()
+        states.pop()
+        states.push(state)
+        initializeStage(state)
     }
 
     fun update(dt: Float) {
@@ -37,8 +49,12 @@ object GameStateManager {
         states.peek().render(sb)
     }
 
-    fun addOverlay(){
-      overlay += 1
+    fun dispose() {
+        states.forEach { it.disposeState() }
+    }
+
+    fun addOverlay() {
+        overlay += 1
     }
 
     fun removeOverlay() {

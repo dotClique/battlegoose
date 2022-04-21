@@ -12,12 +12,12 @@ import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
 class CreateLobbyView(
-    private val onClickMainMenu: () -> Unit
+    private val onClickMainMenu: () -> Unit,
+    stage: Stage
 ) : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
 
-    private var stage = Stage(Game.viewPort, Game.batch)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)
@@ -38,8 +38,6 @@ class CreateLobbyView(
     private val y0: Float = Menu.BOTTOM_SPACING
 
     init {
-        Gdx.input.inputProcessor = stage
-
         titleLabel.setAlignment(Align.center)
         lobbyIdLabel.setAlignment(Align.center)
         lobbyInfoLabel.setAlignment(Align.center)
@@ -123,7 +121,6 @@ class CreateLobbyView(
 
     override fun dispose() {
         background.dispose()
-        stage.dispose()
         skin.dispose()
     }
 }
