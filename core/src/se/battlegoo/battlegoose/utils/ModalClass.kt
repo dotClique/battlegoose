@@ -2,6 +2,7 @@ package se.battlegoo.battlegoose.utils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -14,10 +15,13 @@ import se.battlegoo.battlegoose.views.Skins
 
 class ModalClass(
     private val title: String,
-    private val text: String,
+    private val text: String?=null,
     type: ModalType,
     private var stage: Stage,
-    private val scale: Float = 1f
+    private val scale: Float = 1f,
+    private val contentActors: List<Actor>? = null,
+    private val minWidth: Float? = null,
+    private val minHeight: Float? = null
 ) {
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
@@ -45,11 +49,15 @@ class ModalClass(
         }
     }
 
+    private fun <T : Actor> addActors(actors: List<T>?) {
+        actors?.forEach { dialog.contentTable.add(it) }
+    }
 
     init {
         dialog.setScale(scale)
         val dialogText = Label(text, skin)
-        dialog.text(dialogText)
+        if (text != null) dialog.text(dialogText)
+        addActors(contentActors)
         dialog.isMovable = false
         when (type) {
             is ModalType.Error -> {
@@ -75,6 +83,8 @@ class ModalClass(
     fun show() {
         dialog.show(stage)
         // Centre the dialog on the screen with respect to the scale
+        if (minWidth != null) dialog.background.minWidth= minWidth
+        if (minHeight != null) dialog.background.minHeight = minHeight
         dialog.setPosition(
             ((stage.width - dialog.width * scale) / 2).roundToInt().toFloat(),
             ((stage.height - dialog.height * scale) / 2).roundToInt().toFloat()

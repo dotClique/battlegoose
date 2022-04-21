@@ -18,7 +18,7 @@ import se.battlegoo.battlegoose.utilities.fitScale
 class HeroCardView(
     position: ScreenVector,
     maxSize: ScreenVector,
-    private val parentStage: Stage?,
+    private val parentStage: Stage,
     private val heroCardViewModel: HeroCardViewModel,
     var selected: Boolean,
     private val onClickCard: (heroId: String) -> Unit,
@@ -51,7 +51,7 @@ class HeroCardView(
         private val COLOR_CARD_HIGHLIGHTED = Color.ORANGE
     }
 
-    private val stage: Stage = parentStage ?: Stage(Game.viewPort)
+    private val stage: Stage = parentStage
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroCard.png")
     private val heroTexture: Texture = Texture(
@@ -130,7 +130,6 @@ class HeroCardView(
         infoButton.setPosition(heroBaseline.x, heroBaseline.y - textHeight)
 
         stage.addActor(infoButton)
-        Gdx.input.inputProcessor = stage
     }
 
     private fun cardIsPressed(): Boolean {
@@ -158,7 +157,6 @@ class HeroCardView(
         backgroundSprite.draw(sb)
         heroSprite.draw(sb)
         textTable.draw(sb, 1f)
-        stage.draw()
     }
 
     override fun dispose() {
@@ -166,7 +164,6 @@ class HeroCardView(
         heroTexture.dispose()
         mainSkin.dispose()
         textSkin.dispose()
-        parentStage ?: stage.dispose() // If no stage received from parent, dispose of local stage
     }
 }
 

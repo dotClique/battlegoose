@@ -12,16 +12,16 @@ class MainMenuState :
 
     private var mainMenuView = MainMenuView(
         onClickCreateLobby = { GameStateManager.push(CreateLobbyState()) },
-        onClickJoinLobby = { GameStateManager.push(JoinLobbyState()) },
-//        onClickJoinLobby = {
-//            Modal.question(
-//                "A longer title than the other",
-//                "This will do nothing ")
-//            Modal.question(
-//                "Title",
-//                "This will move page",
-//                onYes = { GameStateManager.push(JoinLobbyState()) })
-//        },
+//        onClickJoinLobby = { GameStateManager.push(JoinLobbyState()) },
+        onClickJoinLobby = {
+            Modal.question(
+                "A longer title than the other",
+                "This will do nothing ")
+            Modal.question(
+                "Title",
+                "This will move page",
+                onYes = { GameStateManager.push(JoinLobbyState()) })
+        },
         // onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
         onClickQuickJoin = { GameStateManager.push(BattleState()) },
         onClickLeaderboard = { GameStateManager.push(LeaderboardState()) }
@@ -30,7 +30,7 @@ class MainMenuState :
     private var changeUsernameController = ChangeUsernameController(
         ChangeUsernameView(
             Game.WIDTH - 700f, Game.HEIGHT - 100f,
-            700f, 100f
+            700f, 100f, stage = stage
         )
     )
 

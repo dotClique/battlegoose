@@ -1,7 +1,7 @@
 package se.battlegoo.battlegoose.utils
 
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 
@@ -24,14 +24,23 @@ object Modal {
         GameStateManager.removeOverlay()
     }
 
-    fun error(title: String, text: String, onOk: (() -> Unit)? = null, scale: Float = 1f) {
+    fun error(
+        title: String,
+        text: String,
+        onOk: (() -> Unit)? = null,
+        scale: Float = 1f,
+        contentActors: List<Actor>? = null
+    ) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(ModalClass(title, text, ModalType.Error {
             callFuncCall?.invoke(onOk)
-        }, Game.stage, scale))
+        }, Game.stage, scale, contentActors))
     }
 
-    fun info(title: String, text: String, onOk: (() -> Unit)? = null, scale: Float = 1f) {
+    fun info(
+        title: String, text: String, onOk: (() -> Unit)? = null, scale: Float = 1f,
+        contentActors: List<Actor>? = null
+    ) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(ModalClass(title, text, ModalType.Info {
             callFuncCall?.invoke(onOk)
@@ -43,14 +52,17 @@ object Modal {
         text: String,
         onYes: (() -> Unit)? = null,
         onNo: (() -> Unit)? = null,
-        scale: Float = 1f
-    ) {
+        scale: Float = 1f,
+        contentActors: List<Actor>? = null
+
+        ) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(
             ModalClass(
                 title, text,
                 scale = scale,
                 stage = Game.stage,
+                contentActors = contentActors,
                 type = ModalType.Warning(
                     onYes = { callFuncCall?.invoke(onYes) },
                     onNo = { callFuncCall?.invoke(onNo) }),
@@ -63,7 +75,8 @@ object Modal {
         text: String,
         onYes: (() -> Unit)? = null,
         onNo: (() -> Unit)? = null,
-        scale: Float = 1f
+        scale: Float = 1f,
+        contentActors: List<Actor>? = null
     ) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(
@@ -71,6 +84,7 @@ object Modal {
                 title, text,
                 scale = scale,
                 stage = Game.stage,
+                contentActors = contentActors,
                 type = ModalType.Question(
                     onYes = { callFuncCall?.invoke(onYes) },
                     onNo = { callFuncCall?.invoke(onNo) }),

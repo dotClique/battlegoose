@@ -4,22 +4,23 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.utilities.fitScale
+import se.battlegoo.battlegoose.utils.ModalClass
+import se.battlegoo.battlegoose.utils.ModalType
 
 class HeroDetailsView(
     position: ScreenVector,
     maxSize: ScreenVector,
     heroDetailsViewModel: HeroDetailsViewModel,
-    private val onExit: () -> Unit
-) : ViewBase() {
+    val stage: Stage,
+    private val onExit: (() -> Unit)? = null,
+) {
 
     companion object {
         // Relative values in percentage (0f - 1f) to place elements on the background
@@ -42,10 +43,9 @@ class HeroDetailsView(
         private const val TABLE_COLUMN_SPELL_TITLE_WIDTH = 0.3f
 
         // Color selection
-        private val COLOR_FONT_HEADER = Color.BLACK
+        private val COLOR_FONT_HEADER = Color.RED
     }
 
-    private val stage: Stage = Stage(Game.viewPort)
 
     private val backgroundTexture: Texture = Texture("heroSelection/heroDetails.png")
     private val heroTexture: Texture = Texture(
@@ -61,15 +61,16 @@ class HeroDetailsView(
 
     private val mainSkin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private val headerLabelStyle: Label.LabelStyle = Label.LabelStyle(
-        mainSkin.getFont(Fonts.STAR_SOLDIER.identifier), Color.BLACK
+        mainSkin.getFont(Fonts.STAR_SOLDIER.identifier), Color.WHITE
     )
     private val textSkin: Skin = Skin(Gdx.files.internal(Skins.PLAIN_JAMES.filepath))
     private val bodyLabelStyle: Label.LabelStyle = Label.LabelStyle(
-        textSkin.getFont(Fonts.PLAIN_JAMES.identifier), Color.BLACK
+        textSkin.getFont(Fonts.PLAIN_JAMES.identifier), Color.WHITE
     )
 
     private val textTable: Table = Table(mainSkin)
-    private val nameLabel = Label(heroDetailsViewModel.name, headerLabelStyle)
+
+    //    private val nameLabel = Label(heroDetailsViewModel.name, headerLabelStyle)
     private val descriptionLabel = Label(heroDetailsViewModel.description, bodyLabelStyle)
     private val spellHeaderLabel = Label("Spell:", headerLabelStyle)
     private val spellNameLabel = Label(heroDetailsViewModel.spellName, bodyLabelStyle)
@@ -78,6 +79,7 @@ class HeroDetailsView(
             "${heroDetailsViewModel.spellCooldown} turns cooldown.",
         bodyLabelStyle
     )
+    private var modal: ModalClass
 
     init {
         val (backgroundSize, backgroundOffset) = fitScale(backgroundTexture, maxSize)
@@ -118,9 +120,9 @@ class HeroDetailsView(
         textTable.setPosition(textBaselineX, heroBaseline.y - textBoxSize.y - (lineHeight / 2))
         textTable.left().top() // Align content from top left
 
-        nameLabel.setFontScale(headerFontScale)
-        nameLabel.color = COLOR_FONT_HEADER
-        nameLabel.wrap = true
+//        nameLabel.setFontScale(headerFontScale)
+//        nameLabel.color = COLOR_FONT_HEADER
+//        nameLabel.wrap = true
 
         descriptionLabel.setFontScale(bodyFontScale)
         descriptionLabel.wrap = true
@@ -138,7 +140,7 @@ class HeroDetailsView(
         // Set default values for table cells
         textTable.defaults().fill().left().colspan(2)
         // Add and position all text elements
-        textTable.add(nameLabel).width(textBoxSize.x)
+//        textTable.add(nameLabel).width(textBoxSize.x)
         textTable.row()
         textTable.add(descriptionLabel).width(textBoxSize.x)
         textTable.row().spaceTop(lineHeight / 2).colspan(1)
@@ -147,28 +149,27 @@ class HeroDetailsView(
         textTable.row().width(textBoxSize.x)
         textTable.add(spellDescriptionLabel)
 
-        stage.addActor(textTable)
+        modal = ModalClass(
+            heroDetailsViewModel.name,
+            "",
+            ModalType.Info {
+                backgroundTexture.dispose()
+                heroTexture.dispose()
+                mainSkin.dispose()
+                textSkin.dispose()
+                onExit?.invoke()
+            },
+            stage,
+            contentActors = listOf(textTable)
+        )
+
+
     }
 
-    override fun registerInput() {
-        if (Gdx.input.justTouched()) {
-            onExit()
-        }
+    fun show() {
+        modal.show()
     }
 
-    override fun render(sb: SpriteBatch) {
-        backgroundSprite.draw(sb)
-        heroSprite.draw(sb)
-        stage.draw()
-    }
-
-    override fun dispose() {
-        backgroundTexture.dispose()
-        heroTexture.dispose()
-        mainSkin.dispose()
-        textSkin.dispose()
-        stage.dispose()
-    }
 }
 
 data class HeroDetailsViewModel(

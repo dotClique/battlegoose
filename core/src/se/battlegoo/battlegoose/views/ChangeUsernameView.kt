@@ -13,7 +13,8 @@ class ChangeUsernameView(
     val y: Float = 0f,
     val width: Float = 700f,
     val height: Float = 100f,
-    var usernameChangedListener: (String) -> Unit = {}
+    var usernameChangedListener: (String) -> Unit = {},
+    val stage: Stage
 ) : ViewBase() {
 
     companion object {
@@ -30,7 +31,6 @@ class ChangeUsernameView(
         usernameChangedListener(username)
     }
 
-    private val stage = Stage(Game.viewPort)
     private var savedUsername: String = ""
     var username: String by textField::text
 
@@ -67,7 +67,6 @@ class ChangeUsernameView(
         textField.setPosition(x + height, y)
 
         stage.addActor(textField)
-        Gdx.input.inputProcessor = stage
 
         textField.setTextFieldListener { _, _ ->
             state = if (username == savedUsername) ChangeUsernameState.SYNCED
@@ -83,13 +82,10 @@ class ChangeUsernameView(
     }
 
     override fun render(sb: SpriteBatch) {
-        stage.act()
-        stage.draw()
         saveButton.render(sb)
     }
 
     override fun dispose() {
-        stage.dispose()
         saveButton.dispose()
     }
 
