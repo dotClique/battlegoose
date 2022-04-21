@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import kotlin.math.max
-import kotlin.math.min
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
+import kotlin.math.max
+import kotlin.math.min
 
 class HeroSelectionView(
     private val heroes: Collection<HeroSelectionViewModel>,

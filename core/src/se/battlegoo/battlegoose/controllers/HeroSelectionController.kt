@@ -28,7 +28,6 @@ class HeroSelectionController(
         view.showHeroDetails(heroId)
     }
 
-
     override fun onClickHeroSelectionBack() {
         onClickBack()
     }

@@ -1,11 +1,10 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.utils.Logger
-import java.util.Deque
-import java.util.concurrent.ConcurrentLinkedDeque
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.utils.Modal
+import java.util.Deque
+import java.util.concurrent.ConcurrentLinkedDeque
 
 object GameStateManager {
     private val states: Deque<GameState> = ConcurrentLinkedDeque()
@@ -20,7 +19,6 @@ object GameStateManager {
         states.push(state)
         initializeStage(state)
     }
-
 
     fun goBack(): GameState? {
         if (states.size <= 1) {
@@ -61,5 +59,4 @@ object GameStateManager {
         if (overlay <= 0) return
         overlay -= 1
     }
-
 }

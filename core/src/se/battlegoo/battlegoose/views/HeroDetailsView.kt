@@ -28,7 +28,6 @@ class HeroDetailsView(
         private val COLOR_FONT_HEADER = Color.RED
     }
 
-
     //    private val backgroundTexture: Texture = Texture("heroSelection/heroDetails.png")
     private val heroTexture: Texture = Texture(
         when (heroDetailsViewModel.heroSprite) {
@@ -117,14 +116,11 @@ class HeroDetailsView(
             contentActors = listOf(textTable),
             minHeight = Game.HEIGHT * 0.9f
         )
-
-
     }
 
     fun show() {
         modal.show()
     }
-
 }
 
 data class HeroDetailsViewModel(

@@ -32,19 +32,37 @@ object Modal {
         contentActors: List<Actor>? = null
     ) {
         var callFuncCall: CallBtnFunc = null
-        callFuncCall = createModal(ModalClass(title, text, ModalType.Error {
-            callFuncCall?.invoke(onOk)
-        }, Game.stage, scale, contentActors))
+        callFuncCall = createModal(
+            ModalClass(
+                title,
+                text,
+                ModalType.Error { callFuncCall?.invoke(onOk) },
+                Game.stage,
+                scale,
+                contentActors
+            )
+        )
     }
 
     fun info(
-        title: String, text: String, onOk: (() -> Unit)? = null, scale: Float = 1f,
+        title: String,
+        text: String,
+        onOk: (() -> Unit)? = null,
+        scale: Float = 1f,
         contentActors: List<Actor>? = null
     ) {
         var callFuncCall: CallBtnFunc = null
-        callFuncCall = createModal(ModalClass(title, text, ModalType.Info {
-            callFuncCall?.invoke(onOk)
-        }, Game.stage, scale))
+        callFuncCall = createModal(
+            ModalClass(
+                title,
+                text,
+                ModalType.Info {
+                    callFuncCall?.invoke(onOk)
+                },
+                Game.stage,
+                scale
+            )
+        )
     }
 
     fun warning(
@@ -55,7 +73,7 @@ object Modal {
         scale: Float = 1f,
         contentActors: List<Actor>? = null
 
-        ) {
+    ) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(
             ModalClass(
@@ -65,7 +83,8 @@ object Modal {
                 contentActors = contentActors,
                 type = ModalType.Warning(
                     onYes = { callFuncCall?.invoke(onYes) },
-                    onNo = { callFuncCall?.invoke(onNo) }),
+                    onNo = { callFuncCall?.invoke(onNo) }
+                ),
             )
         )
     }
@@ -87,7 +106,8 @@ object Modal {
                 contentActors = contentActors,
                 type = ModalType.Question(
                     onYes = { callFuncCall?.invoke(onYes) },
-                    onNo = { callFuncCall?.invoke(onNo) }),
+                    onNo = { callFuncCall?.invoke(onNo) }
+                ),
             )
         )
     }
@@ -95,5 +115,4 @@ object Modal {
     fun changeStage(newStage: Stage) {
         modalList.forEach { it.updateStage(newStage) }
     }
-
 }
