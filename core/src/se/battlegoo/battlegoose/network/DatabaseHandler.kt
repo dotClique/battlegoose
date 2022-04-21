@@ -193,22 +193,6 @@ class DatabaseHandler {
         }
     }
 
-    fun pushValue(
-        databasePath: String,
-        value: Any,
-        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        callback: () -> Unit
-    ) {
-        dbAccessWrapper {
-            GdxFIRDatabase.inst()
-                .inReference(databasePath)
-                .push()
-                .setValue(value)
-                .then<Void> { callback() }
-                .fail(fail)
-        }
-    }
-
     fun deleteValue(
         databasePath: String,
         fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
