@@ -6,4 +6,4 @@ typealias GridVector = ImmutableVector2<Int>
 data class ImmutableVector2<T>(
     val x: T,
     val y: T
-)
+) : DataModel

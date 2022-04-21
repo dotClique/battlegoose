@@ -6,4 +6,4 @@ data class LobbyData(
     val otherPlayerID: String = "",
     val shouldStart: Boolean = false,
     val battleID: String = ""
-)
+) : DataModel

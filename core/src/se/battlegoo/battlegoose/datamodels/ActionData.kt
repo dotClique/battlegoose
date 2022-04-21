@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.datamodels
 
 import se.battlegoo.battlegoose.models.spells.Spell
 
-sealed class ActionData {
+sealed class ActionData : DataModel {
 
     val actionType: String = this::class.java.name
 

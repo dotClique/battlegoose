@@ -6,4 +6,4 @@ data class BattleData(
     val otherPlayerID: String,
     val actions: List<ActionData>
     // Also store starting positions and starting map here
-)
+) : DataModel
