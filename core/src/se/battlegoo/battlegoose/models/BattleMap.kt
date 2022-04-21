@@ -1,6 +1,9 @@
 package se.battlegoo.battlegoose.models
 
 import se.battlegoo.battlegoose.GridVector
+import se.battlegoo.battlegoose.ImmutableVector2
+import se.battlegoo.battlegoose.gridmath.Direction
+import se.battlegoo.battlegoose.gridmath.neighbours
 import se.battlegoo.battlegoose.models.units.UnitModel
 
 class BattleMap(
@@ -12,31 +15,90 @@ class BattleMap(
     private val obstacles: Array<Array<Obstacle?>> =
         Array(gridSize.y) { arrayOfNulls<Obstacle?>(gridSize.x) }
 
+    fun isValidPosition(pos: GridVector): Boolean {
+        return 0 <= pos.y && pos.y < gridSize.y && 0 <= pos.x && pos.x < (gridSize.x - (pos.y % 2))
+    }
+
     private fun validatePosition(pos: GridVector) {
-        if (pos.y > gridSize.y || pos.x > gridSize.x - (pos.y % 2)) {
+        if (!isValidPosition(pos)) {
             throw IllegalArgumentException(
-                "Invalid coordinate $pos for size ($gridSize.x, $gridSize.y)"
+                "Invalid coordinate $pos for size $gridSize"
             )
         }
-        if (getUnit(pos) != null) {
-            throw IllegalStateException("Unit already placed at $pos")
-        }
-        if (getObstacle(pos) != null) {
-            throw IllegalStateException("Obstacle already placed at $pos")
-        }
+    }
+
+    fun isValidUnitPlacement(pos: GridVector): Boolean {
+        return isValidPosition(pos) &&
+            !isObstacleAt(pos) &&
+            !isUnitAt(pos)
+    }
+
+    private fun validatePlacement(pos: GridVector) {
+        if (isUnitAt(pos)) throw IllegalStateException("Unit already placed at $pos")
+        if (isObstacleAt(pos)) throw IllegalStateException("Obstacle already placed at $pos")
     }
 
     fun placeUnit(unit: UnitModel, pos: GridVector) {
-        validatePosition(pos)
+        validatePlacement(pos)
         units[pos.y][pos.x] = unit
     }
 
-    fun getUnit(pos: GridVector): UnitModel? = units[pos.y][pos.x]
+    fun moveUnit(from: GridVector, to: GridVector) {
+        if (isUnitAt(to) || isObstacleAt(to)) {
+            throw IllegalStateException("Position $to already occupied")
+        }
+        getUnit(from).let {
+            if (it != null) {
+                placeUnit(it, to)
+                units[from.y][from.x] = null
+            } else {
+                throw IllegalStateException("No unit to move from $from")
+            }
+        }
+    }
+
+    fun removeUnit(pos: GridVector) {
+        if (!isUnitAt(pos)) {
+            throw IllegalStateException("No unit at $pos")
+        }
+        units[pos.y][pos.x] = null
+    }
+
+    fun removeUnit(unit: UnitModel) {
+        removeUnit(
+            getPosOfUnit(unit) ?: throw IllegalStateException("Unit $unit is not on the map")
+        )
+    }
+
+    fun getUnit(pos: GridVector): UnitModel? {
+        validatePosition(pos)
+        return units[pos.y][pos.x]
+    }
+
+    fun getPosOfUnit(unit: UnitModel): GridVector? {
+        for (y in 0 until gridSize.y) {
+            for (x in 0 until gridSize.x - (y % 2)) {
+                val pos = GridVector(x, y)
+                if (getUnit(pos) == unit) {
+                    return GridVector(x, y)
+                }
+            }
+        }
+        return null
+    }
+
+    fun getNeighboursOfPos(pos: GridVector): Map<Direction, ImmutableVector2<Int>> {
+        return neighbours(pos).filter { (_, pos) -> isValidPosition(pos) }
+    }
+
+    fun isUnitAt(pos: GridVector): Boolean = getUnit(pos) != null
 
     fun placeObstacle(obstacle: Obstacle, pos: GridVector) {
-        validatePosition(pos)
+        validatePlacement(pos)
         obstacles[pos.y][pos.x] = obstacle
     }
 
     fun getObstacle(pos: GridVector): Obstacle? = obstacles[pos.y][pos.x]
+
+    fun isObstacleAt(pos: GridVector): Boolean = getObstacle(pos) != null
 }

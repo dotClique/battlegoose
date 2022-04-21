@@ -1,10 +1,12 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.math.Rectangle
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.ScreenVector
 
-class ClickableImpl(private val getBoundingRectangle: () -> Rectangle) : ClickableView {
+class ClickableImpl(
+    private val isPointWithinBounds: (ScreenVector) -> Boolean
+) : ClickableView {
 
     private var observer: ClickObserver? = null
 
@@ -13,12 +15,11 @@ class ClickableImpl(private val getBoundingRectangle: () -> Rectangle) : Clickab
     }
 
     override fun registerInput() {
-        if (Gdx.input.justTouched() &&
-            getBoundingRectangle().contains(
-                    Game.unproject(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
-                )
-        ) {
-            observer?.onClick()
+        if (Gdx.input.justTouched()) {
+            val clickPos = Game.unproject(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
+            if (isPointWithinBounds(ScreenVector(clickPos.x, clickPos.y))) {
+                observer?.onClick()
+            }
         }
     }
 }

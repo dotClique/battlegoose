@@ -1,5 +1,6 @@
 package se.battlegoo.battlegoose.controllers
 
+import se.battlegoo.battlegoose.views.BattleMapTileState
 import se.battlegoo.battlegoose.views.BattleMapTileView
 import se.battlegoo.battlegoose.views.ClickObserver
 
@@ -8,7 +9,7 @@ class BattleMapTileController(
     private val onTileClick: (tileController: BattleMapTileController) -> Unit
 ) : ControllerBase(tileView) {
 
-    var selected: Boolean by tileView::focused
+    var state: BattleMapTileState by tileView::state
 
     init {
         tileView.subscribe(object : ClickObserver {
