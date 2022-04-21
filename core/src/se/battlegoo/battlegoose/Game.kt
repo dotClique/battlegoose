@@ -22,7 +22,6 @@ class Game : ApplicationAdapter() {
         const val TITLE = "BattleGoose"
         val viewPort = FitViewport(WIDTH, HEIGHT)
         lateinit var stage: Stage
-        lateinit var skin : Skin
 
         /**
          * Public function that scales Gdx values to Viewport values
@@ -36,7 +35,6 @@ class Game : ApplicationAdapter() {
     override fun create() {
         batch = SpriteBatch()
         stage = Stage(viewPort, batch)
-        skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
         Gdx.input.inputProcessor = stage
         resize(WIDTH.toInt(), HEIGHT.toInt())
         GameStateManager.push(MainMenuState())
@@ -57,7 +55,6 @@ class Game : ApplicationAdapter() {
 
     override fun dispose() {
         batch.dispose()
-        skin.dispose()
     }
 
     override fun resize(width: Int, height: Int) {

@@ -22,14 +22,14 @@ object Modal {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(ModalClass(title, text, ModalType.Error {
             callFuncCall?.invoke(onOk)
-        }, Game.stage, Game.skin))
+        }, Game.stage))
     }
 
     fun info(title: String, text: String, onOk: (() -> Unit)? = null) {
         var callFuncCall: CallBtnFunc = null
         callFuncCall = createModal(ModalClass(title, text, ModalType.Info {
             callFuncCall?.invoke(onOk)
-        }, Game.stage, Game.skin))
+        }, Game.stage))
     }
 
     fun warning(
@@ -43,7 +43,6 @@ object Modal {
             ModalClass(
                 title, text,
                 stage = Game.stage,
-                skin = Game.skin,
                 type = ModalType.Warning(
                     onYes = { callFuncCall?.invoke(onYes) },
                     onNo = { callFuncCall?.invoke(onNo) }),
@@ -62,7 +61,6 @@ object Modal {
             ModalClass(
                 title, text,
                 stage = Game.stage,
-                skin = Game.skin,
                 type = ModalType.Question(
                     onYes = { callFuncCall?.invoke(onYes) },
                     onNo = { callFuncCall?.invoke(onNo) }),

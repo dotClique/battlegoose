@@ -1,34 +1,36 @@
 package se.battlegoo.battlegoose.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import java.util.UUID
 import kotlin.math.roundToInt
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.gamestates.GameStateManager
+import se.battlegoo.battlegoose.views.Skins
 
 class ModalClass(
     private val title: String,
     private val text: String,
     type: ModalType,
     val stage: Stage,
-    val skin: Skin,
-    private val scale: Float = 2f
+    private val scale: Float = 1f
 ) {
 
+    private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     val clicks = HashMap<String, (() -> Unit)?>()
 
-    private val dialog = object : Dialog("\t $title", skin) {
+    private val dialog = object : Dialog("\t$title", skin) {
 
         init {
             setScale(scale)
         }
 
-        override fun getPrefHeight(): Float = Game.HEIGHT / 4
-        override fun getPrefWidth(): Float = Game.WIDTH / 4
+        override fun getPrefHeight(): Float = Game.HEIGHT / 2
+        override fun getPrefWidth(): Float = Game.WIDTH / 2
 
         override fun result(`object`: Any?) {
             if (`object` == null || `object` !is String)
@@ -40,13 +42,14 @@ class ModalClass(
                     "Object passed to Dialog result function is not in possible clicks."
                 )
             clicks[`object`]?.let { it() }
-            GameStateManager.removeOverlay()
+            skin.dispose()
         }
     }
 
 
     init {
-        dialog.text(text)
+        val dialogText = Label(text, skin)
+        dialog.text(dialogText)
         dialog.isMovable = false
         when (type) {
             is ModalType.Error -> {
@@ -71,18 +74,21 @@ class ModalClass(
 
     fun show() {
         dialog.show(stage)
+        Gdx.input.inputProcessor = stage
         // Centre the dialog on the screen with respect to the scale
         dialog.setPosition(
             ((stage.width - dialog.width * scale) / 2).roundToInt().toFloat(),
             ((stage.height - dialog.height * scale) / 2).roundToInt().toFloat()
         )
-        GameStateManager.addOverlay()
     }
 
     private fun addButton(buttonText: String, onClick: (() -> Unit)?) {
         val uuid = UUID.randomUUID().toString()
         val button = TextButton(buttonText, skin)
-        dialog.buttonTable.add(button).width(dialog.prefWidth / 3).height(dialog.prefHeight / 4)
+        dialog.buttonTable
+            .add(button)
+            .width(dialog.prefWidth / 3)
+            .height(dialog.prefHeight / 4.5f)
         dialog.setObject(button, uuid)
         clicks[uuid] = onClick
     }
