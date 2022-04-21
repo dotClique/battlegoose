@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.models.spells
 
-import se.battlegoo.battlegoose.GridVector
+import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.models.Battle
 import kotlin.math.abs
 import kotlin.math.floor

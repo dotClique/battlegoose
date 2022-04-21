@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.models
 
-import se.battlegoo.battlegoose.GridVector
+import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.gridmath.Direction
 import se.battlegoo.battlegoose.gridmath.neighbours
 import se.battlegoo.battlegoose.models.units.UnitModel

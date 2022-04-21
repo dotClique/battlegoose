@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import kotlin.math.max
 import kotlin.math.min

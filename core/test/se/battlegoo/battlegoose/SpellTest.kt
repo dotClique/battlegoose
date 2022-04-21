@@ -3,6 +3,7 @@ package se.battlegoo.battlegoose
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground

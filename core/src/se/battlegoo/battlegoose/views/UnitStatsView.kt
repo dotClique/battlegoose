@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.units.UnitModel
 
 class UnitStatsView(

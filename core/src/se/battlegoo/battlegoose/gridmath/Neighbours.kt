@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.gridmath
 
-import se.battlegoo.battlegoose.GridVector
+import se.battlegoo.battlegoose.datamodels.GridVector
 
 val NEIGHBOUR_DIFFERENCE_LOOKUP: Array<HashMap<Direction, GridVector>> = arrayOf(
     // even row (with yDown=false)

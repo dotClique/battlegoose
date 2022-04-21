@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.gridmath
 
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import kotlin.math.abs
 
 fun isPointInsideHexagon(pos: ScreenVector, hexPos: ScreenVector, hexSize: ScreenVector): Boolean {

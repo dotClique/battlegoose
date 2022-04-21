@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType

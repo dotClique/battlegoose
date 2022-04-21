@@ -1,6 +1,5 @@
 package se.battlegoo.battlegoose.datamodels
 
-import se.battlegoo.battlegoose.GridVector
 import se.battlegoo.battlegoose.models.spells.Spell
 
 sealed class ActionData {

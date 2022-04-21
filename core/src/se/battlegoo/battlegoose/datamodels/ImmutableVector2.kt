@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose
+package se.battlegoo.battlegoose.datamodels
 
 typealias ScreenVector = ImmutableVector2<Float>
 typealias GridVector = ImmutableVector2<Int>

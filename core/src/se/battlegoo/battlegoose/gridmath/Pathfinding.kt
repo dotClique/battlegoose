@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.gridmath
 
-import se.battlegoo.battlegoose.GridVector
+import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.models.BattleMap
 
 fun findReachablePositions(

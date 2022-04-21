@@ -1,7 +1,7 @@
 package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.views.UnitHealthBarView
 
