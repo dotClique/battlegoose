@@ -4,11 +4,12 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 import kotlin.math.roundToInt
 
 open class UnitModel(
-    val hero: Hero,
+    val owner: Hero,
     baseStats: UnitStats,
     val name: String,
     val description: String
 ) {
+    var allegiance: Hero = owner
 
     var currentStats: UnitStats = baseStats
         private set
@@ -24,8 +25,10 @@ open class UnitModel(
     fun takeAttackDamage(incomingDamage: Int) {
         applyModifier(fun(unitStats: UnitStats): UnitStats {
             return unitStats.copy(
-                health = unitStats.health - incomingDamage
-                    * (100.0f - currentStats.defense).roundToInt()
+                health = unitStats.health - (
+                    incomingDamage
+                        * (100.0f - currentStats.defense) / 100
+                    ).roundToInt()
             )
         })
     }
