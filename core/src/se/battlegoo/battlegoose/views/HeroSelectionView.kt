@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import kotlin.math.max
+import kotlin.math.min
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
-import kotlin.math.max
-import kotlin.math.min
 
 class HeroSelectionView(
     private val heroes: Collection<HeroSelectionViewModel>,
@@ -124,14 +124,6 @@ class HeroSelectionView(
         val heroData = heroes.firstOrNull { it.id == heroId }
         heroData?.let {
             heroDetailsView = HeroDetailsView(
-                ScreenVector(
-                    (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
-                    (Game.HEIGHT / 2) - (MAX_WINDOW_HEIGHT / 2),
-                ),
-                ScreenVector(
-                    MAX_WINDOW_WIDTH,
-                    MAX_WINDOW_HEIGHT,
-                ),
                 HeroDetailsViewModel(
                     it.id, it.name, it.description, it.heroSprite,
                     it.spellName, it.spellDescription, it.spellCooldown

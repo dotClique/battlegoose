@@ -15,7 +15,7 @@ import se.battlegoo.battlegoose.views.Skins
 
 class ModalClass(
     private val title: String,
-    private val text: String?=null,
+    private val text: String? = null,
     type: ModalType,
     private var stage: Stage,
     private val scale: Float = 1f,
@@ -29,8 +29,8 @@ class ModalClass(
 
     private val dialog = object : Dialog("\t$title", skin) {
 
-        override fun getPrefHeight(): Float = Game.HEIGHT / 2
-        override fun getPrefWidth(): Float = Game.WIDTH / 2
+        override fun getPrefHeight(): Float = this@ModalClass.minHeight ?: Game.HEIGHT / 2
+        override fun getPrefWidth(): Float = this@ModalClass.minWidth ?: Game.WIDTH / 2
 
         override fun result(`object`: Any?) {
             if (`object` == null || `object` !is String)
@@ -59,6 +59,8 @@ class ModalClass(
         if (text != null) dialog.text(dialogText)
         addActors(contentActors)
         dialog.isMovable = false
+//        if (minWidth != null) dialog.background.minWidth= minWidth
+//        if (minHeight != null) dialog.background.minHeight = minHeight
         when (type) {
             is ModalType.Error -> {
                 dialog.color = Color.RED
@@ -83,8 +85,6 @@ class ModalClass(
     fun show() {
         dialog.show(stage)
         // Centre the dialog on the screen with respect to the scale
-        if (minWidth != null) dialog.background.minWidth= minWidth
-        if (minHeight != null) dialog.background.minHeight = minHeight
         dialog.setPosition(
             ((stage.width - dialog.width * scale) / 2).roundToInt().toFloat(),
             ((stage.height - dialog.height * scale) / 2).roundToInt().toFloat()
@@ -96,8 +96,8 @@ class ModalClass(
         val button = TextButton(buttonText, skin)
         dialog.buttonTable
             .add(button)
-            .width(dialog.prefWidth / 3)
-            .height(dialog.prefHeight / 4.5f)
+            .width(Game.WIDTH / 6)
+            .height(Game.HEIGHT / 9)
         dialog.setObject(button, uuid)
         clicks[uuid] = onClick
     }
