@@ -16,7 +16,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 class BattleMapController(
-    private val hero: Hero,
+    private val hero: Hero<*>,
     private val model: BattleMap,
     private val view: BattleMapView
 ) : ControllerBase(view) {

@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.models.heroes
 
 import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
 
-class SergeantSwan : Hero(
+class SergeantSwan : Hero<AdrenalineShotSpell>(
     HeroStats(),
     AdrenalineShotSpell(),
     "Sergeant Swan",

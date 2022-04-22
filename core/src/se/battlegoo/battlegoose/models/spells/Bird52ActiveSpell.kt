@@ -5,7 +5,7 @@ import se.battlegoo.battlegoose.models.Battle
 import kotlin.math.abs
 import kotlin.math.floor
 
-class Bird52ActiveSpell(baseSpell: Spell, val numColumnsToAttack: Int, val attackDamage: Int) :
+class Bird52ActiveSpell(baseSpell: Bird52Spell, val numColumnsToAttack: Int, val attackDamage: Int) :
     ActiveSpell(baseSpell) {
 
     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {

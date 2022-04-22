@@ -12,7 +12,7 @@ import se.battlegoo.battlegoose.views.HeroSelectionViewModel
 
 class HeroSelectionState : GameState() {
 
-    private val heroes: List<Hero> = listOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross())
+    private val heroes: List<Hero<*>> = listOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross())
     private val heroSelection = HeroSelection(heroes)
     private val heroSelectionView = HeroSelectionView(
         heroes.map {

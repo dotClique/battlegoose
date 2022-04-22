@@ -3,7 +3,7 @@ package se.battlegoo.battlegoose.models.spells
 import se.battlegoo.battlegoose.models.Battle
 
 abstract class ActiveSpell(
-    val baseSpell: Spell
+    val baseSpell: Spell<*>
 ) {
     private var turnsSinceCast: Int = 0
     var finished: Boolean = false

@@ -1,7 +1,5 @@
 package se.battlegoo.battlegoose.datamodels
 
-import se.battlegoo.battlegoose.models.spells.Spell
-
 sealed class ActionData : DataModel {
 
     val actionType: String = this::class.java.name
@@ -23,9 +21,9 @@ sealed class ActionData : DataModel {
         override val actionPointCost: Int = 1
     ) : ActionData()
 
-    data class CastSpell<T : Spell>(
+    data class CastSpell<T : SpellData>(
         override val playerID: String,
-        val spell: SpellData<T>,
+        val spell: T,
         override val actionPointCost: Int = 1
     ) : ActionData()
 

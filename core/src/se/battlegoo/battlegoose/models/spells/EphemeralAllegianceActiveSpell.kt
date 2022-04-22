@@ -3,7 +3,7 @@ package se.battlegoo.battlegoose.models.spells
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.units.UnitModel
 
-class EphemeralAllegianceActiveSpell(baseSpell: Spell) :
+class EphemeralAllegianceActiveSpell(baseSpell: EphemeralAllegianceSpell) :
     ActiveSpell(baseSpell) {
 
     private lateinit var convertedUnit: UnitModel

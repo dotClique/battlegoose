@@ -3,9 +3,9 @@ package se.battlegoo.battlegoose.models.heroes
 import se.battlegoo.battlegoose.models.Action
 import se.battlegoo.battlegoose.models.spells.Spell
 
-abstract class Hero(
+abstract class Hero<T : Spell<*>> (
     val baseStats: HeroStats,
-    val spell: Spell,
+    val spell: T,
     val name: String,
     val description: String,
     val heroSprite: HeroSprite

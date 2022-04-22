@@ -1,12 +1,14 @@
 package se.battlegoo.battlegoose.models.spells
 
-class AdrenalineShotSpell : Spell(
+import se.battlegoo.battlegoose.datamodels.SpellData
+
+class AdrenalineShotSpell : Spell<SpellData.AdrenalineShot>(
     "Adrenaline Shot",
     "Get an extra action point every turn for the following 3 turns.",
     3,
     6
 ) {
-    override fun cast(): ActiveSpell {
+    override fun cast(data: SpellData.AdrenalineShot): ActiveSpell {
         return AdrenalineShotActiveSpell(this)
     }
 }
