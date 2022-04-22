@@ -45,14 +45,14 @@ object MultiplayerService {
     }
 
     private fun checkRandomLobbyAvailability(consumer: Consumer<String?>) =
-        databaseHandler.readPrimitive(
+        databaseHandler.read(
             DbPath.RandomOpponentData[RandomOpponentData::availableLobby]
         ) { lobbyID -> consumer.accept(lobbyID) }
 
     private fun purgeInactiveFromQueue(
         listener: Consumer<RandomOpponentStatus>,
         purgedQueueConsumer: Consumer<List<String>?>
-    ) = databaseHandler.readPrimitive(
+    ) = databaseHandler.read(
         DbPath.RandomOpponentData[RandomOpponentData::lastUpdated]
     ) { lastUpdated ->
         val now = Date().time
@@ -60,7 +60,7 @@ object MultiplayerService {
 
         if (lastUpdated != null && now - lastUpdated < timeoutMs) {
             purgedQueueConsumer.accept(null)
-            return@readPrimitive
+            return@read
         }
 
         databaseHandler.setValue(DbPath.RandomOpponentData[RandomOpponentData::lastUpdated], now) {
@@ -89,13 +89,13 @@ object MultiplayerService {
         lobbyID: String,
         listener: Consumer<RandomOpponentStatus>
     ) {
-        databaseHandler.listenPrimitive(
+        databaseHandler.listen(
             DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID]
         ) { otherPlayerID, otherPlayerIDListenerCanceler ->
             if (!otherPlayerID.isNullOrEmpty()) {
                 otherPlayerIDListenerCanceler.invoke()
                 listener.accept(RandomOpponentStatus.OTHER_PLAYER_JOINED)
-                return@listenPrimitive
+                return@listen
             }
             listener.accept(RandomOpponentStatus.WAITING_FOR_OTHER_PLAYER)
         }
@@ -119,11 +119,11 @@ object MultiplayerService {
 
     fun tryRequestOpponent(listener: Consumer<RandomOpponentStatus>) {
         var processing = false
-        databaseHandler.listenPrimitive(
+        databaseHandler.listen(
             DbPath.RandomOpponentQueue,
         ) { updatedQueueData, queueListenerCanceler ->
             if (processing) {
-                return@listenPrimitive
+                return@listen
             }
             processing = true
 
@@ -176,17 +176,17 @@ object MultiplayerService {
 
     fun tryJoinLobby(lobbyID: String, listener: Consumer<LobbyStatus>) {
         databaseHandler.getUserID { userID ->
-            databaseHandler.readDataModel(
+            databaseHandler.read(
                 DbPath.Lobbies[lobbyID],
                 consumer = { lobby ->
                     if (lobby == null) {
                         listener.accept(LobbyStatus.DoesNotExist)
-                        return@readDataModel
+                        return@read
                     }
 
                     if (userCanJoinLobby(userID, lobby)) {
                         listener.accept(LobbyStatus.Full)
-                        return@readDataModel
+                        return@read
                     }
 
                     joinLobby(lobbyID, userID) {
@@ -226,11 +226,11 @@ object MultiplayerService {
                     battleID
                 ) {
                     // Listen for the other player to join the battle
-                    databaseHandler.listenPrimitive(
+                    databaseHandler.listen(
                         DbPath.Battles[battleID][BattleData::otherPlayerID]
                     ) { otherPlayerID, otherPlayerIDListenerCanceler ->
                         if (otherPlayerID == null || otherPlayerID.length < 0) {
-                            return@listenPrimitive
+                            return@listen
                         }
                         this.battleID = battleID
                         databaseHandler.deleteValue(DbPath.Lobbies[lobbyID]) {}
@@ -243,11 +243,11 @@ object MultiplayerService {
     }
 
     private fun joinBattle(lobbyID: String) {
-        databaseHandler.listenPrimitive(
+        databaseHandler.listen(
             DbPath.Lobbies[lobbyID][LobbyData::battleID]
         ) { battleID, battleIDListenerCanceler ->
             if (battleID == null || battleID == "") {
-                return@listenPrimitive
+                return@listen
             }
 
             databaseHandler.getUserID { userID ->
@@ -266,12 +266,12 @@ object MultiplayerService {
     fun postAction(action: ActionData) {
         val battleDataID =
             battleID ?: return Logger("ulrik").error("No battleID") // TODO: Handle error
-        databaseHandler.readDataModel(
+        databaseHandler.read(
             DbPath.Battles[battleDataID]
         ) {
             if (it == null)
             // TODO: Error
-                return@readDataModel Logger("ulrik").error("BattleData is null")
+                return@read Logger("ulrik").error("BattleData is null")
             databaseHandler.setValue(
                 DbPath.Battles[battleDataID][BattleData::actions],
                 it.actions + listOf(action)
@@ -280,13 +280,13 @@ object MultiplayerService {
     }
 
     private fun listenForActions(battleID: String) {
-        databaseHandler.listenDataModel(
+        databaseHandler.listen(
             DbPath.Battles[battleID][BattleData::actions],
             listenerCancelerConsumer = battleListenerCancelers::add
         ) { updatedActionData, _ ->
             if (updatedActionData == null) {
                 // TODO: Error
-                return@listenDataModel Logger("ulrik").error("updatedActionData is null")
+                return@listen Logger("ulrik").error("updatedActionData is null")
             }
             actionListBuffer = if (actionListBuffer == null || lastReadActionIndex == -1) {
                 updatedActionData
@@ -317,12 +317,12 @@ object MultiplayerService {
 
     fun getUsername(listener: Consumer<String?>) {
         databaseHandler.getUserID { userId ->
-            databaseHandler.readPrimitive(DbPath.Username[userId], consumer = listener)
+            databaseHandler.read(DbPath.Username[userId], consumer = listener)
         }
     }
 
     fun getUsernameMap(listener: Consumer<Map<String, String>?>) {
-        databaseHandler.readPrimitive(
+        databaseHandler.read(
             DbPath.Username,
             fail = { _, _ -> listener.accept(null) },
             consumer = listener
@@ -342,7 +342,7 @@ object MultiplayerService {
     }
 
     fun getLeaderboard(listener: Consumer<List<LeaderboardEntry>?>) {
-        databaseHandler.readPrimitive(
+        databaseHandler.read(
             DbPath.Leaderboard,
             fail = { _, _ -> listener.accept(null) }
         ) { board ->
@@ -362,7 +362,7 @@ object MultiplayerService {
 
     fun incrementScore(incrementBy: Long, listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userId ->
-            databaseHandler.readPrimitive(DbPath.Leaderboard[userId]) { before ->
+            databaseHandler.read(DbPath.Leaderboard[userId]) { before ->
                 val new = (before ?: 0) + incrementBy
                 databaseHandler.setValue(DbPath.Leaderboard[userId], new) {
                     listener.accept(true)

@@ -74,7 +74,7 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : Any> listenPrimitive(
+    inline fun <reified T : Any> listen(
         databasePath: DbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
@@ -90,13 +90,13 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : DataModel> listenDataModel(
+    inline fun <reified T : DataModel> listen(
         databasePath: DataModelDbPath<T>,
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: BiConsumer<T?, ListenerCanceler>
     ) {
-        listenPrimitive(
+        listen(
             databasePath.toPrimitive(),
             fail,
             listenerCancelerConsumer
@@ -105,14 +105,14 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : DataModel> listenDataModel(
+    inline fun <reified T : DataModel> listen(
         databasePath: DataModelListDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<List<T>?, ListenerCanceler>
     ) {
         val converter = getConverter<T>()
-        listenPrimitive(
+        listen(
             databasePath.toPrimitive(),
             fail,
             listenerCancelerConsumer
@@ -121,14 +121,14 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : DataModel> listenDataModel(
+    inline fun <reified T : DataModel> listen(
         databasePath: DataModelMapDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<Map<String, T>?, ListenerCanceler>
     ) {
         val converter = getConverter<T>()
-        listenPrimitive(
+        listen(
             databasePath.toPrimitive(),
             fail,
             listenerCancelerConsumer
@@ -137,7 +137,7 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : Any> readPrimitive(
+    inline fun <reified T : Any> read(
         databasePath: PrimitiveDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: Consumer<T?>
@@ -151,34 +151,34 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : DataModel> readDataModel(
+    inline fun <reified T : DataModel> read(
         databasePath: DataModelDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: Consumer<T?>
     ) {
-        readPrimitive(databasePath.toPrimitive(), fail) {
+        read(databasePath.toPrimitive(), fail) {
             consumer.accept(it?.let(getConverter()))
         }
     }
 
-    inline fun <reified T : DataModel> readDataModel(
+    inline fun <reified T : DataModel> read(
         databasePath: DataModelListDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: Consumer<List<T>?>
     ) {
         val converter = getConverter<T>()
-        readPrimitive(databasePath.toPrimitive(), fail) {
+        read(databasePath.toPrimitive(), fail) {
             consumer.accept(it?.map(converter))
         }
     }
 
-    inline fun <reified T : DataModel> readDataModel(
+    inline fun <reified T : DataModel> read(
         databasePath: DataModelMapDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         consumer: Consumer<Map<String, T>?>
     ) {
         val converter = getConverter<T>()
-        readPrimitive(databasePath.toPrimitive(), fail) { map ->
+        read(databasePath.toPrimitive(), fail) { map ->
             consumer.accept(map?.map { Pair(it.key, converter(it.value)) }?.toMap())
         }
     }
