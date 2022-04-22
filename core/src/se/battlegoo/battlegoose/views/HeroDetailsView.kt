@@ -111,7 +111,7 @@ class HeroDetailsView(
             },
             stage,
             contentActors = listOf(textTable),
-            minHeight = Game.HEIGHT * 0.9f
+            prefHeight = Game.HEIGHT * 0.9f
         )
     }
 

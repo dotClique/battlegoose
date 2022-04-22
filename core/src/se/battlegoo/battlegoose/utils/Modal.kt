@@ -20,9 +20,9 @@ class Modal(
     type: ModalType,
     stage: Stage? = null,
     private val scale: Float = 1f,
-    private val contentActors: List<Actor>? = null,
-    private val minWidth: Float? = null,
-    private val minHeight: Float? = null
+    private val contentActors: List<Actor> = listOf(),
+    private val prefWidth: Float = Game.WIDTH / 2,
+    private val prefHeight: Float = Game.HEIGHT / 2
 ) {
 
     private var usedStage = stage ?: Game.stage
@@ -31,8 +31,8 @@ class Modal(
 
     private val dialog = object : Dialog("\t$title", skin) {
 
-        override fun getPrefHeight(): Float = this@Modal.minHeight ?: Game.HEIGHT / 2
-        override fun getPrefWidth(): Float = this@Modal.minWidth ?: Game.WIDTH / 2
+        override fun getPrefHeight(): Float = this@Modal.prefHeight
+        override fun getPrefWidth(): Float = this@Modal.prefWidth
 
         override fun result(`object`: Any?) {
             if (`object` == null || `object` !is String)
@@ -52,8 +52,8 @@ class Modal(
         }
     }
 
-    private fun <T : Actor> addActors(actors: List<T>?) {
-        actors?.forEach { dialog.contentTable.add(it) }
+    private fun <T : Actor> addActors(actors: List<T>) {
+        actors.forEach { dialog.contentTable.add(it) }
     }
 
     init {
