@@ -3,7 +3,7 @@ package se.battlegoo.battlegoose.views
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.gridmath.isPointInsideHexagon
 import kotlin.math.sqrt
 

@@ -1,8 +1,8 @@
 package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.GridVector
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.GridVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.gridmath.findReachablePositions
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.Obstacle

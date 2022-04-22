@@ -2,10 +2,10 @@ package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.GridVector
-import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.controllers.BattleMapController
 import se.battlegoo.battlegoose.controllers.UnitController
+import se.battlegoo.battlegoose.datamodels.GridVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground

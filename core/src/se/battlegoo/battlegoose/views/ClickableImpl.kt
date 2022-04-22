@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
 import se.battlegoo.battlegoose.Game
-import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 
 class ClickableImpl(
     private val isPointWithinBounds: (ScreenVector) -> Boolean

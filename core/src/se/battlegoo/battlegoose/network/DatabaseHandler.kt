@@ -6,17 +6,18 @@ import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser
 import pl.mk5.gdx.fireapp.database.FilterType
 import pl.mk5.gdx.fireapp.database.OrderByMode
 import pl.mk5.gdx.fireapp.promises.Promise
-import se.battlegoo.battlegoose.GridVector
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
+import se.battlegoo.battlegoose.datamodels.DataModel
+import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.datamodels.LobbyData
+import se.battlegoo.battlegoose.datamodels.RandomOpponentData
 import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.spells.Spell
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
 typealias ConversionFunc<T> = (Map<String, Any>) -> T
-typealias ListConversionFunc<T> = (List<Map<String, Any>>) -> List<T>
 typealias ListenerCanceler = () -> Unit
 
 class DatabaseHandler {
@@ -53,174 +54,174 @@ class DatabaseHandler {
         }
     }
 
-    inline fun <reified T : Any> readFilteredValue(
-        databasePath: String,
+    inline fun <reified T : Any> readFilteredPrimitiveList(
+        databasePath: PrimitiveListDbPath<T>,
         order: OrderByMode,
         orderByArg: String,
         filter: FilterType,
         filterArg: String,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        consumer: Consumer<T?>,
+        consumer: Consumer<List<T>?>,
     ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
-                .inReference(databasePath)
+                .inReference(databasePath.path)
                 .filter(filter, filterArg)
                 .orderBy(order, orderByArg)
-                .readValue(T::class.java)
-                .then<T> { consumer.accept(it) }
+                .readValue(List::class.java)
+                .then<List<T>?> { consumer.accept(it) }
                 .fail(fail)
         }
     }
 
-    inline fun <reified T : Any> listenPrimitiveValue(
-        databasePath: String,
-        noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
+    inline fun <reified T : Any> listenPrimitive(
+        databasePath: DbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<T?, ListenerCanceler>
     ) {
         dbAccessWrapper {
             val listener =
-                GdxFIRDatabase.inst().inReference(databasePath).onDataChange(T::class.java)
-            listener.then<T> {
+                GdxFIRDatabase.inst().inReference(databasePath.path).onDataChange(T::class.java)
+            listener.then<T?> {
                 consumer.accept(it, listener::cancel)
             }.fail(fail)
             listenerCancelerConsumer.invoke(listener::cancel)
         }
     }
 
-    inline fun <reified T : Any> listenListValue(
-        databasePath: String,
+    inline fun <reified T : DataModel> listenDataModel(
+        databasePath: DataModelDbPath<T>,
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        consumer: BiConsumer<List<T>?, ListenerCanceler>,
+        consumer: BiConsumer<T?, ListenerCanceler>
     ) {
-        @Suppress("UNCHECKED_CAST")
-        when (T::class) {
-            ActionData::class -> listenListDataClass(
-                databasePath,
-                this::convertToActionDataList as ListConversionFunc<T>,
-                fail, listenerCancelerConsumer, consumer
-            )
+        listenPrimitive(
+            databasePath.toPrimitive(),
+            fail,
+            listenerCancelerConsumer
+        ) { value, canceler ->
+            consumer.accept(value?.let(getConverter()), canceler)
         }
     }
 
-    inline fun <reified T : Any> readPrimitiveValue(
-        databasePath: String,
+    inline fun <reified T : DataModel> listenDataModel(
+        databasePath: DataModelListDbPath<T>,
         noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        consumer: Consumer<T?>
-    ) {
-        dbAccessWrapper {
-            GdxFIRDatabase.inst().inReference(databasePath).readValue(T::class.java).then<T> {
-                consumer.accept(it)
-            }.fail(fail)
-        }
-    }
-
-    inline fun <reified T : Any> readReferenceValue(
-        databasePath: String,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        consumer: Consumer<T?>
-    ) {
-        @Suppress("UNCHECKED_CAST")
-        when (T::class) {
-            LobbyData::class ->
-                readDataClass(
-                    databasePath, fail, consumer,
-                    this::convertToLobby as
-                        ConversionFunc<T>
-                )
-            BattleData::class ->
-                readDataClass(
-                    databasePath, fail, consumer,
-                    ::convertToBattle as ConversionFunc<T>
-                )
-            ActionData::class ->
-                readDataClass(
-                    databasePath, fail, consumer,
-                    ::convertToActionData as ConversionFunc<T>
-                )
-        }
-    }
-
-    fun <T> readDataClass(
-        databasePath: String,
-        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        consumer: Consumer<T?>,
-        conversionFunc: ConversionFunc<T>
-    ) {
-        return readPrimitiveValue<Map<String, Any>>(
-            databasePath, fail
-        ) { consumerData ->
-            if (consumerData == null) {
-                consumer.accept(null)
-            } else {
-                consumer.accept(conversionFunc(consumerData))
-            }
-        }
-    }
-
-    fun <T> listenListDataClass(
-        databasePath: String,
-        listConversionFunc: ListConversionFunc<T>,
-        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
+        noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<List<T>?, ListenerCanceler>
     ) {
-        listenPrimitiveValue<List<Map<String, Any>>>(
-            databasePath, listenerCancelerConsumer, fail
-        ) { consumerData, canceler ->
-            if (consumerData == null) {
-                consumer.accept(null, canceler)
-            } else {
-                consumer.accept(listConversionFunc(consumerData), canceler)
-            }
+        val converter = getConverter<T>()
+        listenPrimitive(
+            databasePath.toPrimitive(),
+            fail,
+            listenerCancelerConsumer
+        ) { list, canceler ->
+            consumer.accept(list?.map(converter), canceler)
         }
     }
 
-    fun setValue(
-        databasePath: String,
-        value: Any,
+    inline fun <reified T : DataModel> listenDataModel(
+        databasePath: DataModelMapDbPath<T>,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
+        consumer: BiConsumer<Map<String, T>?, ListenerCanceler>
+    ) {
+        val converter = getConverter<T>()
+        listenPrimitive(
+            databasePath.toPrimitive(),
+            fail,
+            listenerCancelerConsumer
+        ) { map, canceler ->
+            consumer.accept(map?.map { Pair(it.key, converter(it.value)) }?.toMap(), canceler)
+        }
+    }
+
+    inline fun <reified T : Any> readPrimitive(
+        databasePath: PrimitiveDbPath<T>,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: Consumer<T?>
+    ) {
+        dbAccessWrapper {
+            GdxFIRDatabase.inst()
+                .inReference(databasePath.path)
+                .readValue(T::class.java)
+                .then(consumer::accept)
+                .fail(fail)
+        }
+    }
+
+    inline fun <reified T : DataModel> readDataModel(
+        databasePath: DataModelDbPath<T>,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: Consumer<T?>
+    ) {
+        readPrimitive(databasePath.toPrimitive(), fail) {
+            consumer.accept(it?.let(getConverter()))
+        }
+    }
+
+    inline fun <reified T : DataModel> readDataModel(
+        databasePath: DataModelListDbPath<T>,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: Consumer<List<T>?>
+    ) {
+        val converter = getConverter<T>()
+        readPrimitive(databasePath.toPrimitive(), fail) {
+            consumer.accept(it?.map(converter))
+        }
+    }
+
+    inline fun <reified T : DataModel> readDataModel(
+        databasePath: DataModelMapDbPath<T>,
+        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        consumer: Consumer<Map<String, T>?>
+    ) {
+        val converter = getConverter<T>()
+        readPrimitive(databasePath.toPrimitive(), fail) { map ->
+            consumer.accept(map?.map { Pair(it.key, converter(it.value)) }?.toMap())
+        }
+    }
+
+    fun <T> setValue(
+        databasePath: DbPath<T>,
+        value: T,
         fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         callback: () -> Unit
     ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
-                .inReference(databasePath)
+                .inReference(databasePath.path)
                 .setValue(value)
                 .then<Void> { callback() }
                 .fail(fail)
         }
     }
 
-    fun pushValue(
-        databasePath: String,
-        value: Any,
+    fun <T> deleteValue(
+        databasePath: DbPath<T>,
         fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
         callback: () -> Unit
     ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
-                .inReference(databasePath)
-                .push()
-                .setValue(value)
-                .then<Void> { callback() }
-                .fail(fail)
-        }
-    }
-
-    fun deleteValue(
-        databasePath: String,
-        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        callback: () -> Unit
-    ) {
-        dbAccessWrapper {
-            GdxFIRDatabase.inst()
-                .inReference(databasePath)
+                .inReference(databasePath.path)
                 .removeValue()
                 .then<Void> { callback() }
                 .fail(fail)
         }
+    }
+
+    inline fun <reified T : DataModel> getConverter(): ConversionFunc<T> {
+        @Suppress("UNCHECKED_CAST")
+        return when (T::class) {
+            LobbyData::class -> ::convertToLobby
+            ActionData::class -> ::convertToActionData
+            SpellData::class -> ::convertToSpellData
+            BattleData::class -> ::convertToBattle
+            RandomOpponentData::class -> ::convertToRandomOpponentData
+            else -> throw NotImplementedError("No deserializer for ${T::class}")
+        } as ConversionFunc<T>
     }
 
     fun convertToLobby(data: Map<String, Any>): LobbyData {
@@ -254,27 +255,27 @@ class DatabaseHandler {
         return when (Class.forName(actionType).kotlin) {
             ActionData.MoveUnit::class -> ActionData.MoveUnit(
                 playerID,
-                parseGridVector(
+                convertToGridVector(
                     actionData[ActionData.MoveUnit::fromPosition.name] as Map<String, Any>
                 ),
-                parseGridVector(
+                convertToGridVector(
                     actionData[ActionData.MoveUnit::toPosition.name] as Map<String, Any>
                 ),
                 actionPointCost
             )
             ActionData.AttackUnit::class -> ActionData.AttackUnit(
                 playerID,
-                parseGridVector(
+                convertToGridVector(
                     actionData[ActionData.AttackUnit::attackerPosition.name] as Map<String, Any>
                 ),
-                parseGridVector(
+                convertToGridVector(
                     actionData[ActionData.AttackUnit::targetPosition.name] as Map<String, Any>
                 ),
                 actionPointCost
             )
             ActionData.CastSpell::class -> ActionData.CastSpell(
                 playerID,
-                parseSpellData(actionData),
+                convertToSpellData(actionData),
                 actionPointCost
             )
             ActionData.Pass::class -> ActionData.Pass(playerID)
@@ -284,8 +285,8 @@ class DatabaseHandler {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun parseSpellData(actionData: Map<String, Any>): SpellData<Spell> {
-        val spellData = actionData[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
+    fun convertToSpellData(data: Map<String, Any>): SpellData<Spell> {
+        val spellData = data[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
         val spellType = spellData[SpellData<*>::spellType.name] as String
         // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineShotSpellData" into a
         // KClass
@@ -296,14 +297,17 @@ class DatabaseHandler {
         }
     }
 
-    private fun parseGridVector(data: Map<String, Any>): GridVector {
+    @Suppress("UNCHECKED_CAST")
+    fun convertToRandomOpponentData(data: Map<String, Any>): RandomOpponentData {
+        val availabeLobby = data[RandomOpponentData::availableLobby.name] as String
+        val lastUpdated = data[RandomOpponentData::lastUpdated.name] as Long
+        return RandomOpponentData(availabeLobby, lastUpdated)
+    }
+
+    private fun convertToGridVector(data: Map<String, Any>): GridVector {
         return GridVector(
             (data[GridVector::x.name] as Long).toInt(),
             (data[GridVector::y.name] as Long).toInt()
         )
-    }
-
-    fun convertToActionDataList(actionDataList: List<Map<String, Any>>): List<ActionData> {
-        return actionDataList.map(::convertToActionData)
     }
 }
