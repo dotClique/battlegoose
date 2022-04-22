@@ -1,7 +1,9 @@
 package se.battlegoo.battlegoose.controllers
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.units.UnitModel
+import se.battlegoo.battlegoose.views.UnitHealthBarView
 import se.battlegoo.battlegoose.views.UnitView
 
 open class UnitController(
@@ -10,15 +12,47 @@ open class UnitController(
 ) :
     ControllerBase(unitView) {
 
-    var viewSize: ScreenVector by unitView::size
-    var viewPosition: ScreenVector by unitView::position
+    // Extra backing property to allow accessors with non-default implementations while delegating
+    private var _viewSize: ScreenVector by unitView::size
+    var viewSize: ScreenVector = _viewSize
+        get() = _viewSize
+        set(viewSize) {
+            field = viewSize
+            _viewSize = viewSize
+            unitHealthBarController.viewWidth = healthBarWidth
+        }
+
+    private var _viewPosition: ScreenVector by unitView::position
+    var viewPosition = _viewPosition
+        get() = _viewPosition
+        set(viewPosition) {
+            field = viewPosition
+            _viewPosition = viewPosition
+            unitHealthBarController.viewPosition = healthBarPosition
+            unitHealthBarController.viewWidth = healthBarWidth
+        }
+
     var selected: Boolean by unitView::focused
 
-    override fun update(dt: Float) {}
+    private var unitHealthBarController = UnitHealthBarController(
+        unitModel,
+        UnitHealthBarView(
+            healthBarPosition,
+            healthBarWidth
+        )
+    )
 
-    fun showRangeData() = object {
-        val range = unitModel.currentStats.range
-        val speed = unitModel.currentStats.speed
-        val isFlying = unitModel.currentStats.isFlying
+    private val healthBarWidth
+        get() = viewSize.x
+
+    private val healthBarPosition
+        get() = ScreenVector(viewPosition.x, viewPosition.y + viewSize.y)
+
+    override fun update(dt: Float) {
+        unitHealthBarController.update(dt)
+    }
+
+    fun renderHealthBar(sb: SpriteBatch) {
+        unitHealthBarController.render(sb)
     }
 }

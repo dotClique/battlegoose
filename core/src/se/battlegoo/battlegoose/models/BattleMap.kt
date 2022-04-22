@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.models
 
 import se.battlegoo.battlegoose.GridVector
-import se.battlegoo.battlegoose.ImmutableVector2
 import se.battlegoo.battlegoose.gridmath.Direction
 import se.battlegoo.battlegoose.gridmath.neighbours
 import se.battlegoo.battlegoose.models.units.UnitModel
@@ -87,7 +86,7 @@ class BattleMap(
         return null
     }
 
-    fun getNeighboursOfPos(pos: GridVector): Map<Direction, ImmutableVector2<Int>> {
+    fun getNeighboursOfPos(pos: GridVector): Map<Direction, GridVector> {
         return neighbours(pos).filter { (_, pos) -> isValidPosition(pos) }
     }
 
