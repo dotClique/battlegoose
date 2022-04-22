@@ -292,6 +292,13 @@ class DatabaseHandler {
         // MUST have a branch for each subclass of SpellData
         return when (Class.forName(spellType).kotlin) {
             SpellData.AdrenalineShot::class -> SpellData.AdrenalineShot
+            SpellData.Bird52::class -> SpellData.Bird52
+            SpellData.EphemeralAllegiance::class -> SpellData.EphemeralAllegiance(
+                convertToGridVector(
+                    spellData[SpellData.EphemeralAllegiance::targetPosition.name]
+                        as Map<String, Any>
+                )
+            )
             else -> throw NotImplementedError("The spell class $spellType has no deserializer")
         }
     }
