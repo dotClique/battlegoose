@@ -1,10 +1,10 @@
 package se.battlegoo.battlegoose.models.heroes
 
-import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
+import se.battlegoo.battlegoose.models.spells.Bird52Spell
 
-class MajorMallard : Hero<AdrenalineShotSpell>(
+class MajorMallard : Hero<Bird52Spell>(
     HeroStats(),
-    AdrenalineShotSpell(),
+    Bird52Spell(),
     "Major Mallard",
     "Mallard, Mallard!",
     HeroSprite.MAJOR_MALLARD

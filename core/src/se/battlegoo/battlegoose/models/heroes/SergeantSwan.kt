@@ -1,10 +1,10 @@
 package se.battlegoo.battlegoose.models.heroes
 
-import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
+import se.battlegoo.battlegoose.models.spells.EphemeralAllegianceSpell
 
-class SergeantSwan : Hero<AdrenalineShotSpell>(
+class SergeantSwan : Hero<EphemeralAllegianceSpell>(
     HeroStats(),
-    AdrenalineShotSpell(),
+    EphemeralAllegianceSpell(),
     "Sergeant Swan",
     "The Sergeant has a fabulous backstory, which " +
         "unfortunately cannot fit in this description.",
