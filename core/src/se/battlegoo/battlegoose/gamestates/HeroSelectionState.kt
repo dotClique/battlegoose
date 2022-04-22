@@ -22,7 +22,8 @@ class HeroSelectionState : GameState() {
                 it.spell.description, it.spell.cooldown
             )
         },
-        heroSelection.selected
+        heroSelection.selected,
+        stage = stage
     )
     private val controller = HeroSelectionController(heroSelectionView, heroSelection, this::goBack)
 

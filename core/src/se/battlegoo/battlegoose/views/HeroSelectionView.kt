@@ -14,7 +14,8 @@ import kotlin.math.min
 
 class HeroSelectionView(
     private val heroes: Collection<HeroSelectionViewModel>,
-    private var selectedHeroId: String
+    private var selectedHeroId: String,
+    val stage: Stage
 ) : ViewBase() {
 
     companion object {
@@ -30,7 +31,6 @@ class HeroSelectionView(
 
     private var controller: IHeroSelectionViewController? = null
 
-    private val stage: Stage = Stage(Game.viewPort)
     private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
     private val backgroundTexture = Texture("menuBackground.jpg")
@@ -109,7 +109,6 @@ class HeroSelectionView(
         continueButton.setPosition(Game.WIDTH - buttonBaseline.x - buttonSize.x, buttonBaseline.y)
         continueButton.setSize(buttonSize.x, buttonSize.y)
 
-        Gdx.input.inputProcessor = stage
         stage.addActor(backButton)
         stage.addActor(continueButton)
     }
@@ -125,32 +124,20 @@ class HeroSelectionView(
         val heroData = heroes.firstOrNull { it.id == heroId }
         heroData?.let {
             heroDetailsView = HeroDetailsView(
-                ScreenVector(
-                    (Game.WIDTH / 2) - (MAX_WINDOW_WIDTH / 2),
-                    (Game.HEIGHT / 2) - (MAX_WINDOW_HEIGHT / 2),
-                ),
-                ScreenVector(
-                    MAX_WINDOW_WIDTH,
-                    MAX_WINDOW_HEIGHT,
-                ),
                 HeroDetailsViewModel(
                     it.id, it.name, it.description, it.heroSprite,
                     it.spellName, it.spellDescription, it.spellCooldown
                 ),
-                this::onClickHeroInfoExit
+                stage = stage
             )
-            Gdx.input.inputProcessor = null
         } ?: run {
-            heroDetailsView?.dispose()
             heroDetailsView = null
-            Gdx.input.inputProcessor = stage
         }
+        heroDetailsView?.show()
     }
 
     override fun registerInput() {
         when {
-            heroDetailsView != null ->
-                heroDetailsView?.registerInput()
             Gdx.input.justTouched() && backButton.isPressed ->
                 onClickBack()
             Gdx.input.justTouched() && continueButton.isPressed ->
@@ -163,11 +150,9 @@ class HeroSelectionView(
         // Draw the background
         sb.draw(backgroundTexture, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
-        stage.draw()
         heroCardViews.forEach {
             it.value.render(sb)
         }
-        heroDetailsView?.render(sb)
     }
 
     override fun dispose() {
@@ -175,7 +160,6 @@ class HeroSelectionView(
         heroCardViews.forEach {
             it.value.dispose()
         }
-        heroDetailsView?.dispose()
         skin.dispose()
     }
 
@@ -194,10 +178,6 @@ class HeroSelectionView(
         controller?.onClickHeroSelectionInfoOpen(heroId)
     }
 
-    private fun onClickHeroInfoExit() {
-        controller?.onClickHeroSelectionInfoExit()
-    }
-
     private fun onClickBack() {
         controller?.onClickHeroSelectionBack()
     }
@@ -210,7 +190,6 @@ class HeroSelectionView(
 interface IHeroSelectionViewController {
     fun onClickHeroSelectionCard(heroId: String)
     fun onClickHeroSelectionInfoOpen(heroId: String)
-    fun onClickHeroSelectionInfoExit()
     fun onClickHeroSelectionBack()
     fun onClickHeroSelectionContinue()
 }

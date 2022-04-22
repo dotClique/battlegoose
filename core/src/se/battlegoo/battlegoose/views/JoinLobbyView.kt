@@ -13,12 +13,11 @@ import se.battlegoo.battlegoose.Game
 
 class JoinLobbyView(
     private val onClickMainMenu: () -> Unit,
-    private val onJoinLobby: (String) -> Unit
+    private val onJoinLobby: (String) -> Unit,
+    private val stage: Stage,
 ) : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
-
-    private var stage = Stage(Game.viewPort)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)
@@ -39,8 +38,6 @@ class JoinLobbyView(
         }
 
     init {
-        Gdx.input.inputProcessor = stage
-
         titleLabel.setAlignment(Align.center)
         lobbyIdLabel.setAlignment(Align.center)
 

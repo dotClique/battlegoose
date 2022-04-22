@@ -12,6 +12,15 @@ class MainMenuState :
     private var mainMenuView = MainMenuView(
         onClickCreateLobby = { GameStateManager.push(CreateLobbyState()) },
         onClickJoinLobby = { GameStateManager.push(JoinLobbyState()) },
+//        onClickJoinLobby = {
+//            Modal(
+//                "A longer title than the other",
+//                "This will do nothing ", ModalType.Info()).show()
+//            Modal(
+//                "Title",
+//                "This will move page",
+//                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} )).show()
+//        },
         // onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
         onClickQuickJoin = { GameStateManager.push(BattleState()) },
         onClickLeaderboard = { GameStateManager.push(LeaderboardState()) }
@@ -20,7 +29,7 @@ class MainMenuState :
     private var changeUsernameController = ChangeUsernameController(
         ChangeUsernameView(
             Game.WIDTH - 700f, Game.HEIGHT - 100f,
-            700f, 100f
+            700f, 100f, stage = stage
         )
     )
 

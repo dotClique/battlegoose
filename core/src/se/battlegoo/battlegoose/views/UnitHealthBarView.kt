@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.ScreenVector
-import se.battlegoo.battlegoose.utilities.createDrawableOfTexture
-import se.battlegoo.battlegoose.utilities.createSolidColorTexture
-import se.battlegoo.battlegoose.utilities.emptyDrawable
+import se.battlegoo.battlegoose.utils.createDrawableOfTexture
+import se.battlegoo.battlegoose.utils.createSolidColorTexture
+import se.battlegoo.battlegoose.utils.emptyDrawable
 
 class UnitHealthBarView(
     position: ScreenVector,

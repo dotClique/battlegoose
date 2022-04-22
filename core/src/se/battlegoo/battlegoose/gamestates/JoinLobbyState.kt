@@ -9,6 +9,7 @@ class JoinLobbyState : GameState() {
 
     private val joinLobbyView = JoinLobbyView(
         // onClickMainMenu = this::goBack,
+        stage = stage,
         onClickMainMenu = { GameStateManager.replace(HeroSelectionState()) },
         onJoinLobby = { lobbyID ->
             MultiplayerService.tryJoinLobby(lobbyID) {

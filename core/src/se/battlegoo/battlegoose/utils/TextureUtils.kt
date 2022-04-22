@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.utilities
+package se.battlegoo.battlegoose.utils
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
