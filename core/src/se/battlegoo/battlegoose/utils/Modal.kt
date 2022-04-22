@@ -8,11 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import java.util.UUID
+import kotlin.math.roundToInt
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.views.Skins
-import java.util.UUID
-import kotlin.math.roundToInt
 
 class Modal(
     private val title: String,
@@ -44,10 +44,7 @@ class Modal(
                     "Object passed to Dialog result function is not in possible clicks."
                 )
             GameStateManager.removeOverlay(this@Modal)
-            hide()
-            cancel() // Cancel hide() call in onClick in Dialog
-            skin.dispose()
-            remove() // Remove this dialog from the stage
+            this@Modal.close()
             clicks[`object`]?.let { it() }
         }
     }
@@ -91,6 +88,17 @@ class Modal(
             ((usedStage.width - dialog.width * scale) / 2).roundToInt().toFloat(),
             ((usedStage.height - dialog.height * scale) / 2).roundToInt().toFloat()
         )
+    }
+
+    /**
+     * Hides the modal, disposes the assets the modal uses
+     * and removes the modal from the stage.
+     */
+    fun close() {
+        dialog.hide()
+        dialog.cancel() // Cancel hide() call in onClick in Dialog
+        skin.dispose()
+        dialog.remove() // Remove this dialog from the stage
     }
 
     private fun addButton(buttonText: String, onClick: (() -> Unit)?) {
