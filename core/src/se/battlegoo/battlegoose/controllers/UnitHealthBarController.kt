@@ -22,7 +22,6 @@ class UnitHealthBarController(
     }
 
     override fun render(sb: SpriteBatch) {
-//        if (showView) super.render(sb)
-        super.render(sb)
+        if (showView) super.render(sb)
     }
 }
