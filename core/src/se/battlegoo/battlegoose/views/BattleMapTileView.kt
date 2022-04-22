@@ -3,8 +3,10 @@ package se.battlegoo.battlegoose.views
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.gridmath.isPointInsideHexagon
+import se.battlegoo.battlegoose.utils.TextureAsset
 import kotlin.math.sqrt
 
 enum class BattleMapTileState {
@@ -19,10 +21,10 @@ class BattleMapTileView(
     pos: ScreenVector
 ) : ViewBase(), ClickableView {
 
-    private val texture = Texture("tileDark.png")
-    private val textureFocused = Texture("tileAccentDark.png")
-    private val textureMoveTarget = Texture("tileMoveDark.png")
-    private val textureAttackTarget = Texture("tileAttackDark.png")
+    private val texture = Game.getTexture(TextureAsset.TILE_DARK)
+    private val textureFocused = Game.getTexture(TextureAsset.TILE_ACCENT_DARK)
+    private val textureMoveTarget = Game.getTexture(TextureAsset.TILE_MOVE_DARK)
+    private val textureAttackTarget = Game.getTexture(TextureAsset.TILE_ATTACK_DARK)
 
     private fun textureByState(state: BattleMapTileState): Texture = when (state) {
         BattleMapTileState.NORMAL -> texture
@@ -58,8 +60,5 @@ class BattleMapTileView(
         sprite.draw(sb)
     }
 
-    override fun dispose() {
-        texture.dispose()
-        textureFocused.dispose()
-    }
+    override fun dispose() {}
 }

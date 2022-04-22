@@ -1,8 +1,8 @@
 package se.battlegoo.battlegoose.views
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.utils.TextureAsset
 
 class MainMenuView(
     onClickCreateLobby: () -> Unit,
@@ -11,7 +11,7 @@ class MainMenuView(
     onClickLeaderboard: () -> Unit
 ) : ViewBase() {
 
-    private val background = Texture("menuBackgroundGoose.png")
+    private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND_GOOSE)
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -50,7 +50,6 @@ class MainMenuView(
     }
 
     override fun dispose() {
-        background.dispose()
         createLobbyBtn.dispose()
         joinLobbyBtn.dispose()
         quickJoinBtn.dispose()
