@@ -3,6 +3,8 @@ package se.battlegoo.battlegoose.gamestates
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.controllers.ChangeUsernameController
+import se.battlegoo.battlegoose.utils.Modal
+import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.ChangeUsernameView
 import se.battlegoo.battlegoose.views.MainMenuView
 
@@ -15,11 +17,11 @@ class MainMenuState :
 //        onClickJoinLobby = {
 //            Modal(
 //                "A longer title than the other",
-//                "This will do nothing ", ModalType.Info(), Game.stage).show()
+//                "This will do nothing ", ModalType.Info()).show()
 //            Modal(
 //                "Title",
 //                "This will move page",
-//                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} ), Game.stage).show()
+//                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} )).show()
 //        },
         // onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
         onClickQuickJoin = { GameStateManager.push(BattleState()) },
