@@ -9,10 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.views.Skins
 import java.util.UUID
 import kotlin.math.roundToInt
-import se.battlegoo.battlegoose.gamestates.GameStateManager
 
 class Modal(
     private val title: String,

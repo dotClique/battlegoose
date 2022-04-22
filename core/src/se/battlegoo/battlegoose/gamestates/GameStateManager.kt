@@ -61,6 +61,6 @@ object GameStateManager {
     }
 
     private fun changeStage(newStage: Stage) {
-        modalList.forEach { it.updateStage(newStage)}
+        modalList.forEach { it.updateStage(newStage) }
     }
 }

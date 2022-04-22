@@ -3,8 +3,6 @@ package se.battlegoo.battlegoose.gamestates
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.controllers.ChangeUsernameController
-import se.battlegoo.battlegoose.utils.Modal
-import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.ChangeUsernameView
 import se.battlegoo.battlegoose.views.MainMenuView
 
