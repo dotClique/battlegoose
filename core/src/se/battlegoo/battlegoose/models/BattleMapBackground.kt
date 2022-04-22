@@ -1,5 +1,7 @@
 package se.battlegoo.battlegoose.models
 
 enum class BattleMapBackground {
-    SAND
+    DUNES,
+    ICE_RINK,
+    DIRT_ROAD
 }

@@ -15,7 +15,9 @@ class BattleMapView(
     ViewBase() {
 
     private val texturePath = when (background) {
-        BattleMapBackground.SAND -> "sand.png"
+        BattleMapBackground.DUNES -> "maps/dunes.png"
+        BattleMapBackground.ICE_RINK -> "maps/iceRink.png"
+        BattleMapBackground.DIRT_ROAD -> "maps/dirtRoad.png"
     }
     private val backgroundTexture = Texture(texturePath)
     var backgroundTextureRegion = TextureRegion(backgroundTexture)

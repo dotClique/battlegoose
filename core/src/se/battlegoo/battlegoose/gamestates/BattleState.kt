@@ -11,6 +11,8 @@ import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.Obstacle
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
+import se.battlegoo.battlegoose.models.units.DelinquentDuck
+import se.battlegoo.battlegoose.models.units.GuardGoose
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 import se.battlegoo.battlegoose.views.BattleMapView
@@ -29,14 +31,14 @@ class BattleState : GameState() {
     private val battle = Battle(
         SergeantSwan(),
         SergeantSwan(),
-        BattleMap(BattleMapBackground.SAND, GridVector(10, 6))
+        BattleMap(BattleMapBackground.values().random(), GridVector(10, 6))
     )
 
     private val battleMapController = BattleMapController(
         battle.hero1,
         battle.battleMap,
         BattleMapView(
-            battle.battleMap.backgroundPath,
+            battle.battleMap.background,
             ScreenVector((Game.WIDTH - mapSize.x) / 2f, (Game.HEIGHT - mapSize.y) / 2f),
             mapSize
         )
@@ -47,8 +49,14 @@ class BattleState : GameState() {
             for (x in arrayOf(0, battleMapController.mapSize.x - 1 - (y % 2))) {
                 val hero = if (x == 0) battle.hero1 else battle.hero2
                 val direction = if (x == 0) FacingDirection.RIGHT else FacingDirection.LEFT
-                val controller = when (Random.nextInt(2)) {
-                    0 -> UnitController(
+                val controller = when (Random.nextInt(4)) {
+                    3 -> UnitController(
+                        GuardGoose(hero), UnitView(UnitSprite.GUARD_GOOSE, direction)
+                    )
+                    2 -> UnitController(
+                        DelinquentDuck(hero), UnitView(UnitSprite.DELINQUENT_DUCK, direction)
+                    )
+                    1 -> UnitController(
                         PrivatePenguin(hero), UnitView(UnitSprite.PRIVATE_PENGUIN, direction)
                     )
                     else -> UnitController(

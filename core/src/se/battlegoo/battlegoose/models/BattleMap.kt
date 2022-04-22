@@ -6,7 +6,7 @@ import se.battlegoo.battlegoose.gridmath.neighbours
 import se.battlegoo.battlegoose.models.units.UnitModel
 
 class BattleMap(
-    val backgroundPath: BattleMapBackground,
+    val background: BattleMapBackground,
     val gridSize: GridVector
 ) : Iterable<GridVector> {
     private val units: Array<Array<UnitModel?>> =
