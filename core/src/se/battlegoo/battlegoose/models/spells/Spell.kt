@@ -8,5 +8,5 @@ abstract class Spell<T : SpellData>(
     val duration: Int,
     val cooldown: Int
 ) {
-    abstract fun cast(data: T): ActiveSpell
+    abstract fun cast(data: T): ActiveSpell<Spell<*>>
 }

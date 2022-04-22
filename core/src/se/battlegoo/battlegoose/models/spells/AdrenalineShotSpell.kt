@@ -8,7 +8,7 @@ class AdrenalineShotSpell : Spell<SpellData.AdrenalineShot>(
     3,
     6
 ) {
-    override fun cast(data: SpellData.AdrenalineShot): ActiveSpell {
-        return AdrenalineShotActiveSpell(this)
+    override fun cast(data: SpellData.AdrenalineShot): ActiveSpell<AdrenalineShotSpell> {
+        return AdrenalineShotActiveSpell(this, data)
     }
 }

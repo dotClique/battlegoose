@@ -8,7 +8,7 @@ class EphemeralAllegianceSpell : Spell<SpellData.EphemeralAllegiance>(
     4, // Needs an extra (3+1) for cleanup
     5
 ) {
-    override fun cast(data: SpellData.EphemeralAllegiance): ActiveSpell {
-        return EphemeralAllegianceActiveSpell(this)
+    override fun cast(data: SpellData.EphemeralAllegiance): ActiveSpell<EphemeralAllegianceSpell> {
+        return EphemeralAllegianceActiveSpell(this, data)
     }
 }

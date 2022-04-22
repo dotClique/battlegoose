@@ -1,10 +1,13 @@
 package se.battlegoo.battlegoose.models.spells
 
+import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.units.UnitModel
 
-class EphemeralAllegianceActiveSpell(baseSpell: EphemeralAllegianceSpell) :
-    ActiveSpell(baseSpell) {
+class EphemeralAllegianceActiveSpell(
+    baseSpell: EphemeralAllegianceSpell,
+    override val data: SpellData.EphemeralAllegiance
+) : ActiveSpell<EphemeralAllegianceSpell>(baseSpell, data) {
 
     private lateinit var convertedUnit: UnitModel
 

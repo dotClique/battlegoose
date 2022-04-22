@@ -1,9 +1,11 @@
 package se.battlegoo.battlegoose.models.spells
 
+import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.Battle
 
-abstract class ActiveSpell(
-    val baseSpell: Spell<*>
+abstract class ActiveSpell<out T : Spell<*>>(
+    val baseSpell: T,
+    open val data: SpellData
 ) {
     private var turnsSinceCast: Int = 0
     var finished: Boolean = false
