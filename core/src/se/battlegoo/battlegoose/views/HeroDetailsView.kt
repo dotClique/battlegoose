@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
-import se.battlegoo.battlegoose.utils.ModalClass
+import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
 
 class HeroDetailsView(
@@ -58,7 +58,7 @@ class HeroDetailsView(
             "${heroDetailsViewModel.spellCooldown} turns cooldown.",
         bodyLabelStyle
     )
-    private var modal: ModalClass
+    private var modal: Modal
 
     init {
 
@@ -100,7 +100,7 @@ class HeroDetailsView(
         textTable.row().width(textBoxSize.x)
         textTable.add(spellDescriptionLabel)
 
-        modal = ModalClass(
+        modal = Modal(
             heroDetailsViewModel.name,
             null,
             ModalType.Info {

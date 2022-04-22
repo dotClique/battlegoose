@@ -1,13 +1,11 @@
 package se.battlegoo.battlegoose.utils
 
 sealed class ModalType(
-    onFirstButtonClick: (() -> Unit)? = null,
-    onSecondButtonClick: (() -> Unit)? = null
 ) {
-    data class Error(val onOk: (() -> Unit)? = null) : ModalType(onOk)
-    data class Info(val onOk: (() -> Unit)? = null) : ModalType(onOk)
+    data class Error(val onOk: (() -> Unit)? = null) : ModalType()
+    data class Info(val onOk: (() -> Unit)? = null) : ModalType()
     data class Warning(val onYes: (() -> Unit)? = null, val onNo: (() -> Unit)? = null) :
-        ModalType(onYes, onNo)
+        ModalType()
     data class Question(val onYes: (() -> Unit)? = null, val onNo: (() -> Unit)? = null) :
-        ModalType(onYes, onNo)
+        ModalType()
 }
