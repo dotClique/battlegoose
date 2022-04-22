@@ -59,8 +59,6 @@ class ModalClass(
         if (text != null) dialog.text(dialogText)
         addActors(contentActors)
         dialog.isMovable = false
-//        if (minWidth != null) dialog.background.minWidth= minWidth
-//        if (minHeight != null) dialog.background.minHeight = minHeight
         when (type) {
             is ModalType.Error -> {
                 dialog.color = Color.RED

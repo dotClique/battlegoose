@@ -37,7 +37,6 @@ class HeroDetailsView(
         }
     )
 
-    //    private val backgroundSprite: Sprite = Sprite(backgroundTexture)
     private val heroSprite: Image = Image(heroTexture)
 
     private val mainSkin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
@@ -51,7 +50,6 @@ class HeroDetailsView(
 
     private val textTable: Table = Table(mainSkin)
 
-    //    private val nameLabel = Label(heroDetailsViewModel.name, headerLabelStyle)
     private val descriptionLabel = Label(heroDetailsViewModel.description, bodyLabelStyle)
     private val spellHeaderLabel = Label("Spell:", headerLabelStyle)
     private val spellNameLabel = Label(heroDetailsViewModel.spellName, bodyLabelStyle)
@@ -70,7 +68,6 @@ class HeroDetailsView(
         )
 
         textTable.setSize(textBoxSize.x, textBoxSize.y)
-//        textTable.setPosition(textBaselineX, heroBaseline.y - textBoxSize.y - (lineHeight / 2))
         textTable.left().top() // Align content from top left
 
         spellHeaderLabel.color = COLOR_FONT_HEADER
