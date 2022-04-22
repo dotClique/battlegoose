@@ -9,16 +9,20 @@ import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
+import se.battlegoo.battlegoose.models.BattleOutcome
 import se.battlegoo.battlegoose.models.Obstacle
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.units.DelinquentDuck
 import se.battlegoo.battlegoose.models.units.GuardGoose
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 import se.battlegoo.battlegoose.models.units.SpitfireSeagull
+import se.battlegoo.battlegoose.utils.Modal
+import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.BattleMapView
 import se.battlegoo.battlegoose.views.FacingDirection
 import se.battlegoo.battlegoose.views.UnitSprite
 import se.battlegoo.battlegoose.views.UnitView
+import kotlin.math.abs
 import kotlin.random.Random
 
 class BattleState : GameState() {
@@ -43,6 +47,31 @@ class BattleState : GameState() {
             mapSize
         )
     )
+
+    // TODO: Move to BattleController
+    fun resolveGame(outcome: BattleOutcome) {
+        // view.showResolutionScreen { GameStateManager.goBack() }
+
+        // TODO: Move to BattleView
+        val (title, text) = when (outcome) {
+            BattleOutcome.VICTORY -> Pair("VICTORY!", "You are victorious!\nFantastic job!")
+            BattleOutcome.TIE -> Pair("TIE!", "It's a tie!\nIt could have been worse.")
+            BattleOutcome.DEFEAT -> Pair("DEFEAT!", "You lost!\nBetter luck next time!")
+        }
+        val pointChange = outcome.scoreChange
+        val pluralS = if (abs(pointChange) == 1L) "" else "s"
+        val pointMessage = when {
+            pointChange > 0L -> "You have gained $pointChange point$pluralS."
+            pointChange < 0L -> "Your have lost ${abs(pointChange)} point$pluralS."
+            else -> "Your score is unchanged."
+        }
+        Modal(
+            title,
+            text + "\n" + pointMessage,
+            ModalType.Info { GameStateManager.goBack() }
+            // ModalType.Info(onResolutionAccepted)
+        ).show()
+    }
 
     init {
         for (y in 0 until battleMapController.mapSize.y) {
