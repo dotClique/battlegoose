@@ -16,6 +16,8 @@ class CreateLobbyView(
     stage: Stage
 ) : ViewBase() {
 
+    var onClickStartBattle: (() -> Unit)? = null
+
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
@@ -24,12 +26,13 @@ class CreateLobbyView(
     private val titleLabel: Label = Label("Create Lobby", skin)
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
-    private val createButton: TextButton = TextButton("Create", skin)
     private val waitingLabel: Label = Label("Creating lobby", skin)
     private val lobbyInfoLabel: Label = Label(
         "Ask your friend to enter this code for the game to begin",
         skin
     )
+
+    private val startBattleButton: TextButton = TextButton("Start Battle", skin)
 
     private var waitingText = "Creating lobby"
 
@@ -47,7 +50,9 @@ class CreateLobbyView(
         lobbyIdTextField.isDisabled = true
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
+        startBattleButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
+        startBattleButton.height *= 1.5f
 
         waitingLabel.setPosition(
             Game.WIDTH / 2f - waitingLabel.width / 2f,
@@ -56,7 +61,7 @@ class CreateLobbyView(
 
         stage.addActor(lobbyIdTextField)
         stage.addActor(mainMenuButton)
-        stage.addActor(createButton)
+        stage.addActor(startBattleButton)
         stage.addActor(lobbyIdLabel)
     }
 
@@ -76,6 +81,9 @@ class CreateLobbyView(
     override fun registerInput() {
         if (Gdx.input.justTouched() && mainMenuButton.isPressed) {
             onClickMainMenu()
+        }
+        if(Gdx.input.justTouched() && startBattleButton.isPressed) {
+            onClickStartBattle?.invoke()
         }
     }
 
@@ -102,6 +110,8 @@ class CreateLobbyView(
         )
 
         mainMenuButton.setPosition(x0, y0)
+        startBattleButton.setPosition(Game.WIDTH - x0 - startBattleButton.width, y0)
+
 
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
@@ -116,6 +126,9 @@ class CreateLobbyView(
         }
 
         mainMenuButton.draw(sb, 1f)
+
+        if (onClickStartBattle != null)
+            startBattleButton.draw(sb, 1f)
     }
 
     override fun dispose() {

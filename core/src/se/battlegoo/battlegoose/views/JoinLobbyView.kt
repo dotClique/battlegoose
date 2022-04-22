@@ -26,7 +26,7 @@ class JoinLobbyView(
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val joinButton: TextButton = TextButton("Join", skin)
-    private val waitingLabel: Label = Label("", skin)
+    private val statusLabel: Label = Label("", skin)
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -56,8 +56,8 @@ class JoinLobbyView(
             Game.HEIGHT / 1.75f
         )
 
-        waitingLabel.setPosition(
-            Game.WIDTH / 2f - waitingLabel.width / 2f,
+        statusLabel.setPosition(
+            Game.WIDTH / 2f - statusLabel.width / 2f,
             Game.HEIGHT * 0.8f
         )
 
@@ -71,12 +71,16 @@ class JoinLobbyView(
         return lobbyIdTextField.text
     }
 
-    fun resetWaitingText() {
-        waitingLabel.setText("Waiting for opponent")
+    fun setStatusWaiting() {
+        statusLabel.setText("Waiting for opponent")
     }
 
-    fun updateWaitingText() {
-        waitingLabel.setText("${waitingLabel.text}.")
+    fun updateStatusLabel(text: String) {
+        statusLabel.setText(text)
+    }
+
+    fun updateStatusWaiting() {
+        statusLabel.setText("${statusLabel.text}.")
     }
 
     override fun registerInput() {
@@ -125,7 +129,7 @@ class JoinLobbyView(
         if (!joined) {
             joinButton.draw(sb, 1f)
         } else {
-            waitingLabel.draw(sb, 1f)
+            statusLabel.draw(sb, 1f)
         }
 
         mainMenuButton.draw(sb, 1f)

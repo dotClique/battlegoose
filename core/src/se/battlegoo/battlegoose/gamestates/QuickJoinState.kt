@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.network.ListenerCanceler
 import se.battlegoo.battlegoose.network.MultiplayerService
 
 class QuickJoinState : GameState() {
@@ -20,15 +21,22 @@ class QuickJoinState : GameState() {
     private val goBackText = "Press anywhere to return to main menu..."
     private val layoutGoBack = GlyphLayout(goBack, goBackText)
 
+    private var cancelStartBattleListener: ListenerCanceler = {}
+
     init {
-        MultiplayerService.tryRequestOpponent() {
+        MultiplayerService.tryRequestOpponent({
             titleText = it.toString()
-        }
+        }, { cancelListener ->
+            this.cancelStartBattleListener = cancelListener
+        })
     }
 
     private fun handleInput() {
-        if (Gdx.input.justTouched())
+        if (Gdx.input.justTouched()) {
+            cancelStartBattleListener()
             GameStateManager.push(MainMenuState())
+
+        }
     }
 
     override fun update(dt: Float) {

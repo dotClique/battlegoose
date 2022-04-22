@@ -1,12 +1,12 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
+import java.util.Date
+import java.util.function.Consumer
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
-import java.util.Date
-import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -85,7 +85,7 @@ object MultiplayerService {
         }
     }
 
-    private fun listenForOtherPlayerJoinLobby(
+    fun listenForOtherPlayerJoinLobby(
         lobbyID: String,
         listener: Consumer<RandomOpponentStatus>
     ) {
@@ -117,7 +117,10 @@ object MultiplayerService {
         )
     }
 
-    fun tryRequestOpponent(listener: Consumer<RandomOpponentStatus>) {
+    fun tryRequestOpponent(
+        listener: Consumer<RandomOpponentStatus>,
+        cancelBattleJoinListener: Consumer<ListenerCanceler>
+    ) {
         var processing = false
         databaseHandler.listen(
             DbPath.RandomOpponentQueue,
@@ -143,12 +146,15 @@ object MultiplayerService {
 
                         if (!availableLobbyID.isNullOrEmpty()) {
                             setAvailableLobby("") {
-                                tryJoinLobby(availableLobbyID) {
+                                tryJoinLobby(availableLobbyID, {
                                     queueListenerCanceler.invoke()
                                     popQueue(queue) {
                                         listener.accept(RandomOpponentStatus.JOINED_LOBBY)
                                     }
-                                }
+                                },
+                                    { cancelListener ->
+                                        cancelBattleJoinListener.accept(cancelListener)
+                                    })
                             }
                             return@checkRandomLobbyAvailability
                         }
@@ -174,25 +180,27 @@ object MultiplayerService {
         }
     }
 
-    fun tryJoinLobby(lobbyID: String, listener: Consumer<LobbyStatus>) {
+    fun tryJoinLobby(
+        lobbyID: String,
+        listener: Consumer<JoinLobbyStatus>,
+        cancelBattleJoinListener: Consumer<ListenerCanceler>,
+    ) {
         databaseHandler.getUserID { userID ->
             databaseHandler.read(
                 DbPath.Lobbies[lobbyID],
                 consumer = { lobby ->
                     if (lobby == null) {
-                        listener.accept(LobbyStatus.DoesNotExist)
+                        listener.accept(JoinLobbyStatus.DoesNotExist)
                         return@read
                     }
 
                     if (userCanJoinLobby(userID, lobby)) {
-                        listener.accept(LobbyStatus.Full)
+                        listener.accept(JoinLobbyStatus.Full)
                         return@read
                     }
-
                     joinLobby(lobbyID, userID) {
-                        joinBattle(lobbyID)
                         listener.accept(
-                            LobbyStatus.Ready(
+                            JoinLobbyStatus.Ready(
                                 LobbyData(
                                     lobbyID,
                                     lobby.hostID,
@@ -201,13 +209,38 @@ object MultiplayerService {
                                 )
                             )
                         )
+                        listenForBattleStart(lobbyID,
+                            { battleID ->
+                                listener.accept(
+                                    JoinLobbyStatus.StartBattle(
+                                        LobbyData(
+                                            lobbyID, lobby.hostID, userID, true, battleID
+                                        )
+                                    )
+                                )
+                            },
+                            { listenerCanceler ->
+                                cancelBattleJoinListener.accept(listenerCanceler)
+                            })
                     }
-                }
-            )
+                })
         }
     }
 
-    fun startBattle(lobbyID: String) {
+    fun leaveLobbyAsOtherPlayer(
+        lobbyID: String,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        callback: () -> Unit = {}
+    ) {
+        databaseHandler.setValue(
+            DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID],
+            "", fail
+        ) {
+            callback()
+        }
+    }
+
+    fun startBattle(lobbyID: String, onCreated: () -> Unit = {}) {
         val battleID = generateReadableUID()
         databaseHandler.getUserID { userID ->
             val initialBattleData =
@@ -234,19 +267,31 @@ object MultiplayerService {
                         }
                         this.battleID = battleID
                         databaseHandler.deleteValue(DbPath.Lobbies[lobbyID]) {}
-                        otherPlayerIDListenerCanceler.invoke()
+                        otherPlayerIDListenerCanceler()
                         listenForActions(battleID)
+                        onCreated()
                     }
                 }
             }
         }
     }
 
-    private fun joinBattle(lobbyID: String) {
+    private fun listenForBattleStart(
+        lobbyID: String,
+        consumer: Consumer<String>,
+        listenerCancelerConsumer: Consumer<ListenerCanceler>
+    ) {
+        var cancelListener = false
+        val listenerCanceler: ListenerCanceler = { cancelListener = true }
         databaseHandler.listen(
             DbPath.Lobbies[lobbyID][LobbyData::battleID]
         ) { battleID, battleIDListenerCanceler ->
+            listenerCancelerConsumer.accept(listenerCanceler)
             if (battleID == null || battleID == "") {
+                return@listen
+            }
+            if (cancelListener) {
+                battleIDListenerCanceler()
                 return@listen
             }
 
@@ -254,7 +299,10 @@ object MultiplayerService {
                 databaseHandler.setValue(
                     DbPath.Battles[battleID][BattleData::otherPlayerID],
                     userID
-                ) { battleIDListenerCanceler.invoke() }
+                ) {
+                    consumer.accept(battleID)
+                    battleIDListenerCanceler()
+                }
             }
 
             this.battleID = battleID

@@ -3,9 +3,11 @@ package se.battlegoo.battlegoose.gamestates
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.network.MultiplayerService
+import se.battlegoo.battlegoose.network.RandomOpponentStatus
 import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyState : GameState() {
+
 
     private var waitingTimer: Float = 0f
     private val letterSpawnTime: Float = 1f
@@ -17,6 +19,8 @@ class CreateLobbyState : GameState() {
     )
 
     private var createLobbyCompleted = false
+    private var readyToStartBattle = false
+    private var startBattle = false
 
     private var lobbyId: String? = null
         set(value) {
@@ -25,6 +29,8 @@ class CreateLobbyState : GameState() {
         }
 
     private fun goBack() {
+        // TODO: Handle that player that created the lobby leaves lobby
+        // TODO: Delete lobby
         GameStateManager.goBack()
     }
 
@@ -32,16 +38,35 @@ class CreateLobbyState : GameState() {
         createLobbyView.registerInput()
         if (!createLobbyCompleted) {
             createLobbyCompleted = true
-            MultiplayerService.tryCreateLobby {
-                Logger("Created lobby", Logger.INFO).info(it.toString())
-                lobbyId = it.lobbyID
+            MultiplayerService.tryCreateLobby { lobbyData ->
+                Logger("Created lobby", Logger.INFO).info(lobbyData.toString())
+                lobbyId = lobbyData.lobbyID
+                MultiplayerService.listenForOtherPlayerJoinLobby(lobbyData.lobbyID) { status ->
+                    readyToStartBattle = status == RandomOpponentStatus.OTHER_PLAYER_JOINED
+                }
             }
+        }
+    }
+
+    private fun startBattle() {
+        val lobbyIDCpy =
+            lobbyId ?: return Logger("ulrik").error(
+                "LobbyID is null createLobbyState startBattle"
+            )
+        MultiplayerService.startBattle(lobbyIDCpy) {
+            startBattle = true
         }
     }
 
     override fun update(dt: Float) {
         handleInput()
+        Logger("ulrik").error("ReadyToStartBattle: $readyToStartBattle")
         // Dynamic 'waiting for opponent' message
+        if (readyToStartBattle) {
+            createLobbyView.onClickStartBattle = ::startBattle
+        } else {
+            createLobbyView.onClickStartBattle = null
+        }
         waitingTimer += dt
         if (letterCount >= 4f) {
             createLobbyView.resetWaitingText()
@@ -50,6 +75,9 @@ class CreateLobbyState : GameState() {
             createLobbyView.updateWaitingText()
             waitingTimer -= letterSpawnTime
             letterCount++
+        }
+        if (startBattle) {
+            GameStateManager.replace(BattleState())
         }
     }
 
