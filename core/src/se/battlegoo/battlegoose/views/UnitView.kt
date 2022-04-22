@@ -1,14 +1,16 @@
 package se.battlegoo.battlegoose.views
 
+import se.battlegoo.battlegoose.utils.TextureAsset
+
 class UnitView(
     unitSprite: UnitSprite,
     textureStartFacingDirection: FacingDirection
 ) : SpriteViewBase(
     when (unitSprite) {
-        UnitSprite.PRIVATE_PENGUIN -> "units/penguin.png"
-        UnitSprite.SPITFIRE_SEAGULL -> "units/seagull.png"
-        UnitSprite.DELINQUENT_DUCK -> "units/duck.png"
-        UnitSprite.GUARD_GOOSE -> "units/guardGoose.png"
+        UnitSprite.PRIVATE_PENGUIN -> TextureAsset.UNIT_PRIVATE_PENGUIN
+        UnitSprite.SPITFIRE_SEAGULL -> TextureAsset.UNIT_SPITFIRE_SEAGULL
+        UnitSprite.DELINQUENT_DUCK -> TextureAsset.UNIT_DELINQUENT_DUCK
+        UnitSprite.GUARD_GOOSE -> TextureAsset.UNIT_GUARD_GOOSE
     }
 ) {
 

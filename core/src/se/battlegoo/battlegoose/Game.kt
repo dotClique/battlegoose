@@ -2,7 +2,9 @@ package se.battlegoo.battlegoose
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
@@ -11,10 +13,20 @@ import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.FitViewport
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.gamestates.MainMenuState
+import se.battlegoo.battlegoose.utils.TextureAsset
 
 class Game : ApplicationAdapter() {
 
     companion object {
+
+        private val assetManager = AssetManager()
+
+        private fun loadTexture(asset: TextureAsset) =
+            assetManager.load(asset.path, Texture::class.java)
+
+        fun getTexture(asset: TextureAsset): Texture =
+            assetManager.get(asset.path, Texture::class.java)
+
         lateinit var batch: SpriteBatch
         const val WIDTH = 2280f
         const val HEIGHT = 1080f
@@ -38,6 +50,8 @@ class Game : ApplicationAdapter() {
     }
 
     override fun create() {
+        TextureAsset.values().forEach(::loadTexture)
+        assetManager.finishLoading()
         batch = SpriteBatch()
         stage = Stage(viewPort, batch)
         Gdx.input.inputProcessor = stage
@@ -59,6 +73,7 @@ class Game : ApplicationAdapter() {
     }
 
     override fun dispose() {
+        assetManager.dispose()
         batch.dispose()
         GameStateManager.dispose()
     }

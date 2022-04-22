@@ -1,11 +1,11 @@
 package se.battlegoo.battlegoose.views
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.BattleMapBackground
+import se.battlegoo.battlegoose.utils.TextureAsset
 
 class BattleMapView(
     background: BattleMapBackground,
@@ -14,12 +14,12 @@ class BattleMapView(
 ) :
     ViewBase() {
 
-    private val texturePath = when (background) {
-        BattleMapBackground.DUNES -> "maps/dunes.png"
-        BattleMapBackground.ICE_RINK -> "maps/iceRink.png"
-        BattleMapBackground.DIRT_ROAD -> "maps/dirtRoad.png"
+    private val textureAsset = when (background) {
+        BattleMapBackground.DUNES -> TextureAsset.MAP_DUNES
+        BattleMapBackground.ICE_RINK -> TextureAsset.MAP_ICE_RINK
+        BattleMapBackground.DIRT_ROAD -> TextureAsset.MAP_DIRT_ROAD
     }
-    private val backgroundTexture = Texture(texturePath)
+    private val backgroundTexture = Game.getTexture(textureAsset)
     var backgroundTextureRegion = TextureRegion(backgroundTexture)
 
     override fun render(sb: SpriteBatch) {
@@ -30,7 +30,5 @@ class BattleMapView(
         )
     }
 
-    override fun dispose() {
-        backgroundTexture.dispose()
-    }
+    override fun dispose() {}
 }

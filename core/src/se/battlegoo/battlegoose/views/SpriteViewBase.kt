@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import se.battlegoo.battlegoose.datamodels.ScreenVector
+import se.battlegoo.battlegoose.utils.TextureAsset
 
-abstract class SpriteViewBase(texturePath: String) : ViewBase() {
+abstract class SpriteViewBase(private val textureAsset: TextureAsset) : ViewBase() {
 
-    private val texture = Texture(texturePath)
+    private val texture = Texture(textureAsset.path)
     private var textureRegion = TextureRegion(texture)
     protected val sprite = Sprite(textureRegion)
 
@@ -36,5 +37,5 @@ abstract class SpriteViewBase(texturePath: String) : ViewBase() {
 
     override fun render(sb: SpriteBatch) = sprite.draw(sb)
 
-    override fun dispose() = texture.dispose()
+    override fun dispose() {}
 }

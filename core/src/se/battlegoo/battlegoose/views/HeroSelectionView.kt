@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -9,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
+import se.battlegoo.battlegoose.utils.TextureAsset
 import kotlin.math.max
 import kotlin.math.min
 
@@ -33,7 +33,7 @@ class HeroSelectionView(
 
     private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
-    private val backgroundTexture = Texture("menuBackground.jpg")
+    private val backgroundTexture = Game.getTexture(TextureAsset.MENU_BACKGROUND)
     private val heroCardViews: Map<String, HeroCardView>
     private var heroDetailsView: HeroDetailsView? = null
 
@@ -156,7 +156,6 @@ class HeroSelectionView(
     }
 
     override fun dispose() {
-        backgroundTexture.dispose()
         heroCardViews.forEach {
             it.value.dispose()
         }

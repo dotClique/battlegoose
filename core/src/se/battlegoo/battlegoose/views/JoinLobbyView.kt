@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -10,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.utils.TextureAsset
 
 class JoinLobbyView(
     private val onClickMainMenu: () -> Unit,
@@ -17,7 +17,7 @@ class JoinLobbyView(
     private val stage: Stage,
 ) : ViewBase() {
 
-    private val background = Texture("menuBackground.jpg")
+    private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)
@@ -132,7 +132,6 @@ class JoinLobbyView(
     }
 
     override fun dispose() {
-        background.dispose()
         stage.dispose()
         skin.dispose()
     }
