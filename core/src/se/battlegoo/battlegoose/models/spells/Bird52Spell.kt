@@ -8,7 +8,10 @@ class Bird52Spell : Spell<SpellData.Bird52>(
     1,
     3
 ) {
+    val numColumnsToAttack = 2
+    val attackDamage = 30
+
     override fun cast(data: SpellData.Bird52): ActiveSpell<Bird52Spell> {
-        return Bird52ActiveSpell(this, data, 2, 30)
+        return Bird52ActiveSpell(this, data)
     }
 }
