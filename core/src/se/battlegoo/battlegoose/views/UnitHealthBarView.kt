@@ -1,89 +1,114 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
-import se.battlegoo.battlegoose.models.units.UnitStats
+import com.badlogic.gdx.utils.Align
+import se.battlegoo.battlegoose.ScreenVector
+import se.battlegoo.battlegoose.utilities.createDrawableOfTexture
+import se.battlegoo.battlegoose.utilities.createSolidColorTexture
+import se.battlegoo.battlegoose.utilities.emptyDrawable
 
 class UnitHealthBarView(
-    unitStats: UnitStats,
-    private val xPos: Float,
-    private val yPos: Float,
-    val width: Int
+    position: ScreenVector,
+    width: Float
 ) : ViewBase() {
 
-    private val height: Int = width * 1 / 8
-    private var healthBar: ProgressBar
-    private var progressBarStyle = ProgressBar.ProgressBarStyle()
-    private val font = BitmapFont()
-    var targetProgressValue: Float =
-        unitStats.health.toFloat() / unitStats.maxHealth.toFloat()
-    var currentHealth = unitStats.health
-    var maxHealth = unitStats.maxHealth
+    var position = position
+        set(position) {
+            field = position
+            updateHealthBarDrawing()
+        }
 
-    init {
-        progressBarStyle.background = getColoredDrawable(width, height, Color.RED)
-        progressBarStyle.knob = getColoredDrawable(0, height, Color.GREEN)
-        progressBarStyle.knobBefore = getColoredDrawable(width, height, Color.GREEN)
+    var width = width
+        set(width) {
+            field = width
+            updateHealthBarDrawing()
+        }
 
-        healthBar = ProgressBar(0f, 1f, 0.01f, false, progressBarStyle)
-        healthBar.width = width.toFloat()
-        healthBar.height = height.toFloat()
+    private val height: Float
+        get() = width * 0.14f
 
-        healthBar.setAnimateDuration(0.0f)
+    private val healthColor = Color.valueOf("#64DD17")
+    private val healthMissingColor = Color.valueOf("#E74C3C")
+    private var healthBarStyle = ProgressBar.ProgressBarStyle()
+    private var healthColorTexture: Texture? = null
+    private var healthMissingColorTexture: Texture? = null
+    private var healthBar: ProgressBar =
+        ProgressBar(0f, 1f, 0.01f, false, healthBarStyle)
+            .also { it.value = it.maxValue } // initial value to avoid startup animation
 
-        // setValue includes animation
-        healthBar.value =
-            unitStats.health.toFloat() / unitStats.maxHealth.toFloat()
+    private val font = BitmapFont().also { it.setColor(1f, 1f, 1f, 1f) }
 
-        healthBar.setAnimateDuration(0.2f)
+    var currentHealth = 0
+        set(value) {
+            field = value
+            updateHealthProgress()
+        }
+    var maxHealth = 0
+        set(value) {
+            field = value
+            updateHealthProgress()
+        }
 
-        healthBar.setOrigin(xPos + width / 2, yPos + height / 2)
-        healthBar.x = xPos
-        healthBar.y = yPos
-
-        font.data.setScale(width.toFloat() / 180)
-        font.setColor(1f, 1f, 1f, 9f)
-    }
-
-    // Could be moved to a Utils class?
-    private fun getColoredDrawable(width: Int, height: Int, color: Color?): Drawable? {
-        val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
-        pixmap.setColor(color)
-        pixmap.fill()
-        val drawable = TextureRegionDrawable(TextureRegion(Texture(pixmap)))
-        pixmap.dispose()
-        return drawable
-    }
-
-    private fun step() {
-        if (targetProgressValue > healthBar.value - healthBar.stepSize) {
-            healthBar.value = targetProgressValue
-        } else if (targetProgressValue < healthBar.value + healthBar.stepSize) {
-            healthBar.value -= healthBar.stepSize
+    private fun updateHealthProgress() {
+        healthBar.value = if (maxHealth == 0) {
+            0f // prevent division by zero
+        } else if (currentHealth == maxHealth) {
+            1f // prevent floating point error
+        } else {
+            currentHealth / maxHealth.toFloat()
         }
     }
 
-    override fun render(sb: SpriteBatch) {
+    private val animationDuration = 0.2f
+    private val fakeTimePerRender = animationDuration / 10 // since we lack the real one
 
-        step()
-        healthBar.updateVisualValue()
+    init {
+        healthBarStyle.knob = emptyDrawable() // hack to hide knob without breaking progress pos
+        healthBar.setAnimateDuration(animationDuration)
+        updateHealthBarDrawing()
+    }
+
+    private fun updateHealthBarDrawing() {
+        createSolidColorTexture(width, height, healthColor).let { texture ->
+            healthColorTexture?.dispose()
+            healthColorTexture = texture
+            healthBarStyle.knobBefore = createDrawableOfTexture(texture)
+        }
+        createSolidColorTexture(width, height, healthMissingColor).let { texture ->
+            healthMissingColorTexture?.dispose()
+            healthMissingColorTexture = texture
+            healthBarStyle.background = createDrawableOfTexture(texture)
+        }
+
+        healthBar.width = width
+        healthBar.height = height
+        healthBar.x = position.x
+        healthBar.y = position.y
+
+        font.data.setScale(width / 120)
+    }
+
+    override fun render(sb: SpriteBatch) {
+        healthBar.act(fakeTimePerRender)
         healthBar.draw(sb, 1f)
         font.draw(
             sb,
-            "HP:\t$currentHealth/$maxHealth",
-            xPos + width * 3 / 10,
-            yPos + height * 2 / 3
+            "$currentHealth/$maxHealth",
+            position.x,
+            position.y + height * 5 / 6,
+            healthBar.width,
+            Align.center,
+            false
         )
     }
 
     override fun dispose() {
         font.dispose()
+        healthColorTexture?.dispose()
+        healthMissingColorTexture?.dispose()
     }
 }

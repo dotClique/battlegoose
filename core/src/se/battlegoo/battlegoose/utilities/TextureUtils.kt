@@ -1,6 +1,11 @@
 package se.battlegoo.battlegoose.utilities
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import se.battlegoo.battlegoose.ScreenVector
 
 /**
@@ -42,3 +47,18 @@ fun fitScale(texture: Texture, targetSize: ScreenVector):
 }
 
 data class FitDimensions(val size: ScreenVector, val margins: ScreenVector)
+
+fun createSolidColorTexture(width: Float, height: Float, color: Color): Texture {
+    val pixmap = Pixmap(width.toInt(), height.toInt(), Pixmap.Format.RGBA8888)
+    pixmap.setColor(color)
+    pixmap.fill()
+    return Texture(pixmap)
+}
+
+fun createDrawableOfTexture(texture: Texture): Drawable {
+    return TextureRegionDrawable(TextureRegion(texture))
+}
+
+fun emptyDrawable(): Drawable {
+    return createDrawableOfTexture(createSolidColorTexture(0f, 0f, Color.BLACK))
+}

@@ -185,7 +185,8 @@ class BattleMapController(
 
     private fun attackUnit(controller: UnitController, targetController: UnitController) {
         // TODO Actual attack logic...
-        removeUnit(targetController)
+        targetController.unitModel.takeAttackDamage(controller.unitModel.currentStats.attack)
+//        removeUnit(targetController)
     }
 
     override fun update(dt: Float) {
@@ -212,6 +213,8 @@ class BattleMapController(
         for (uc in unitControllers.values) {
             uc.render(sb)
         }
+        // Separate health bar rendering to render all health bars above all units
+        unitControllers.values.forEach { it.renderHealthBar(sb) }
     }
 
     override fun dispose() {
