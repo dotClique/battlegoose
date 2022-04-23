@@ -53,9 +53,6 @@ class LeaderboardState : GameState() {
 
     private fun handleInput() {
         leaderboardView.registerInput()
-        if (Gdx.input.justTouched()) {
-            MultiplayerService.incrementScore(1) { updateLeaderboard() }
-        }
     }
 
     override fun update(dt: Float) {
