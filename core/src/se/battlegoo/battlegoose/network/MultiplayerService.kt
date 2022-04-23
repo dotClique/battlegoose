@@ -18,6 +18,8 @@ object MultiplayerService {
 
     private var battleListenerCancelers = mutableListOf<ListenerCanceler>()
 
+    fun getUserID(consumer: Consumer<String>) = databaseHandler.getUserID(consumer)
+
     private fun userCanJoinLobby(userID: String, lobbyData: LobbyData): Boolean {
         return lobbyData.otherPlayerID.isNotEmpty() && lobbyData.otherPlayerID != userID
     }
