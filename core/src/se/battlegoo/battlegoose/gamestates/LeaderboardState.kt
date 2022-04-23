@@ -46,9 +46,9 @@ class LeaderboardState : GameState() {
         MultiplayerService.getLeaderboard {
             it?.let {
                 leaderboard = it
+                leaderboardView.setLeaderboardText(leaderboardText)
             }
         }
-        leaderboardView.setLeaderboardText(leaderboardText)
     }
 
     private fun handleInput() {
