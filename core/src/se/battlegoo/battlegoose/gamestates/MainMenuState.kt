@@ -21,7 +21,7 @@ class MainMenuState :
 //                "This will move page",
 //                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} )).show()
 //        },
-        onClickQuickJoin = { GameStateManager.push(HeroSelectionState()) },
+        onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
         onClickLeaderboard = { GameStateManager.push(LeaderboardState()) }
     )
 
