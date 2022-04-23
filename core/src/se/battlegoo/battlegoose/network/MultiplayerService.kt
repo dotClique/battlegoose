@@ -257,7 +257,7 @@ object MultiplayerService {
         databaseHandler.deleteValue(DbPath.Lobbies[lobbyID], fail, onSuccess)
     }
 
-    fun startBattle(lobbyID: String, onCreated: () -> Unit = {}) {
+    fun startBattle(lobbyID: String, onCreated: (initialBattleData: BattleData) -> Unit = {}) {
         val battleID = generateReadableUID()
         databaseHandler.getUserID { userID ->
             val initialBattleData =
@@ -286,7 +286,7 @@ object MultiplayerService {
                         databaseHandler.deleteValue(DbPath.Lobbies[lobbyID]) {}
                         otherPlayerIDListenerCanceler()
                         listenForActions(battleID)
-                        onCreated()
+                        onCreated(initialBattleData)
                     }
                 }
             }

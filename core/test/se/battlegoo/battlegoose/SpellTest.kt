@@ -40,7 +40,8 @@ class SpellTest {
         val battle = Battle(
             hero,
             SergeantSwan(),
-            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
+            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6)),
+            "", true
         )
         val spell = hero.spell.cast(SpellData.AdrenalineShot)
         assertEquals(
@@ -84,7 +85,7 @@ class SpellTest {
         ) {}
         val hero2 = SergeantSwan()
         val battle = Battle(
-            hero1, hero2, BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
+            hero1, hero2, BattleMap(BattleMapBackground.DUNES, GridVector(10, 6)), "", true
         )
 
         battle.battleMap.placeUnit(GuardGoose(hero1), GridVector(1, 1))
@@ -198,7 +199,9 @@ class SpellTest {
         val battle = Battle(
             hero,
             SergeantSwan(),
-            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
+            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6)),
+            "",
+            true
         )
 
         val unit1Team1 = GuardGoose(battle.hero1)
@@ -274,10 +277,13 @@ class SpellTest {
         val battle = Battle(
             SergeantSwan(),
             SergeantSwan(),
-            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
+            BattleMap(BattleMapBackground.DUNES, GridVector(10, 6)),
+            "",
+            true
         )
         var counter = 0
         val testDuration = 5
+
         class TestSpell : Spell<SpellData.Bird52>("test", "t2", testDuration, 2) {
             override fun cast(data: SpellData.Bird52): ActiveSpell<TestSpell> {
                 return object : ActiveSpell<TestSpell>(this, data) {
@@ -287,6 +293,7 @@ class SpellTest {
                 }
             }
         }
+
         val spell = TestSpell()
         val activeSpell = spell.cast(SpellData.Bird52)
         assertEquals("Spell::cast called apply by itself", 0, counter)
