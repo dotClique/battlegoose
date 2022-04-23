@@ -23,9 +23,6 @@ class LeaderboardState : GameState() {
     private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
     private var leaderboard: List<LeaderboardEntry> = listOf()
-        set(value) {
-            field = value
-        }
 
     private val leaderboardText: String
         get() {
