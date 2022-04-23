@@ -18,8 +18,8 @@ class HeroSelectionState : GameState() {
         heroes.map {
             HeroSelectionViewModel(
                 it::class.java.name,
-                it.name, it.description, it.heroSprite, it.spell.title,
-                it.spell.description, it.spell.cooldown
+                it.name, it.description, it.heroSprite, it.army,
+                it.spell.title, it.spell.description, it.spell.cooldown
             )
         },
         heroSelection.selected,

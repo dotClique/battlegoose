@@ -9,13 +9,24 @@ import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.HeroStatsModifier
 import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
+import se.battlegoo.battlegoose.models.units.DelinquentDuck
+import se.battlegoo.battlegoose.models.units.GuardGoose
+import se.battlegoo.battlegoose.models.units.PrivatePenguin
 
 class HeroTest {
     @Test
     fun testHero() {
         val hero = object : Hero<AdrenalineShotSpell>(
             HeroStats(2), AdrenalineShotSpell(), "",
-            "", HeroSprite.SERGEANT_SWAN
+            "", HeroSprite.SERGEANT_SWAN,
+            listOf(
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+            )
         ) {}
         assertEquals(2, hero.currentStats.actionPoints)
         assertEquals(2, hero.baseStats.actionPoints)
@@ -37,7 +48,15 @@ class HeroTest {
     fun testHeroNotAllowedToPerformActionCostingMoreThanCurrentActionPoints() {
         val hero = object : Hero<AdrenalineShotSpell>(
             HeroStats(2), AdrenalineShotSpell(), "",
-            "", HeroSprite.SERGEANT_SWAN
+            "", HeroSprite.SERGEANT_SWAN,
+            listOf(
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+            )
         ) {}
         assertEquals("Wrong initial number of APs", 2, hero.currentStats.actionPoints)
         assertThrows(

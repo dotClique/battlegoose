@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
+import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.utils.TextureAsset
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.reflect.KClass
 
 class HeroSelectionView(
     private val heroes: Collection<HeroSelectionViewModel>,
@@ -126,7 +128,7 @@ class HeroSelectionView(
             heroDetailsView = HeroDetailsView(
                 HeroDetailsViewModel(
                     it.id, it.name, it.description, it.heroSprite,
-                    it.spellName, it.spellDescription, it.spellCooldown
+                    it.army, it.spellName, it.spellDescription, it.spellCooldown
                 ),
                 stage = stage
             )
@@ -198,6 +200,7 @@ data class HeroSelectionViewModel(
     val name: String,
     val description: String,
     val heroSprite: HeroSprite,
+    val army: List<KClass<out UnitModel>>,
     val spellName: String,
     val spellDescription: String,
     val spellCooldown: Int

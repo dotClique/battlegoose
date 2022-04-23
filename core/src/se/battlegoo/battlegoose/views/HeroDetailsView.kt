@@ -11,8 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
+import se.battlegoo.battlegoose.models.units.DelinquentDuck
+import se.battlegoo.battlegoose.models.units.GuardGoose
+import se.battlegoo.battlegoose.models.units.PrivatePenguin
+import se.battlegoo.battlegoose.models.units.SpitfireSeagull
+import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
+import kotlin.reflect.KClass
 
 class HeroDetailsView(
     heroDetailsViewModel: HeroDetailsViewModel,
@@ -58,6 +64,22 @@ class HeroDetailsView(
             "${heroDetailsViewModel.spellCooldown} turns cooldown.",
         bodyLabelStyle
     )
+
+    private val armyLabel = Label(
+        "Army: " + heroDetailsViewModel.army.let { army ->
+            army.associateWith { unitClass -> army.count(unitClass::equals) }
+        }.toList().joinToString { (unitClass, count) ->
+            when (unitClass) {
+                DelinquentDuck::class -> "Delinquent Duck"
+                GuardGoose::class -> "Guard Goose"
+                PrivatePenguin::class -> "Private Penguin"
+                SpitfireSeagull::class -> "Spitfire Seagull"
+                else -> throw IllegalArgumentException("Unknown unit type")
+            } + if (count > 1) " (x$count)" else ""
+        },
+        bodyLabelStyle
+    )
+
     private var modal: Modal
 
     init {
@@ -72,10 +94,12 @@ class HeroDetailsView(
 
         spellHeaderLabel.color = COLOR_FONT_HEADER
         descriptionLabel.wrap = true
+        armyLabel.wrap = true
         spellHeaderLabel.wrap = true
         spellNameLabel.wrap = true
         spellDescriptionLabel.wrap = true
 
+        armyLabel.setFontScale(1.2f)
         descriptionLabel.setFontScale(2f)
         spellNameLabel.setFontScale(2f)
         spellDescriptionLabel.setFontScale(2f)
@@ -86,6 +110,8 @@ class HeroDetailsView(
         textTable.add(heroSprite).width(textBoxSize.y / 3).height(textBoxSize.y / 3)
             .colspan(2)
             .center()
+        textTable.row()
+        textTable.add(armyLabel).width(textBoxSize.x)
         textTable.row()
         textTable.add(descriptionLabel).width(textBoxSize.x)
         textTable.row().spaceTop(Game.HEIGHT / 20).colspan(1)
@@ -119,6 +145,7 @@ data class HeroDetailsViewModel(
     val name: String,
     val description: String,
     val heroSprite: HeroSprite,
+    val army: List<KClass<out UnitModel>>,
     val spellName: String,
     val spellDescription: String,
     val spellCooldown: Int

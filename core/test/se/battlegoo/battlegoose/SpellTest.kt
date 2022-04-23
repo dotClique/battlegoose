@@ -27,7 +27,15 @@ class SpellTest {
     fun testAdrenalineShotSpell() {
         val hero = object : Hero<AdrenalineShotSpell>(
             HeroStats(1), AdrenalineShotSpell(), "",
-            "", HeroSprite.SERGEANT_SWAN
+            "", HeroSprite.SERGEANT_SWAN,
+            listOf(
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+            )
         ) {}
         val battle = Battle(
             hero,
@@ -63,7 +71,16 @@ class SpellTest {
     @Test
     fun testEphemeralAllegianceSpell() {
         val hero1 = object : Hero<EphemeralAllegianceSpell>(
-            HeroStats(1), EphemeralAllegianceSpell(), "", "", HeroSprite.SERGEANT_SWAN
+            HeroStats(1), EphemeralAllegianceSpell(), "", "",
+            HeroSprite.SERGEANT_SWAN,
+            listOf(
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+            )
         ) {}
         val hero2 = SergeantSwan()
         val battle = Battle(
@@ -168,7 +185,15 @@ class SpellTest {
     fun testBird52Spell() {
         val hero = object : Hero<Bird52Spell>(
             HeroStats(1), Bird52Spell(), "",
-            "", HeroSprite.SERGEANT_SWAN
+            "", HeroSprite.SERGEANT_SWAN,
+            listOf(
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+                DelinquentDuck::class,
+                GuardGoose::class,
+                PrivatePenguin::class,
+            )
         ) {}
         val battle = Battle(
             hero,
