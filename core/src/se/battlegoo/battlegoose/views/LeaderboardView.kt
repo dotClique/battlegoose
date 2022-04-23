@@ -11,15 +11,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.utils.TextureAsset
 
 class LeaderboardView(
     private val onClickMainMenu: () -> Unit,
-    stage: Stage
+    private val stage: Stage
 ) : ViewBase() {
 
-    private val background = Texture("menuBackground.jpg")
+    private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
 
-    private var stage = Stage(Game.viewPort)
     private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
@@ -32,14 +32,20 @@ class LeaderboardView(
     private val y0: Float = Menu.BOTTOM_SPACING
 
     init {
-        Gdx.input.inputProcessor = stage
         stage.addActor(mainMenuButton)
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
+        mainMenuButton.setPosition(x0, y0)
+
+        leaderboardFont.data.setScale(3f)
 
         titleLabel.setAlignment(Align.center)
-        leaderboardFont.data.setScale(3f)
+        titleLabel.setFontScale(5f)
+        titleLabel.setPosition(
+            (Game.WIDTH / 2f) - titleLabel.width / 2f,
+            Game.HEIGHT * 0.9f
+        )
     }
 
     fun setLeaderboardText(leaderboardText: String) {
@@ -55,14 +61,8 @@ class LeaderboardView(
     override fun render(sb: SpriteBatch) {
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
-        titleLabel.setFontScale(5f)
-        titleLabel.setPosition(
-            (Game.WIDTH / 2f) - titleLabel.width / 2f,
-            Game.HEIGHT * 0.9f
-        )
         titleLabel.draw(sb, 1f)
 
-        mainMenuButton.setPosition(x0, y0)
         mainMenuButton.draw(sb, 1f)
 
         leaderboardFont.draw(
@@ -72,8 +72,6 @@ class LeaderboardView(
     }
 
     override fun dispose() {
-        background.dispose()
-        stage.dispose()
         skin.dispose()
         leaderboardFont.dispose()
     }
