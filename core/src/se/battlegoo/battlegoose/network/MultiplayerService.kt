@@ -1,13 +1,13 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
+import java.util.Date
+import java.util.function.BiConsumer
+import java.util.function.Consumer
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
-import java.util.Date
-import java.util.function.BiConsumer
-import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -36,7 +36,30 @@ object MultiplayerService {
         return (1..6).map { ('A'..'Z').random() }.joinToString("")
     }
 
-    fun tryCreateLobby(listener: Consumer<LobbyData>) {
+    fun createLobby(listener: (LobbyData, CreateLobbyStatus, ListenerCanceler) -> Unit) {
+        databaseHandler.getUserID { userID ->
+            val lobbyID = generateReadableUID()
+            databaseHandler.setValue(
+                DbPath.Lobbies[lobbyID], LobbyData(lobbyID, userID)
+            ) {
+                // Listen for other player to join lobby
+                listener(LobbyData(lobbyID, userID), CreateLobbyStatus.OPEN) {}
+                databaseHandler.listen(
+                    DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID]
+                ) { otherPlayerID, cancelListener ->
+                    val lobbyData = LobbyData(lobbyID, userID, otherPlayerID ?: "")
+                    if (!otherPlayerID.isNullOrEmpty()) {
+                        listener(lobbyData, CreateLobbyStatus.OTHER_PLAYER_JOINED, cancelListener)
+                        return@listen
+                    }
+                    listener(lobbyData, CreateLobbyStatus.OPEN, cancelListener)
+                }
+            }
+        }
+    }
+
+    // TODO: Remove this function
+    private fun tryCreateLobby(listener: Consumer<LobbyData>) {
         databaseHandler.getUserID { userID ->
             val lobbyID = generateReadableUID()
             databaseHandler.setValue(
@@ -46,6 +69,7 @@ object MultiplayerService {
             }
         }
     }
+
 
     private fun checkRandomLobbyAvailability(consumer: Consumer<String?>) =
         databaseHandler.read(
@@ -194,7 +218,7 @@ object MultiplayerService {
                             queueCanceler.accept(null)
                             tryCreateLobby { lobby ->
                                 setAvailableLobby(lobby.lobbyID) {
-                                    listenForOtherRandomPlayerJoinLobby(lobby.lobbyID, listener)
+                                listenForOtherRandomPlayerJoinLobby(lobby.lobbyID, listener)
                                     queueListenerCanceler.invoke()
                                     popQueue(queue) {
                                         lobbyIDConsumer.accept(lobby.lobbyID)
@@ -335,7 +359,7 @@ object MultiplayerService {
         ) { battleID, battleIDListenerCanceler ->
             listenerCancelerConsumer.accept(listenerCanceler)
             if (cancelListener) {
-                Logger("ulrik").error("Canceled listener in listenForBattleStart")
+                Logger("battlegoose").error("Canceled listener in listenForBattleStart")
                 battleIDListenerCanceler()
                 return@listen
             }
@@ -363,13 +387,13 @@ object MultiplayerService {
     /** Pushes an action to the actionlist. */
     fun postAction(action: ActionData) {
         val battleDataID =
-            battleID ?: return Logger("ulrik").error("No battleID") // TODO: Handle error
+            battleID ?: return Logger("battlegoose").error("No battleID") // TODO: Handle error
         databaseHandler.read(
             DbPath.Battles[battleDataID]
         ) {
             if (it == null)
             // TODO: Error
-                return@read Logger("ulrik").error("BattleData is null")
+                return@read Logger("battlegoose").error("BattleData is null")
             databaseHandler.setValue(
                 DbPath.Battles[battleDataID][BattleData::actions],
                 it.actions + listOf(action)
@@ -405,7 +429,7 @@ object MultiplayerService {
         ) { updatedActionData, _ ->
             if (updatedActionData == null) {
                 // TODO: Error
-                return@listen Logger("ulrik").error("updatedActionData is null")
+                return@listen Logger("battlegoose").error("updatedActionData is null")
             }
             actionListBuffer = if (actionListBuffer == null || lastReadActionIndex == -1) {
                 updatedActionData

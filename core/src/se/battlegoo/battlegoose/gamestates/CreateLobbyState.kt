@@ -17,8 +17,9 @@ class CreateLobbyState : GameState() {
 
     private var readyToStartBattle = false
     private var battleData: BattleData? = null
+    private var startBattle = false
+    private var listenForOtherPlayer: Boolean? = true // null denotes canceled listener
 
-    private var cancelOtherPlayerIDListener: () -> Unit = {}
     private var lobbyId: String? = null
         set(value) {
             field = value
@@ -26,22 +27,26 @@ class CreateLobbyState : GameState() {
         }
 
     init {
-        MultiplayerService.tryCreateLobby { lobbyData ->
-            lobbyId = lobbyData.lobbyID
-            MultiplayerService.listenForOtherPlayerJoinLobby(
-                lobbyData.lobbyID
-            ) { status, cancelListener ->
-                readyToStartBattle = status == CreateLobbyStatus.OTHER_PLAYER_JOINED
-                createLobbyView.setStatus(status)
-                cancelOtherPlayerIDListener = cancelListener
+        MultiplayerService.createLobby { lobbyData, status, cancelListener ->
+            if (listenForOtherPlayer == false) {
+                cancelListener()
+                Logger("battlegoose").error("Canceled listener")
+                listenForOtherPlayer = null
+                return@createLobby
             }
+            lobbyId = lobbyData.lobbyID
+            readyToStartBattle = status == CreateLobbyStatus.OTHER_PLAYER_JOINED
+            createLobbyView.setStatus(status)
+
         }
     }
 
     private fun goBack() {
         val lobbyIDCpy = lobbyId
-        if (lobbyIDCpy != null)
-            MultiplayerService.deleteLobby(lobbyIDCpy, fail = { str, t ->
+            ?: return Logger("battlegoose")
+                .info("Cannot leave lobby before a lobby is created.")
+        MultiplayerService.deleteLobby(lobbyIDCpy,
+            fail = { str, t ->
                 Modal(
                     "Error deleting lobby",
                     "Deleting lobby failed with $str, $t",
@@ -49,8 +54,7 @@ class CreateLobbyState : GameState() {
                     stage
                 ).show()
             })
-        cancelOtherPlayerIDListener()
-        GameStateManager.goBack()
+        listenForOtherPlayer = false
     }
 
     private fun handleInput() {
@@ -72,7 +76,11 @@ class CreateLobbyState : GameState() {
 
     override fun update(dt: Float) {
         handleInput()
-        // Dynamic 'waiting for opponent' message
+        if (listenForOtherPlayer == null) {
+            // The listener is then canceled and it is ready to go back.
+            GameStateManager.goBack()
+            return
+        }
         if (readyToStartBattle) {
             createLobbyView.onClickStartBattle = ::startBattle
         } else {
