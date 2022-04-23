@@ -5,6 +5,7 @@ enum class TextureAsset(val path: String) {
     TILE_ACCENT_DARK("tileAccentDark.png"),
     TILE_MOVE_DARK("tileMoveDark.png"),
     TILE_ATTACK_DARK("tileAttackDark.png"),
+    TILE_HINT_DARK("tileHintDark.png"),
     UNIT_PRIVATE_PENGUIN("units/penguin.png"),
     UNIT_SPITFIRE_SEAGULL("units/seagull.png"),
     UNIT_DELINQUENT_DUCK("units/duck.png"),

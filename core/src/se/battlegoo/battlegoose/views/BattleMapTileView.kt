@@ -7,6 +7,7 @@ import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.gridmath.isPointInsideHexagon
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.utils.WavePulsator
 import kotlin.math.sqrt
 
 enum class BattleMapTileState {
@@ -26,6 +27,8 @@ class BattleMapTileView(
     private val textureMoveTarget = Game.getTexture(TextureAsset.TILE_MOVE_DARK)
     private val textureAttackTarget = Game.getTexture(TextureAsset.TILE_ATTACK_DARK)
 
+    private val textureHint = Game.getTexture(TextureAsset.TILE_HINT_DARK)
+
     private fun textureByState(state: BattleMapTileState): Texture = when (state) {
         BattleMapTileState.NORMAL -> texture
         BattleMapTileState.FOCUSED -> textureFocused
@@ -39,26 +42,42 @@ class BattleMapTileView(
             field = value
         }
 
-    private val sprite = Sprite(textureByState(state))
-
     private val tileSize = ScreenVector(tileHexRadius * sqrt(3f), tileHexRadius * 2)
+
+    private val sprite = Sprite(textureByState(state))
+        .apply { setSize(tileSize.x, tileSize.y) }
+        .apply { setPosition(pos.x, pos.y) }
+    private val hintSprite = Sprite(textureHint)
+        .apply { setSize(tileSize.x, tileSize.y) }
+        .apply { setPosition(pos.x, pos.y) }
+
+    private val hintAlphaPulsator = WavePulsator(0f, 0.8f, 50, 2)
+
+    var showHint: Boolean = false
+        set(value) {
+            hintAlphaPulsator.reset()
+            field = value
+        }
 
     private val clickHandler: ClickableView = ClickableImpl { clickPos ->
         isPointInsideHexagon(clickPos, pos, tileSize)
     }
 
-    init {
-        sprite.setSize(tileSize.x, tileSize.y)
-        sprite.setPosition(pos.x, pos.y)
+    override fun render(sb: SpriteBatch) {
+        sprite.draw(sb)
+        if (showHint) {
+            if (hintAlphaPulsator.isDone()) {
+                showHint = false
+                return
+            }
+            hintAlphaPulsator.tick()
+            hintSprite.draw(sb, hintAlphaPulsator.value())
+        }
     }
 
     override fun subscribe(observer: ClickObserver) = clickHandler.subscribe(observer)
 
     override fun registerInput() = clickHandler.registerInput()
-
-    override fun render(sb: SpriteBatch) {
-        sprite.draw(sb)
-    }
 
     override fun dispose() {}
 }
