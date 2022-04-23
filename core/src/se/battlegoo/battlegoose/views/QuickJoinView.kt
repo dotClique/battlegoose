@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -22,6 +21,7 @@ class QuickJoinView(
 
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val titleLabel: Label = Label("Quick Join", skin)
+    private val statusLabel: Label = Label("", skin)
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -39,6 +39,15 @@ class QuickJoinView(
             (Game.WIDTH / 2f) - titleLabel.width / 2f,
             Game.HEIGHT * 0.9f
         )
+
+        statusLabel.setAlignment(Align.center)
+        statusLabel.setFontScale(2.6f)
+        statusLabel.setPosition(
+            Game.WIDTH / 2f - statusLabel.width / 2f,
+            Game.HEIGHT * 0.6f
+        )
+        statusLabel.setText("Status") // Status messages from MultiplayerService will be in this
+        // Logger("Quick Join", Logger.INFO).info(it.toString())
     }
 
     override fun registerInput() {
@@ -51,6 +60,7 @@ class QuickJoinView(
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
         titleLabel.draw(sb, 1f)
+        statusLabel.draw(sb, 1f)
 
         mainMenuButton.draw(sb, 1f)
     }
@@ -59,4 +69,3 @@ class QuickJoinView(
         skin.dispose()
     }
 }
-
