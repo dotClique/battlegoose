@@ -43,14 +43,11 @@ class BattleMapController(
     private var selectedTilePos: GridVector? = null
 
     init {
-        for (y in 0 until mapSize.y) {
-            for (x in 0 until mapSize.x - (y % 2)) {
-                val gridPos = GridVector(x, y)
-                tileControllers[gridPos.y][gridPos.x] = BattleMapTileController(
-                    tileView = BattleMapTileView(tileHexRadius, toPixelPos(gridPos)),
-                    onTileClick = { selectTile(gridPos, it) }
-                )
-            }
+        model.forEach { gridPos ->
+            tileControllers[gridPos.y][gridPos.x] = BattleMapTileController(
+                tileView = BattleMapTileView(tileHexRadius, toPixelPos(gridPos)),
+                onTileClick = { selectTile(gridPos, it) }
+            )
         }
     }
 
@@ -134,11 +131,11 @@ class BattleMapController(
         if (unit?.allegiance == hero) {
             unitControllers[unit]?.let { unitController ->
                 clearTileStates()
-                for (mPos in findMoveTargets(pos, unit)) {
-                    tileControllers[mPos.y][mPos.x]?.state = BattleMapTileState.MOVE_TARGET
+                findMoveTargets(pos, unit).mapNotNull { getTileControllerAt(it) }.forEach {
+                    it.state = BattleMapTileState.MOVE_TARGET
                 }
-                for (aPos in findAttackTargets(pos, unit)) {
-                    tileControllers[aPos.y][aPos.x]?.state = BattleMapTileState.ATTACK_TARGET
+                findAttackTargets(pos, unit).mapNotNull { getTileControllerAt(it) }.forEach {
+                    it.state = BattleMapTileState.ATTACK_TARGET
                 }
                 tileController.state = BattleMapTileState.FOCUSED
                 unitController.selected = true
@@ -169,6 +166,10 @@ class BattleMapController(
 
     private fun getUnitControllerAt(gridPosition: GridVector): UnitController? {
         return model.getUnit(gridPosition).let { unitControllers[it] }
+    }
+
+    private fun getTileControllerAt(gridPosition: GridVector): BattleMapTileController? {
+        return tileControllers[gridPosition.y][gridPosition.x]
     }
 
     private fun clearTileStates() {
