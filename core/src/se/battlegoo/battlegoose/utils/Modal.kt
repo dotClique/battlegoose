@@ -56,7 +56,8 @@ class Modal(
     init {
         dialog.setScale(scale)
         val dialogText = Label(text, skin)
-        if (text != null) dialog.text(dialogText)
+        dialogText.wrap = true
+        dialog.contentTable.add(dialogText).center().width(dialog.prefWidth * 0.9f)
         addActors(contentActors)
         dialog.isMovable = false
         when (type) {

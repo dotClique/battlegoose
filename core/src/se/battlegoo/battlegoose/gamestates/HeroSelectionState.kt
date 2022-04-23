@@ -25,7 +25,11 @@ class HeroSelectionState : GameState() {
         heroSelection.selected,
         stage = stage
     )
-    private val controller = HeroSelectionController(heroSelectionView, heroSelection, this::goBack)
+    private val controller = HeroSelectionController(
+        heroSelectionView,
+        heroSelection,
+        this::goBack
+    ) { GameStateManager.replace(BattleState()) }
 
     private fun goBack() {
         GameStateManager.goBack()

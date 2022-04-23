@@ -1,6 +1,5 @@
 package se.battlegoo.battlegoose.controllers
 
-import com.badlogic.gdx.Gdx
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.views.HeroSelectionView
 import se.battlegoo.battlegoose.views.IHeroSelectionViewController
@@ -8,7 +7,8 @@ import se.battlegoo.battlegoose.views.IHeroSelectionViewController
 class HeroSelectionController(
     private val view: HeroSelectionView,
     private val heroSelection: HeroSelection,
-    private val onClickBack: () -> Unit
+    private val onClickBack: () -> Unit,
+    private val onClickContinue: () -> Unit
 ) : ControllerBase(view), IHeroSelectionViewController {
 
     init {
@@ -33,10 +33,6 @@ class HeroSelectionController(
     }
 
     override fun onClickHeroSelectionContinue() {
-        Gdx.app.log(
-            "#TODO",
-            "Continue not implemented yet. " +
-                "Currently selected: [${heroSelection.selectedHero.name}]"
-        )
+        onClickContinue()
     }
 }
