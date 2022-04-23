@@ -11,11 +11,11 @@ import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {
 
-    private lateinit var joinLobbyView: JoinLobbyView
+    private val joinLobbyView: JoinLobbyView = createJoinLobbyView()
     private var cancelStartBattleListener: ListenerCanceler = {}
 
-    init {
-        joinLobbyView = JoinLobbyView(
+    private fun createJoinLobbyView(): JoinLobbyView {
+        return JoinLobbyView(
             onClickMainMenu = this::goBack,
             stage = stage,
             onJoinLobby = { lobbyID ->
