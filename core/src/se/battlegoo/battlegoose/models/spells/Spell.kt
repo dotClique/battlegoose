@@ -1,10 +1,12 @@
 package se.battlegoo.battlegoose.models.spells
 
-abstract class Spell(
+import se.battlegoo.battlegoose.datamodels.SpellData
+
+abstract class Spell<T : SpellData>(
     val title: String,
     val description: String,
     val duration: Int,
     val cooldown: Int
 ) {
-    abstract fun cast(): ActiveSpell
+    abstract fun cast(data: T): ActiveSpell<Spell<*>>
 }

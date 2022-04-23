@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.battlegoo.battlegoose.datamodels.GridVector
+import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
@@ -13,7 +14,6 @@ import se.battlegoo.battlegoose.models.heroes.HeroStats
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
 import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
-import se.battlegoo.battlegoose.models.spells.Bird52ActiveSpell
 import se.battlegoo.battlegoose.models.spells.Bird52Spell
 import se.battlegoo.battlegoose.models.spells.EphemeralAllegianceSpell
 import se.battlegoo.battlegoose.models.spells.Spell
@@ -25,7 +25,7 @@ import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 class SpellTest {
     @Test
     fun testAdrenalineShotSpell() {
-        val hero = object : Hero(
+        val hero = object : Hero<AdrenalineShotSpell>(
             HeroStats(1), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN
         ) {}
@@ -34,11 +34,7 @@ class SpellTest {
             SergeantSwan(),
             BattleMap(BattleMapBackground.DUNES, GridVector(10, 6))
         )
-        val spell = hero.spell.cast()
-        assertTrue(
-            "ActiveSpell saved parent spell instance incorrect",
-            spell.baseSpell is AdrenalineShotSpell
-        )
+        val spell = hero.spell.cast(SpellData.AdrenalineShot)
         assertEquals(
             "Wrong inital number of action points",
             1,
@@ -66,7 +62,7 @@ class SpellTest {
 
     @Test
     fun testEphemeralAllegianceSpell() {
-        val hero1 = object : Hero(
+        val hero1 = object : Hero<EphemeralAllegianceSpell>(
             HeroStats(1), EphemeralAllegianceSpell(), "", "", HeroSprite.SERGEANT_SWAN
         ) {}
         val hero2 = SergeantSwan()
@@ -77,7 +73,8 @@ class SpellTest {
         battle.battleMap.placeUnit(GuardGoose(hero1), GridVector(1, 1))
         battle.battleMap.placeUnit(PrivatePenguin(hero1), GridVector(1, 2))
         battle.battleMap.placeUnit(SpitfireSeagull(hero2), GridVector(2, 1))
-        battle.battleMap.placeUnit(DelinquentDuck(hero2), GridVector(2, 2))
+        val targetUnit = DelinquentDuck(hero2)
+        battle.battleMap.placeUnit(targetUnit, GridVector(2, 2))
 
         assertEquals(
             "Hero 1 should have exactly 2 units with allegiance to them",
@@ -100,11 +97,7 @@ class SpellTest {
             battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
         )
 
-        val spell = hero1.spell.cast()
-        assertTrue(
-            "ActiveSpell save parent spell instance incorrectly",
-            spell.baseSpell is EphemeralAllegianceSpell
-        )
+        val spell = hero1.spell.cast(SpellData.EphemeralAllegiance(GridVector(2, 2)))
 
         for (i in 1 until spell.baseSpell.duration - 1) {
             spell.apply(battle)
@@ -127,6 +120,10 @@ class SpellTest {
                 "Hero 2 should maintain ownership of 2 units",
                 2,
                 battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
+            )
+            assertTrue(
+                "Hero 1 should have ownership of the target unit",
+                targetUnit.allegiance == hero1
             )
         }
         assertTrue(
@@ -169,7 +166,7 @@ class SpellTest {
 
     @Test
     fun testBird52Spell() {
-        val hero = object : Hero(
+        val hero = object : Hero<Bird52Spell>(
             HeroStats(1), Bird52Spell(), "",
             "", HeroSprite.SERGEANT_SWAN
         ) {}
@@ -189,11 +186,7 @@ class SpellTest {
         battle.battleMap.placeUnit(unit1Team2, GridVector(2, 2))
         battle.battleMap.placeUnit(unit2Team2, GridVector(4, 2))
 
-        val spell = hero.spell.cast() as Bird52ActiveSpell
-        assertTrue(
-            "ActiveSpell saved parent spell instance incorrect",
-            spell.baseSpell is Bird52Spell
-        )
+        val spell = hero.spell.cast(SpellData.Bird52)
 
         var stats1Team1 = unit1Team1.currentStats
         var stats2Team1 = unit2Team1.currentStats
@@ -212,12 +205,12 @@ class SpellTest {
         )
 
         assertEquals(
-            "${unit2Team1.name} should have taken ${spell.attackDamage} damage",
-            stats2Team1.health - spell.attackDamage, unit2Team1.currentStats.health
+            "${unit2Team1.name} should have taken ${hero.spell.attackDamage} damage",
+            stats2Team1.health - hero.spell.attackDamage, unit2Team1.currentStats.health
         )
         assertEquals(
-            "${unit2Team2.name} should have taken ${spell.attackDamage} damage",
-            stats2Team2.health - spell.attackDamage, unit2Team2.currentStats.health
+            "${unit2Team2.name} should have taken ${hero.spell.attackDamage} damage",
+            stats2Team2.health - hero.spell.attackDamage, unit2Team2.currentStats.health
         )
 
         assertTrue("Spell not finished after ${spell.baseSpell.duration} turns", spell.finished)
@@ -260,16 +253,17 @@ class SpellTest {
         )
         var counter = 0
         val testDuration = 5
-        val spell = object : Spell("test", "t2", testDuration, 2) {
-            override fun cast(): ActiveSpell {
-                return object : ActiveSpell(this) {
+        class TestSpell : Spell<SpellData.Bird52>("test", "t2", testDuration, 2) {
+            override fun cast(data: SpellData.Bird52): ActiveSpell<TestSpell> {
+                return object : ActiveSpell<TestSpell>(this, data) {
                     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
                         counter += 1
                     }
                 }
             }
         }
-        val activeSpell = spell.cast()
+        val spell = TestSpell()
+        val activeSpell = spell.cast(SpellData.Bird52)
         assertEquals("Spell::cast called apply by itself", 0, counter)
         for (i in 1..testDuration) {
             activeSpell.apply(battle)

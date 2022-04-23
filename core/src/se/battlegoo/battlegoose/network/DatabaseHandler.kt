@@ -13,7 +13,6 @@ import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
 import se.battlegoo.battlegoose.datamodels.SpellData
-import se.battlegoo.battlegoose.models.spells.Spell
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
@@ -285,14 +284,21 @@ class DatabaseHandler {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun convertToSpellData(data: Map<String, Any>): SpellData<Spell> {
+    fun convertToSpellData(data: Map<String, Any>): SpellData {
         val spellData = data[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
-        val spellType = spellData[SpellData<*>::spellType.name] as String
+        val spellType = spellData[SpellData::spellType.name] as String
         // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineShotSpellData" into a
         // KClass
         // MUST have a branch for each subclass of SpellData
         return when (Class.forName(spellType).kotlin) {
-            SpellData.AdrenalineShotSpellData::class -> SpellData.AdrenalineShotSpellData
+            SpellData.AdrenalineShot::class -> SpellData.AdrenalineShot
+            SpellData.Bird52::class -> SpellData.Bird52
+            SpellData.EphemeralAllegiance::class -> SpellData.EphemeralAllegiance(
+                convertToGridVector(
+                    spellData[SpellData.EphemeralAllegiance::targetPosition.name]
+                        as Map<String, Any>
+                )
+            )
             else -> throw NotImplementedError("The spell class $spellType has no deserializer")
         }
     }

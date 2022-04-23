@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.models.heroes
 
 import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
 
-class AdmiralAlbatross : Hero(
+class AdmiralAlbatross : Hero<AdrenalineShotSpell>(
     HeroStats(),
     AdrenalineShotSpell(),
     "Admiral Albatross",

@@ -13,7 +13,7 @@ import se.battlegoo.battlegoose.models.spells.AdrenalineShotSpell
 class HeroTest {
     @Test
     fun testHero() {
-        val hero = object : Hero(
+        val hero = object : Hero<AdrenalineShotSpell>(
             HeroStats(2), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN
         ) {}
@@ -35,7 +35,7 @@ class HeroTest {
 
     @Test
     fun testHeroNotAllowedToPerformActionCostingMoreThanCurrentActionPoints() {
-        val hero = object : Hero(
+        val hero = object : Hero<AdrenalineShotSpell>(
             HeroStats(2), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN
         ) {}
