@@ -35,10 +35,5 @@ class HeroSelectionController(
 
     override fun onClickHeroSelectionContinue() {
         onClickContinue()
-        Gdx.app.log(
-            "#TODO",
-            "Continue not implemented yet. " +
-                "Currently selected: [${heroSelection.selectedHero.name}]"
-        )
     }
 }

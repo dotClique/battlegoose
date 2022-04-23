@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.network.CreateLobbyStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
 
 class CreateLobbyView(
@@ -16,29 +17,42 @@ class CreateLobbyView(
     val stage: Stage
 ) : ViewBase() {
 
-    private var waitingTimer: Float = 0f
-    private val letterSpawnTime: Float = 1f
-    private var letterCount: Int = 0
-
-    var onClickStartBattle: (() -> Unit)? = null
-
+    // Assets
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
-
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
-    private var lobbyIdTextField: TextField = TextField("", skin)
 
+    // Labels and TextFields
+    private var lobbyIdTextField: TextField = TextField("", skin)
     private val titleLabel: Label = Label("Create Lobby", skin)
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
-    private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
-    private val waitingLabel: Label = Label("Creating lobby", skin)
+
+    //    private val statusLabel: Label = Label("Creating lobby", skin)
+    private var statusLabel: DotWaitingLabelView = DotWaitingLabelView(
+        "Creating lobby", skin,
+    )
     private val lobbyInfoLabel: Label = Label(
         "Ask your friend to enter this code for the game to begin",
         skin
     )
 
+    // Buttons
+    private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val startBattleButton: TextButton = TextButton("Start Battle", skin)
 
-    private var waitingText = "Creating lobby"
+    // Dynamically set onClickStartBattle function
+    var onClickStartBattle: (() -> Unit)? = null
+        set(value) {
+            field = value
+            if (value == null) {
+                startBattleButton.remove()
+                stage.addActor(lobbyInfoLabel)
+
+            } else {
+                stage.addActor(startBattleButton)
+                lobbyInfoLabel.remove()
+            }
+        }
+
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -47,7 +61,6 @@ class CreateLobbyView(
         titleLabel.setAlignment(Align.center)
         lobbyIdLabel.setAlignment(Align.center)
         lobbyInfoLabel.setAlignment(Align.center)
-        waitingLabel.setAlignment(Align.center)
 
         lobbyIdTextField.alignment = Align.center
         lobbyIdTextField.height = Game.HEIGHT / 12f
@@ -58,27 +71,56 @@ class CreateLobbyView(
         startBattleButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
         startBattleButton.height *= 1.5f
+        titleLabel.setFontScale(5f)
+
+        lobbyIdTextField.setPosition(
+            Game.WIDTH / 2f - lobbyIdTextField.width / 2f,
+            Game.HEIGHT / 1.7f
+        )
+        titleLabel.setPosition(
+            (Game.WIDTH / 2f) - titleLabel.width / 2f,
+            Game.HEIGHT * 0.9f
+        )
+        lobbyIdLabel.setPosition(
+            Game.WIDTH / 2f - lobbyIdTextField.width * 1.1f,
+            Game.HEIGHT / 1.66f
+        )
+        lobbyInfoLabel.setPosition(
+            (Game.WIDTH / 2f) - (lobbyInfoLabel.width / 2f),
+            Game.HEIGHT * 0.5f
+        )
+        statusLabel.setPosition(
+            Game.WIDTH / 2f - statusLabel.width / 2f,
+            Game.HEIGHT * 0.8f
+        )
+        mainMenuButton.setPosition(x0, y0)
+        startBattleButton.setPosition(Game.WIDTH - x0 - startBattleButton.width, y0)
 
         stage.addActor(lobbyIdTextField)
         stage.addActor(mainMenuButton)
         stage.addActor(lobbyIdLabel)
+        stage.addActor(titleLabel)
+        stage.addActor(lobbyInfoLabel)
     }
 
-    private fun resetWaitingText() {
-        waitingLabel.setText(waitingLabel.text.split(".")[0])
-    }
+    fun setStatus(status: CreateLobbyStatus) {
+        statusLabel.setText(
+            when (status) {
+                CreateLobbyStatus.OTHER_PLAYER_JOINED -> {
+                    statusLabel.shouldDotLoad = false
+                    "Another player has joined. Ready to start battle"
+                }
+                CreateLobbyStatus.OPEN -> {
+                    statusLabel.shouldDotLoad = true
+                    "Waiting for another player"
+                }
+            }
+        )
 
-    private fun updateWaitingText() {
-        waitingLabel.setText("${waitingLabel.text}.")
-    }
-
-    fun setStatusText(text: String) {
-        waitingLabel.setText(text)
     }
 
     fun setGeneratedLobbyId(lobbyId: String) {
         lobbyIdTextField.text = lobbyId
-        waitingText = "Waiting for opponent"
     }
 
     override fun registerInput() {
@@ -91,63 +133,10 @@ class CreateLobbyView(
     }
 
     override fun render(sb: SpriteBatch) {
-        lobbyIdTextField.setPosition(
-            Game.WIDTH / 2f - lobbyIdTextField.width / 2f,
-            Game.HEIGHT / 1.7f
-        )
-
-        titleLabel.setFontScale(5f)
-        titleLabel.setPosition(
-            (Game.WIDTH / 2f) - titleLabel.width / 2f,
-            Game.HEIGHT * 0.9f
-        )
-
-        lobbyIdLabel.setPosition(
-            Game.WIDTH / 2f - lobbyIdTextField.width * 1.1f,
-            Game.HEIGHT / 1.66f
-        )
-
-        lobbyInfoLabel.setPosition(
-            (Game.WIDTH / 2f) - (lobbyInfoLabel.width / 2f),
-            Game.HEIGHT * 0.5f
-        )
-        waitingLabel.setPosition(
-            Game.WIDTH / 2f - waitingLabel.width / 2f,
-            Game.HEIGHT * 0.8f
-        )
-
-        mainMenuButton.setPosition(x0, y0)
-        startBattleButton.setPosition(Game.WIDTH - x0 - startBattleButton.width, y0)
+        // The stage and its actors is drawn globally
 
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
-
-        titleLabel.draw(sb, 1f)
-        lobbyIdLabel.draw(sb, 1f)
-        lobbyIdTextField.draw(sb, 1f)
-
-        waitingLabel.draw(sb, 1f)
-
-        if (lobbyIdTextField.text != "") {
-            lobbyInfoLabel.draw(sb, 1f)
-        }
-
-        mainMenuButton.draw(sb, 1f)
-
-        if (onClickStartBattle == null)
-            startBattleButton.remove()
-        else
-            stage.addActor(startBattleButton)
-
-        // Loading with dots.
-        waitingTimer += 0.01f
-        if (letterCount >= 4f) {
-            resetWaitingText()
-            letterCount = 0
-        } else if (waitingTimer > letterSpawnTime) {
-            updateWaitingText()
-            waitingTimer -= letterSpawnTime
-            letterCount++
-        }
+        statusLabel.render(sb)
     }
 
     override fun dispose() {

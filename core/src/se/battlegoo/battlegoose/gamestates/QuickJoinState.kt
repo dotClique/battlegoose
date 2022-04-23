@@ -34,7 +34,7 @@ class QuickJoinState : GameState() {
     private fun handleInput() {
         if (Gdx.input.justTouched()) {
             cancelStartBattleListener()
-            GameStateManager.push(MainMenuState())
+            GameStateManager.goBack()
         }
     }
 

@@ -216,7 +216,7 @@ object MultiplayerService {
                             lobbyID,
                             { battleID ->
                                 if (battleID == null)
-                                    listener.accept(JoinLobbyStatus.NotAccessable)
+                                    listener.accept(JoinLobbyStatus.NotAccessible)
                                 else
                                     listener.accept(
                                         JoinLobbyStatus.StartBattle(
@@ -239,22 +239,22 @@ object MultiplayerService {
     fun leaveLobbyAsOtherPlayer(
         lobbyID: String,
         fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        callback: () -> Unit = {}
+        onLeftLobby: () -> Unit = {}
     ) {
         databaseHandler.setValue(
             DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID],
             "", fail
         ) {
-            callback()
+            onLeftLobby()
         }
     }
 
     fun deleteLobby(
         lobbyID: String,
         fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        callback: () -> Unit = {}
+        onSuccess: () -> Unit = {}
     ) {
-        databaseHandler.deleteValue(DbPath.Lobbies[lobbyID], fail, callback)
+        databaseHandler.deleteValue(DbPath.Lobbies[lobbyID], fail, onSuccess)
     }
 
     fun startBattle(lobbyID: String, onCreated: () -> Unit = {}) {

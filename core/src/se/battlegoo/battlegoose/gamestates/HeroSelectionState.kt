@@ -29,7 +29,7 @@ class HeroSelectionState : GameState() {
         heroSelectionView,
         heroSelection,
         this::goBack
-    ) { GameStateManager.push(BattleState()) }
+    ) { GameStateManager.replace(BattleState()) }
 
     private fun goBack() {
         GameStateManager.goBack()

@@ -15,7 +15,6 @@ class CreateLobbyState : GameState() {
         stage
     )
 
-    private var createLobbyCompleted = false
     private var readyToStartBattle = false
     private var startBattle = false
 
@@ -25,6 +24,20 @@ class CreateLobbyState : GameState() {
             field = value
             value?.let(createLobbyView::setGeneratedLobbyId)
         }
+
+    init {
+        MultiplayerService.tryCreateLobby { lobbyData ->
+            Logger("Created lobby", Logger.INFO).info(lobbyData.toString())
+            lobbyId = lobbyData.lobbyID
+            MultiplayerService.listenForOtherPlayerJoinLobby(
+                lobbyData.lobbyID
+            ) { status, cancelListener ->
+                readyToStartBattle = status == CreateLobbyStatus.OTHER_PLAYER_JOINED
+                createLobbyView.setStatus(status)
+                cancelOtherPlayerIDListener = cancelListener
+            }
+        }
+    }
 
     private fun goBack() {
         // TODO: Handle that player that created the lobby leaves lobby
@@ -45,20 +58,6 @@ class CreateLobbyState : GameState() {
 
     private fun handleInput() {
         createLobbyView.registerInput()
-        if (!createLobbyCompleted) {
-            createLobbyCompleted = true
-            MultiplayerService.tryCreateLobby { lobbyData ->
-                Logger("Created lobby", Logger.INFO).info(lobbyData.toString())
-                lobbyId = lobbyData.lobbyID
-                MultiplayerService.listenForOtherPlayerJoinLobby(
-                    lobbyData.lobbyID
-                ) { status, cancelListener ->
-                    readyToStartBattle = status == CreateLobbyStatus.OTHER_PLAYER_JOINED
-                    createLobbyView.setStatusText(status.message)
-                    cancelOtherPlayerIDListener = cancelListener
-                }
-            }
-        }
     }
 
     private fun startBattle() {
@@ -73,7 +72,6 @@ class CreateLobbyState : GameState() {
 
     override fun update(dt: Float) {
         handleInput()
-        Logger("ulrik").error("ReadyToStartBattle: $readyToStartBattle")
         // Dynamic 'waiting for opponent' message
         if (readyToStartBattle) {
             createLobbyView.onClickStartBattle = ::startBattle

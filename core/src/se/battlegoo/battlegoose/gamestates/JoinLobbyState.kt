@@ -11,7 +11,7 @@ import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {
 
-    private var joinLobbyView: JoinLobbyView? = null
+    private lateinit var joinLobbyView: JoinLobbyView
     private var cancelStartBattleListener: ListenerCanceler = {}
 
     init {
@@ -22,7 +22,7 @@ class JoinLobbyState : GameState() {
                 MultiplayerService.tryJoinLobby(
                     lobbyID, {
                         joinLobbyStatus = it
-                        joinLobbyView?.updateStatusLabel(it.message)
+                        joinLobbyView.setStatus(it)
                     },
                     { listenerCanceler ->
                         this.cancelStartBattleListener = {
@@ -53,8 +53,7 @@ class JoinLobbyState : GameState() {
                         "Try again later. Error:$string, $throwable",
                         ModalType.Error {},
                         stage
-                    )
-                        .show()
+                    ).show()
                 }
             )
         cancelStartBattleListener()
@@ -62,28 +61,36 @@ class JoinLobbyState : GameState() {
     }
 
     private fun handleInput() {
-        joinLobbyView?.registerInput()
+        joinLobbyView.registerInput()
     }
 
     override fun update(dt: Float) {
         handleInput()
         val newJoined = joinLobbyStatus is JoinLobbyStatus.Ready
-        if (!newJoined && joined && joinLobbyStatus is JoinLobbyStatus.NotAccessable)
-            Modal("Lobby deleted", "Try another lobby", ModalType.Info(), stage).show()
+        if (!newJoined && joined && joinLobbyStatus is JoinLobbyStatus.NotAccessible) {
+
+            cancelStartBattleListener()
+            Modal(
+                "Lobby deleted",
+                "The joined lobby was deleted. Try another lobby.",
+                ModalType.Info(),
+                stage
+            ).show()
+        }
 
         joined = newJoined
         startBattle = joinLobbyStatus is JoinLobbyStatus.StartBattle
 
         if (startBattle) {
-            GameStateManager.push(BattleState())
+            GameStateManager.replace(BattleState())
         }
     }
 
     override fun render(sb: SpriteBatch) {
-        joinLobbyView?.render(sb)
+        joinLobbyView.render(sb)
     }
 
     override fun dispose() {
-        joinLobbyView?.dispose()
+        joinLobbyView.dispose()
     }
 }
