@@ -76,11 +76,6 @@ class HeroDetailsView(
         spellNameLabel.wrap = true
         spellDescriptionLabel.wrap = true
 
-        descriptionLabel.wrap = true
-        spellHeaderLabel.wrap = true
-        spellNameLabel.wrap = true
-        spellDescriptionLabel.wrap = true
-
         descriptionLabel.setFontScale(2f)
         spellNameLabel.setFontScale(2f)
         spellDescriptionLabel.setFontScale(2f)
@@ -88,7 +83,6 @@ class HeroDetailsView(
         // Set default values for table cells
         textTable.defaults().fill().left().colspan(2)
         // Add and position all text elements
-//        textTable.add(nameLabel).width(textBoxSize.x)
         textTable.add(heroSprite).width(textBoxSize.y / 3).height(textBoxSize.y / 3)
             .colspan(2)
             .center()
