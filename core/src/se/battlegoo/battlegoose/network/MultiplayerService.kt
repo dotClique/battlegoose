@@ -54,7 +54,10 @@ object MultiplayerService {
         listener: Consumer<RandomOpponentStatus>,
         purgedQueueConsumer: Consumer<List<String>?>
     ) {
-        databaseHandler.setValue(DbPath.RandomOpponentData[RandomOpponentData::lastUpdated], Date().time) {
+        databaseHandler.setValue(
+            DbPath.RandomOpponentData[RandomOpponentData::lastUpdated],
+            Date().time
+        ) {
             databaseHandler.setValue(
                 DbPath.RandomOpponentQueue, listOf()
             ) {
@@ -138,6 +141,7 @@ object MultiplayerService {
 
     fun tryRequestOpponent(
         listener: Consumer<RandomOpponentStatus>,
+        lobbyIDConsumer: Consumer<String>,
         queueCanceler: Consumer<ListenerCanceler?>,
         cancelBattleJoinListener: Consumer<ListenerCanceler>
     ) {
@@ -172,6 +176,7 @@ object MultiplayerService {
                                     availableLobbyID, {
                                         queueListenerCanceler.invoke()
                                         popQueue(queue) {
+                                            lobbyIDConsumer.accept(availableLobbyID)
                                             listener.accept(RandomOpponentStatus.JOINED_LOBBY)
                                         }
                                     },
@@ -190,6 +195,7 @@ object MultiplayerService {
                                     listenForOtherRandomPlayerJoinLobby(lobby.lobbyID, listener)
                                     queueListenerCanceler.invoke()
                                     popQueue(queue) {
+                                        lobbyIDConsumer.accept(lobby.lobbyID)
                                         listener.accept(RandomOpponentStatus.CREATED_LOBBY)
                                     }
                                 }
@@ -315,7 +321,7 @@ object MultiplayerService {
         }
     }
 
-    private fun listenForBattleStart(
+    fun listenForBattleStart(
         lobbyID: String,
         consumer: Consumer<String?>,
         listenerCancelerConsumer: Consumer<ListenerCanceler>
