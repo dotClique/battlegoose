@@ -28,7 +28,6 @@ class JoinLobbyView(
     private val lobbyIdLabel: Label = Label("Lobby ID: ", skin)
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val joinButton: TextButton = TextButton("Join", skin)
-//    private val statusLabel: Label = Label("", skin)
     private val statusLabel: DotWaitingLabelView = DotWaitingLabelView("", skin)
 
     private val x0: Float = Menu.SPACER
@@ -47,7 +46,6 @@ class JoinLobbyView(
         lobbyIdTextField.alignment = Align.center
         lobbyIdTextField.height = Game.HEIGHT / 12f
         lobbyIdTextField.width = Game.WIDTH / 5f
-        // textFieldStyle.font.data.setScale(2.6f)
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f

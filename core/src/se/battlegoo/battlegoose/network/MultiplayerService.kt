@@ -304,16 +304,16 @@ object MultiplayerService {
             DbPath.Lobbies[lobbyID][LobbyData::battleID]
         ) { battleID, battleIDListenerCanceler ->
             listenerCancelerConsumer.accept(listenerCanceler)
+            if (cancelListener) {
+                Logger("ulrik").error("Canceled listener in listenForBattleStart")
+                battleIDListenerCanceler()
+                return@listen
+            }
             if (battleID == null) {
                 consumer.accept(null)
                 return@listen
             } else if (battleID == "")
                 return@listen
-
-            if (cancelListener) {
-                battleIDListenerCanceler()
-                return@listen
-            }
 
             databaseHandler.getUserID { userID ->
                 databaseHandler.setValue(

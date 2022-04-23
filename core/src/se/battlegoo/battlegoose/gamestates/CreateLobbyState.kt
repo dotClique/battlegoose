@@ -27,7 +27,6 @@ class CreateLobbyState : GameState() {
 
     init {
         MultiplayerService.tryCreateLobby { lobbyData ->
-            Logger("Created lobby", Logger.INFO).info(lobbyData.toString())
             lobbyId = lobbyData.lobbyID
             MultiplayerService.listenForOtherPlayerJoinLobby(
                 lobbyData.lobbyID
@@ -62,9 +61,12 @@ class CreateLobbyState : GameState() {
 
     private fun startBattle() {
         val lobbyIDCpy =
-            lobbyId ?: return Logger("ulrik").error(
-                "LobbyID is null createLobbyState startBattle"
-            )
+            lobbyId ?: return Modal(
+                "Error starting battle",
+                "There was no lobby to start battle from. Try again later.",
+                ModalType.Error(),
+                stage
+            ).show()
         MultiplayerService.startBattle(lobbyIDCpy) {
             startBattle = true
         }
