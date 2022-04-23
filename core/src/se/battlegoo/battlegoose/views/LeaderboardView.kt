@@ -2,6 +2,8 @@ package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -12,52 +14,37 @@ import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 
 class LeaderboardView(
-    private val onClickMainMenu: () -> Unit
+    private val onClickMainMenu: () -> Unit,
+    stage: Stage
 ) : ViewBase() {
 
     private val background = Texture("menuBackground.jpg")
 
     private var stage = Stage(Game.viewPort)
-    private val skin: Skin = Skin(Gdx.files.internal("star-soldier-ui.json"))
-    private var leaderboard: Table = Table()
-    private var topPlayers: MutableList<String> = mutableListOf(
-        "Arne", "Per", "Gudrun",
-        "Olga", "Ulvhild", "Tore",
-        "Jalmar", "Lise", "Vidar", "Ernst"
-    )
+    private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val titleLabel: Label = Label("Leaderboard", skin)
+
+    private val leaderboardFont: BitmapFont = skin.getFont(Fonts.STAR_SOLDIER.identifier)
+    private val leaderboardLayout = GlyphLayout(leaderboardFont, "")
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
 
     init {
         Gdx.input.inputProcessor = stage
-        stage.addActor(leaderboard)
         stage.addActor(mainMenuButton)
-
-        leaderboard.pad(10f).defaults().expandX().space(4f)
-        addPlayersToLeaderboard(topPlayers)
-        leaderboard.setPosition(
-            Game.WIDTH / 2f - leaderboard.width / 2f,
-            Game.HEIGHT / 1.7f - leaderboard.height / 2f
-        )
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
 
         titleLabel.setAlignment(Align.center)
+        leaderboardFont.data.setScale(3f)
     }
 
-    fun addPlayersToLeaderboard(topPlayers: MutableList<String>) {
-        for (i in 0 until topPlayers.size) {
-            leaderboard.row()
-            var player = Label("${i + 1} ${topPlayers[i]}", skin)
-            player.setAlignment(Align.center)
-            leaderboard.add(player)
-            // player.color = Color.OLIVE // consider changing color of labels
-        }
+    fun setLeaderboardText(leaderboardText: String) {
+        leaderboardLayout.setText(leaderboardFont, leaderboardText)
     }
 
     override fun registerInput() {
@@ -78,12 +65,17 @@ class LeaderboardView(
 
         mainMenuButton.setPosition(x0, y0)
         mainMenuButton.draw(sb, 1f)
-        leaderboard.draw(sb, 1f)
+
+        leaderboardFont.draw(
+            sb, leaderboardLayout, Game.WIDTH / 2f - leaderboardLayout.width / 2f,
+            Game.HEIGHT * 0.8f
+        )
     }
 
     override fun dispose() {
         background.dispose()
         stage.dispose()
         skin.dispose()
+        leaderboardFont.dispose()
     }
 }
