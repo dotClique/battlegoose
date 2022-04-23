@@ -20,12 +20,15 @@ class QuickJoinState : GameState() {
     private val goBack: BitmapFont = BitmapFont()
     private val goBackText = "Press anywhere to return to main menu..."
     private val layoutGoBack = GlyphLayout(goBack, goBackText)
+    private var queueCanceler: ListenerCanceler? = null
 
     private var cancelStartBattleListener: ListenerCanceler = {}
 
     init {
         MultiplayerService.tryRequestOpponent({
             titleText = it.toString()
+        }, {
+            queueCanceler = it
         }, { cancelListener ->
             this.cancelStartBattleListener = cancelListener
         })
@@ -34,7 +37,11 @@ class QuickJoinState : GameState() {
     private fun handleInput() {
         if (Gdx.input.justTouched()) {
             cancelStartBattleListener()
-            GameStateManager.goBack()
+            MultiplayerService.tryCancelRequestOpponent({ success ->
+                if (success) {
+                    GameStateManager.push(MainMenuState())
+                }
+            }, queueCanceler)
         }
     }
 

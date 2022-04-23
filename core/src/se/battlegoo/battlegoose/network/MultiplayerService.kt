@@ -50,21 +50,11 @@ object MultiplayerService {
             DbPath.RandomOpponentData[RandomOpponentData::availableLobby]
         ) { lobbyID -> consumer.accept(lobbyID) }
 
-    private fun purgeInactiveFromQueue(
+    private fun purgeQueue(
         listener: Consumer<RandomOpponentStatus>,
         purgedQueueConsumer: Consumer<List<String>?>
-    ) = databaseHandler.read(
-        DbPath.RandomOpponentData[RandomOpponentData::lastUpdated]
-    ) { lastUpdated ->
-        val now = Date().time
-        val timeoutMs = 10000
-
-        if (lastUpdated != null && now - lastUpdated < timeoutMs) {
-            purgedQueueConsumer.accept(null)
-            return@read
-        }
-
-        databaseHandler.setValue(DbPath.RandomOpponentData[RandomOpponentData::lastUpdated], now) {
+    ) {
+        databaseHandler.setValue(DbPath.RandomOpponentData[RandomOpponentData::lastUpdated], Date().time) {
             databaseHandler.setValue(
                 DbPath.RandomOpponentQueue, listOf()
             ) {
@@ -74,16 +64,34 @@ object MultiplayerService {
         }
     }
 
+    private fun purgeQueueIfTimeout(
+        listener: Consumer<RandomOpponentStatus>,
+        purgedQueueConsumer: Consumer<List<String>?>
+    ) = databaseHandler.read(
+        DbPath.RandomOpponentData[RandomOpponentData::lastUpdated]
+    ) { lastUpdated ->
+        val timeoutMs = 10000
+
+        if (lastUpdated != null && Date().time - lastUpdated < timeoutMs) {
+            purgedQueueConsumer.accept(null)
+            return@read
+        }
+        purgeQueue(listener, purgedQueueConsumer)
+    }
+
     private fun addPlayerToQueue(
         userID: String,
         queue: List<String>,
         listener: Consumer<RandomOpponentStatus>
-    ) {
-        if (queue.contains(userID)) return
+    ): List<String> {
+        if (queue.contains(userID)) return queue
 
-        databaseHandler.setValue(DbPath.RandomOpponentQueue, queue + userID) {
+        val updatedQueue = queue + userID
+
+        databaseHandler.setValue(DbPath.RandomOpponentQueue, updatedQueue) {
             listener.accept(RandomOpponentStatus.JOIN_QUEUE)
         }
+        return updatedQueue
     }
 
     private fun listenForOtherRandomPlayerJoinLobby(
@@ -118,24 +126,36 @@ object MultiplayerService {
         )
     }
 
+    fun tryCancelRequestOpponent(
+        successListener: Consumer<Boolean>,
+        queueCanceler: ListenerCanceler?
+    ) {
+        if (queueCanceler == null) return successListener.accept(false)
+        queueCanceler.invoke()
+        purgeQueue({}, {})
+        successListener.accept(true)
+    }
+
     fun tryRequestOpponent(
         listener: Consumer<RandomOpponentStatus>,
+        queueCanceler: Consumer<ListenerCanceler?>,
         cancelBattleJoinListener: Consumer<ListenerCanceler>
     ) {
         var processing = false
         databaseHandler.listen(
             DbPath.RandomOpponentQueue,
         ) { updatedQueueData, queueListenerCanceler ->
+            queueCanceler.accept(queueListenerCanceler)
             if (processing) {
                 return@listen
             }
             processing = true
 
-            purgeInactiveFromQueue(listener) { purgedQueue ->
-                val queue = purgedQueue ?: updatedQueueData ?: listOf()
+            purgeQueueIfTimeout(listener) { purgedQueue ->
+                var queue = purgedQueue ?: updatedQueueData ?: listOf()
 
                 databaseHandler.getUserID { userID ->
-                    addPlayerToQueue(userID, queue, listener)
+                    queue = addPlayerToQueue(userID, queue, listener)
 
                     if (queue.last() != userID) {
                         processing = false
@@ -146,6 +166,7 @@ object MultiplayerService {
                     this.checkRandomLobbyAvailability { availableLobbyID ->
 
                         if (!availableLobbyID.isNullOrEmpty()) {
+                            queueCanceler.accept(null)
                             setAvailableLobby("") {
                                 tryJoinLobby(
                                     availableLobbyID, {
@@ -163,6 +184,7 @@ object MultiplayerService {
                         }
 
                         if (queue.size > 1) {
+                            queueCanceler.accept(null)
                             tryCreateLobby { lobby ->
                                 setAvailableLobby(lobby.lobbyID) {
                                     listenForOtherRandomPlayerJoinLobby(lobby.lobbyID, listener)
