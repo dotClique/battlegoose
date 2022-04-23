@@ -1,6 +1,5 @@
 package se.battlegoo.battlegoose.controllers
 
-import com.badlogic.gdx.Gdx
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.views.HeroSelectionView
 import se.battlegoo.battlegoose.views.IHeroSelectionViewController

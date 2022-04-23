@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.Align
 class DotWaitingLabelView(
     text: String,
     skin: Skin,
-    private var xPos: Float = 0f,
-    private var yPos: Float = 0f,
+    xPos: Float = 0f,
+    yPos: Float = 0f,
     var shouldDotLoad: Boolean = false
 ) : ViewBase() {
     private var waitingTimer: Float = 0f
@@ -38,9 +38,7 @@ class DotWaitingLabelView(
         statusLabel.setText(text)
     }
 
-    fun setPosition(x: Float, y: Float) {
-        statusLabel.setPosition(x, y)
-    }
+    fun setPosition(x: Float, y: Float) = statusLabel.setPosition(x, y)
 
     private fun dotLoading() {
         waitingTimer += 0.01f

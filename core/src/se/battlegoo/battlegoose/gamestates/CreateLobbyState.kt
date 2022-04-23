@@ -1,7 +1,6 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.network.CreateLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.utils.Modal
@@ -39,8 +38,6 @@ class CreateLobbyState : GameState() {
     }
 
     private fun goBack() {
-        // TODO: Handle that player that created the lobby leaves lobby
-        // TODO: Delete lobby
         val lobbyIDCpy = lobbyId
         if (lobbyIDCpy != null)
             MultiplayerService.deleteLobby(lobbyIDCpy, fail = { str, t ->

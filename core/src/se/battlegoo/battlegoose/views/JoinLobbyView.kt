@@ -18,7 +18,6 @@ class JoinLobbyView(
     private val stage: Stage,
 ) : ViewBase() {
 
-
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))

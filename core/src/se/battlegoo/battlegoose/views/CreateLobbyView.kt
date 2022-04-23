@@ -46,13 +46,11 @@ class CreateLobbyView(
             if (value == null) {
                 startBattleButton.remove()
                 stage.addActor(lobbyInfoLabel)
-
             } else {
                 stage.addActor(startBattleButton)
                 lobbyInfoLabel.remove()
             }
         }
-
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
@@ -116,7 +114,6 @@ class CreateLobbyView(
                 }
             }
         )
-
     }
 
     fun setGeneratedLobbyId(lobbyId: String) {
