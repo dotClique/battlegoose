@@ -8,11 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import java.util.UUID
+import kotlin.math.roundToInt
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.gamestates.GameStateManager
 import se.battlegoo.battlegoose.views.Skins
-import java.util.UUID
-import kotlin.math.roundToInt
 
 class Modal(
     private val title: String,
@@ -56,7 +56,8 @@ class Modal(
     init {
         dialog.setScale(scale)
         val dialogText = Label(text, skin)
-        if (text != null) dialog.text(dialogText)
+        dialogText.wrap = true
+        dialog.contentTable.add(dialogText).center().width(dialog.prefWidth * 0.9f)
         addActors(contentActors)
         dialog.isMovable = false
         when (type) {
