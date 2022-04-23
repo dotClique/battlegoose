@@ -1,12 +1,9 @@
 package se.battlegoo.battlegoose.gamestates
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import se.battlegoo.battlegoose.network.LeaderboardEntry
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.views.LeaderboardView
-import se.battlegoo.battlegoose.views.Skins
 
 class LeaderboardState : GameState() {
 
