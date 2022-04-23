@@ -17,6 +17,10 @@ class JoinLobbyView(
     private val stage: Stage,
 ) : ViewBase() {
 
+    private var waitingTimer: Float = 0f
+    private val letterSpawnTime: Float = 1f
+    private var letterCount: Int = 0
+
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
@@ -40,6 +44,7 @@ class JoinLobbyView(
     init {
         titleLabel.setAlignment(Align.center)
         lobbyIdLabel.setAlignment(Align.center)
+        statusLabel.setAlignment(Align.center)
 
         lobbyIdTextField.alignment = Align.center
         lobbyIdTextField.height = Game.HEIGHT / 12f
@@ -56,30 +61,22 @@ class JoinLobbyView(
             Game.HEIGHT / 1.75f
         )
 
-        statusLabel.setPosition(
-            Game.WIDTH / 2f - statusLabel.width / 2f,
-            Game.HEIGHT * 0.8f
-        )
-
+        stage.addActor(statusLabel)
         stage.addActor(lobbyIdTextField)
         stage.addActor(mainMenuButton)
         stage.addActor(joinButton)
         stage.addActor(lobbyIdLabel)
     }
 
-    fun getJoinLobbyId(): String {
-        return lobbyIdTextField.text
-    }
-
-    fun setStatusWaiting() {
-        statusLabel.setText("Waiting for opponent")
-    }
-
     fun updateStatusLabel(text: String) {
         statusLabel.setText(text)
     }
 
-    fun updateStatusWaiting() {
+    private fun resetWaitingText() {
+        statusLabel.setText(statusLabel.text.split(".")[0])
+    }
+
+    private fun updateWaitingText() {
         statusLabel.setText("${statusLabel.text}.")
     }
 
@@ -92,12 +89,6 @@ class JoinLobbyView(
                     joined = true
                 }
             }
-        }
-    }
-
-    fun handleInput() {
-        if (joinButton.isPressed) {
-            joined = true
         }
     }
 
@@ -118,6 +109,11 @@ class JoinLobbyView(
             Game.HEIGHT / 1.66f
         )
 
+        statusLabel.setPosition(
+            (Game.WIDTH - statusLabel.width) / 2f,
+            Game.HEIGHT * 0.8f
+        )
+
         mainMenuButton.setPosition(x0, y0)
 
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
@@ -128,11 +124,21 @@ class JoinLobbyView(
 
         if (!joined) {
             joinButton.draw(sb, 1f)
-        } else {
-            statusLabel.draw(sb, 1f)
         }
+        statusLabel.draw(sb, 1f)
 
         mainMenuButton.draw(sb, 1f)
+
+        // Loading with dots.
+        waitingTimer += 0.01f
+        if (letterCount >= 4f) {
+            resetWaitingText()
+            letterCount = 0
+        } else if (waitingTimer > letterSpawnTime) {
+            updateWaitingText()
+            waitingTimer -= letterSpawnTime
+            letterCount++
+        }
     }
 
     override fun dispose() {

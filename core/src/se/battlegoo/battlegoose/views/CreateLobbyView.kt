@@ -13,8 +13,12 @@ import se.battlegoo.battlegoose.utils.TextureAsset
 
 class CreateLobbyView(
     private val onClickMainMenu: () -> Unit,
-    stage: Stage
+    val stage: Stage
 ) : ViewBase() {
+
+    private var waitingTimer: Float = 0f
+    private val letterSpawnTime: Float = 1f
+    private var letterCount: Int = 0
 
     var onClickStartBattle: (() -> Unit)? = null
 
@@ -43,6 +47,7 @@ class CreateLobbyView(
         titleLabel.setAlignment(Align.center)
         lobbyIdLabel.setAlignment(Align.center)
         lobbyInfoLabel.setAlignment(Align.center)
+        waitingLabel.setAlignment(Align.center)
 
         lobbyIdTextField.alignment = Align.center
         lobbyIdTextField.height = Game.HEIGHT / 12f
@@ -54,23 +59,21 @@ class CreateLobbyView(
         mainMenuButton.height *= 1.5f
         startBattleButton.height *= 1.5f
 
-        waitingLabel.setPosition(
-            Game.WIDTH / 2f - waitingLabel.width / 2f,
-            Game.HEIGHT * 0.8f
-        )
-
         stage.addActor(lobbyIdTextField)
         stage.addActor(mainMenuButton)
-        stage.addActor(startBattleButton)
         stage.addActor(lobbyIdLabel)
     }
 
-    fun resetWaitingText() {
-        waitingLabel.setText(waitingText)
+    private fun resetWaitingText() {
+        waitingLabel.setText(waitingLabel.text.split(".")[0])
     }
 
-    fun updateWaitingText() {
+    private fun updateWaitingText() {
         waitingLabel.setText("${waitingLabel.text}.")
+    }
+
+    fun setStatusText(text: String) {
+        waitingLabel.setText(text)
     }
 
     fun setGeneratedLobbyId(lobbyId: String) {
@@ -82,7 +85,7 @@ class CreateLobbyView(
         if (Gdx.input.justTouched() && mainMenuButton.isPressed) {
             onClickMainMenu()
         }
-        if(Gdx.input.justTouched() && startBattleButton.isPressed) {
+        if (Gdx.input.justTouched() && startBattleButton.isPressed) {
             onClickStartBattle?.invoke()
         }
     }
@@ -108,10 +111,13 @@ class CreateLobbyView(
             (Game.WIDTH / 2f) - (lobbyInfoLabel.width / 2f),
             Game.HEIGHT * 0.5f
         )
+        waitingLabel.setPosition(
+            Game.WIDTH / 2f - waitingLabel.width / 2f,
+            Game.HEIGHT * 0.8f
+        )
 
         mainMenuButton.setPosition(x0, y0)
         startBattleButton.setPosition(Game.WIDTH - x0 - startBattleButton.width, y0)
-
 
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
 
@@ -127,8 +133,21 @@ class CreateLobbyView(
 
         mainMenuButton.draw(sb, 1f)
 
-        if (onClickStartBattle != null)
-            startBattleButton.draw(sb, 1f)
+        if (onClickStartBattle == null)
+            startBattleButton.remove()
+        else
+            stage.addActor(startBattleButton)
+
+        // Loading with dots.
+        waitingTimer += 0.01f
+        if (letterCount >= 4f) {
+            resetWaitingText()
+            letterCount = 0
+        } else if (waitingTimer > letterSpawnTime) {
+            updateWaitingText()
+            waitingTimer -= letterSpawnTime
+            letterCount++
+        }
     }
 
     override fun dispose() {

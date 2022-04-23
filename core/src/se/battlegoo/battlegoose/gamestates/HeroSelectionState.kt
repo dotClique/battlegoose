@@ -2,7 +2,6 @@ package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.controllers.HeroSelectionController
-import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.heroes.AdmiralAlbatross
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection

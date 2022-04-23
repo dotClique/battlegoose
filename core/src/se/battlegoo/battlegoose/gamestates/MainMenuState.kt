@@ -22,7 +22,7 @@ class MainMenuState :
 //                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} )).show()
 //        },
 //         onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
-         onClickQuickJoin = { GameStateManager.push(HeroSelectionState()) },
+        onClickQuickJoin = { GameStateManager.push(HeroSelectionState()) },
 //        onClickQuickJoin = { GameStateManager.push(BattleState()) },
         onClickLeaderboard = { GameStateManager.push(LeaderboardState()) }
     )

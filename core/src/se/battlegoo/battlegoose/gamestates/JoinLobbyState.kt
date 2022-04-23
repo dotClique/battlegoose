@@ -19,24 +19,23 @@ class JoinLobbyState : GameState() {
             onClickMainMenu = this::goBack,
             stage = stage,
             onJoinLobby = { lobbyID ->
-                MultiplayerService.tryJoinLobby(lobbyID, {
-                    joinLobbyStatus = it
-                    joinLobbyView?.updateStatusLabel(it.message)
-                },
+                MultiplayerService.tryJoinLobby(
+                    lobbyID, {
+                        joinLobbyStatus = it
+                        joinLobbyView?.updateStatusLabel(it.message)
+                    },
                     { listenerCanceler ->
                         this.cancelStartBattleListener = {
                             Logger("ulrik").error("Canceled StartBattleListener")
                             listenerCanceler()
                         }
-                    })
+                    }
+                )
             }
         )
     }
 
     private var joinLobbyStatus: JoinLobbyStatus? = null
-    private var waitingTimer: Float = 0f
-    private val letterSpawnTime: Float = 1f
-    private var letterCount: Int = 0
 
     private var joined = false
     private var startBattle = false
@@ -52,33 +51,30 @@ class JoinLobbyState : GameState() {
                     Modal(
                         "Failed to leave lobby",
                         "Try again later. Error:$string, $throwable",
-                        ModalType.Error {}).show()
-                })
+                        ModalType.Error {},
+                        stage
+                    )
+                        .show()
+                }
+            )
         cancelStartBattleListener()
         GameStateManager.goBack()
     }
 
     private fun handleInput() {
         joinLobbyView?.registerInput()
-        joinLobbyView?.handleInput()
     }
 
     override fun update(dt: Float) {
         handleInput()
-        joined = joinLobbyStatus is JoinLobbyStatus.Ready
+        val newJoined = joinLobbyStatus is JoinLobbyStatus.Ready
+        if (!newJoined && joined && joinLobbyStatus is JoinLobbyStatus.NotAccessable)
+            Modal("Lobby deleted", "Try another lobby", ModalType.Info(), stage).show()
+
+        joined = newJoined
         startBattle = joinLobbyStatus is JoinLobbyStatus.StartBattle
-        // Dynamic 'waiting for opponent' message
-        if (joined) {
-            waitingTimer += dt
-            if (letterCount >= 4) {
-                joinLobbyView?.setStatusWaiting()
-                letterCount = 0
-            } else if (waitingTimer > letterSpawnTime) {
-                joinLobbyView?.updateStatusWaiting()
-                waitingTimer -= letterSpawnTime
-                letterCount++
-            }
-        } else if (startBattle) {
+
+        if (startBattle) {
             GameStateManager.push(BattleState())
         }
     }
