@@ -15,6 +15,11 @@ import se.battlegoo.battlegoose.views.ObstacleView
 import kotlin.math.min
 import kotlin.math.sqrt
 
+sealed class ActionState {
+    object Idle : ActionState()
+    data class Selecting(val pos: GridVector) : ActionState()
+}
+
 class BattleMapController(
     private val hero: Hero<*>,
     private val model: BattleMap,
@@ -40,7 +45,10 @@ class BattleMapController(
     private val obstacleViews = arrayListOf<ObstacleView>()
     private val unitControllers = hashMapOf<UnitModel, UnitController>()
 
-    private var selectedTilePos: GridVector? = null
+    private var actionState: ActionState = ActionState.Idle
+
+    private val invalidSelectionsBeforeHint = 2
+    private var invalidSelectionsCount = 0
 
     init {
         model.forEach { gridPos ->
@@ -99,12 +107,53 @@ class BattleMapController(
         model.placeObstacle(obstacleType, pos)
     }
 
+    private fun registerInvalidSelection() {
+        invalidSelectionsCount++
+        if (invalidSelectionsCount >= invalidSelectionsBeforeHint) {
+            setShowTileSelectionHints(true)
+        }
+    }
+
+    private fun registerValidSelection() {
+        invalidSelectionsCount = 0
+        setShowTileSelectionHints(false)
+    }
+
     private fun selectTile(gridPosition: GridVector, tileController: BattleMapTileController) {
         when (tileController.state) {
-            BattleMapTileState.NORMAL -> showMoveAndAttackOptions(gridPosition, tileController)
-            BattleMapTileState.FOCUSED -> clearTileStates()
-            BattleMapTileState.MOVE_TARGET -> moveSelectedUnit(gridPosition)
-            BattleMapTileState.ATTACK_TARGET -> attackWithSelectedUnit(gridPosition)
+            BattleMapTileState.NORMAL -> {
+                model.getUnit(gridPosition).let { unitModel ->
+                    if (unitModel == null || unitModel.allegiance != hero) {
+                        registerInvalidSelection()
+                    } else {
+                        registerValidSelection()
+                        clearTileStates()
+                        actionState = ActionState.Selecting(gridPosition)
+                        showMoveAndAttackOptionsForSelectedUnit()
+                        tileController.state = BattleMapTileState.FOCUSED
+                        val unitController = getUnitControllerAt(gridPosition)
+                            ?: throw IllegalStateException("Missing unit controller")
+                        unitController.selected = true
+                    }
+                }
+            }
+            BattleMapTileState.FOCUSED -> {
+                registerValidSelection()
+                clearTileStates()
+                actionState = ActionState.Idle
+            }
+            BattleMapTileState.MOVE_TARGET -> {
+                registerValidSelection()
+                clearTileStates()
+                moveSelectedUnit(gridPosition)
+                actionState = ActionState.Idle
+            }
+            BattleMapTileState.ATTACK_TARGET -> {
+                registerValidSelection()
+                clearTileStates()
+                attackWithSelectedUnit(gridPosition)
+                actionState = ActionState.Idle
+            }
         }
     }
 
@@ -126,41 +175,67 @@ class BattleMapController(
         ).filter { isEnemyUnitAt(it) }
     }
 
-    private fun showMoveAndAttackOptions(pos: GridVector, tileController: BattleMapTileController) {
-        val unit = model.getUnit(pos)
-        if (unit?.allegiance == hero) {
-            unitControllers[unit]?.let { unitController ->
-                clearTileStates()
-                findMoveTargets(pos, unit).mapNotNull { getTileControllerAt(it) }.forEach {
-                    it.state = BattleMapTileState.MOVE_TARGET
-                }
-                findAttackTargets(pos, unit).mapNotNull { getTileControllerAt(it) }.forEach {
-                    it.state = BattleMapTileState.ATTACK_TARGET
-                }
-                tileController.state = BattleMapTileState.FOCUSED
-                unitController.selected = true
-                selectedTilePos = pos
+    private fun showMoveAndAttackOptionsForSelectedUnit() {
+        actionState.let { state ->
+            if (state !is ActionState.Selecting) {
+                throw IllegalStateException(
+                    "Attempted to show move and attack options without selecting a unit"
+                )
             }
+            val unit = model.getUnit(state.pos)
+                ?: throw IllegalStateException("No unit at given position")
+            findMoveTargets(state.pos, unit).mapNotNull { getTileControllerAt(it) }
+                .forEach { it.state = BattleMapTileState.MOVE_TARGET }
+            findAttackTargets(state.pos, unit).mapNotNull { getTileControllerAt(it) }
+                .forEach { it.state = BattleMapTileState.ATTACK_TARGET }
         }
     }
 
-    private fun moveSelectedUnit(gridPosition: GridVector) {
-        selectedTilePos?.let { selectedTile ->
-            getUnitControllerAt(selectedTile)?.let { unitController ->
-                moveUnit(unitController, selectedTile, gridPosition)
-                clearTileStates()
+    private fun setShowTileSelectionHints(showHints: Boolean) {
+        if (!showHints) {
+            model.forEach { pos -> getTileControllerAt(pos)?.let { it.showHint = false } }
+            return
+        }
+        val hintTiles = actionState.let { state ->
+            when (state) {
+                ActionState.Idle -> {
+                    model.filter { pos ->
+                        model.getUnit(pos).let { it != null && it.allegiance == hero }
+                    }
+                }
+                is ActionState.Selecting -> {
+                    val unit = model.getUnit(state.pos)
+                        ?: throw IllegalStateException("No unit at selected position")
+                    findMoveTargets(state.pos, unit)
+                        .union(findAttackTargets(state.pos, unit))
+                        .plus(state.pos)
+                }
             }
+        }
+        model.forEach { pos -> getTileControllerAt(pos)?.let { it.showHint = pos in hintTiles } }
+    }
+
+    private fun moveSelectedUnit(gridPosition: GridVector) {
+        actionState.let { state ->
+            if (state !is ActionState.Selecting) {
+                throw IllegalStateException("Attempted to move without selecting a unit")
+            }
+            val unitController = getUnitControllerAt(state.pos)
+                ?: throw IllegalStateException("Missing unit controller")
+            moveUnit(unitController, state.pos, gridPosition)
         }
     }
 
     private fun attackWithSelectedUnit(gridPosition: GridVector) {
-        selectedTilePos?.let { selectedTile ->
-            getUnitControllerAt(selectedTile)?.let { unitController ->
-                getUnitControllerAt(gridPosition)?.let { targetUnitController ->
-                    attackUnit(unitController, targetUnitController)
-                    clearTileStates()
-                }
+        actionState.let { state ->
+            if (state !is ActionState.Selecting) {
+                throw IllegalStateException("Attempted to attack without selecting a unit")
             }
+            val unitController = getUnitControllerAt(state.pos)
+                ?: throw IllegalStateException("Missing attacker unit controller")
+            val targetUnitController = getUnitControllerAt(gridPosition)
+                ?: throw IllegalStateException("Missing target unit controller")
+            attackUnit(unitController, targetUnitController)
         }
     }
 
@@ -181,7 +256,6 @@ class BattleMapController(
         for (uc in unitControllers.values) {
             uc.selected = false
         }
-        selectedTilePos = null
     }
 
     private fun attackUnit(controller: UnitController, targetController: UnitController) {

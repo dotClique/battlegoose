@@ -10,6 +10,7 @@ class BattleMapTileController(
 ) : ControllerBase(tileView) {
 
     var state: BattleMapTileState by tileView::state
+    var showHint: Boolean by tileView::showHint
 
     init {
         tileView.subscribe(object : ClickObserver {
