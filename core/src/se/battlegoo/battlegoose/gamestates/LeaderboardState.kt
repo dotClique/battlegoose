@@ -1,15 +1,10 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.LeaderboardEntry
 import se.battlegoo.battlegoose.network.MultiplayerService
-import se.battlegoo.battlegoose.views.Fonts
 import se.battlegoo.battlegoose.views.LeaderboardView
 import se.battlegoo.battlegoose.views.Skins
 
@@ -48,15 +43,17 @@ class LeaderboardState : GameState() {
     }
 
     private fun updateLeaderboard() {
-        MultiplayerService.getLeaderboard { it?.let { leaderboard = it }
-            leaderboardView.setLeaderboardText(leaderboardText)
+        MultiplayerService.getLeaderboard {
+            it?.let {
+                leaderboard = it
+            }
         }
+        leaderboardView.setLeaderboardText(leaderboardText)
     }
 
     private fun handleInput() {
         leaderboardView.registerInput()
         if (Gdx.input.justTouched()) {
-            // GameStateManager.push(MainMenuState())
             MultiplayerService.incrementScore(1) { updateLeaderboard() }
         }
     }
