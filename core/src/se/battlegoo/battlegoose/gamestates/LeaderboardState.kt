@@ -20,8 +20,6 @@ class LeaderboardState : GameState() {
         stage
     )
 
-    private val skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
-
     private var leaderboard: List<LeaderboardEntry> = listOf()
 
     private val leaderboardText: String
@@ -61,7 +59,6 @@ class LeaderboardState : GameState() {
     }
 
     override fun dispose() {
-        stage.dispose()
-        skin.dispose()
+        leaderboardView.dispose()
     }
 }
