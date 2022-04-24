@@ -34,7 +34,7 @@ class JoinLobbyController(
                 joinLobbyStatus = status
             }
         }
-        joinLobbyView.onClickMainMenu = onClickMainMenu
+        joinLobbyView.onClickMainMenu = ::goBack
     }
 
     private fun goBack() {

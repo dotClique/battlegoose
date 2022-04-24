@@ -15,21 +15,28 @@ class QuickJoinController(
     val stage: Stage
 ) : ControllerBase(quickJoinView) {
 
+    companion object {
+        private const val LEAVE_TIMEOUT = 2f
+    }
+
     private var shouldStartBattle = false
     private var wantToLeaveQueue = false
     private var canLeaveQueue = false
     private var successfullyLeftQueue = false
+    private var leaveTimeoutCounter = 0f
 
     private var battleData: BattleStateData? = null
 
+    private var showingErrorModal = false
 
     init {
         MultiplayerService.requestOpponent({ status, leaveQueue ->
+            setBattleData(status)
             quickJoinView.setStatus(status)
             shouldStartBattle = status is RandomPairingStatus.StartBattle
             canLeaveQueue =
                 status is RandomPairingStatus.WaitingForOtherPlayer ||
-                    status is RandomPairingStatus.WaitingInQueue
+                status is RandomPairingStatus.WaitingInQueue
             if (wantToLeaveQueue && canLeaveQueue) {
                 leaveQueue({ reason, throwable ->
                     Modal(
@@ -56,34 +63,46 @@ class QuickJoinController(
         }
     }
 
-
     fun goBack() {
         wantToLeaveQueue = true
     }
 
-    private fun handleInput() {
-        quickJoinView.registerInput()
+    private fun showModal(modal: Modal) {
+        if (!showingErrorModal) {
+            modal.show()
+            showingErrorModal = true
+        }
     }
 
+    private fun handleLeaveTimout(dt: Float) {
+        if (wantToLeaveQueue && canLeaveQueue)
+            leaveTimeoutCounter += dt
+        if (leaveTimeoutCounter > LEAVE_TIMEOUT) {
+            successfullyLeftQueue = true // Forcefully set this to true
+        }
+    }
 
     override fun update(dt: Float) {
         val dataCpy = battleData
-        handleInput()
+        quickJoinView.registerInput()
+        handleLeaveTimout(dt)
         when {
+            wantToLeaveQueue && canLeaveQueue && successfullyLeftQueue -> onClickMainMenu()
             shouldStartBattle && dataCpy != null -> onReadyStartBattle(
                 dataCpy.userID,
                 dataCpy.battleID,
                 dataCpy.isHost
             )
-            shouldStartBattle && dataCpy == null -> Modal(
-                "Error starting battle",
-                "Could not retrieve data to start battle.",
-                ModalType.Error(),
-                stage
-            )
-            wantToLeaveQueue && canLeaveQueue && successfullyLeftQueue -> onClickMainMenu()
-        }
+            shouldStartBattle && dataCpy == null -> showModal(
+                Modal(
+                    "Error starting battle",
+                    "Could not retrieve data to start battle.",
+                    ModalType.Error { showingErrorModal = false; onClickMainMenu() },
+                    stage
+                )
 
+            )
+        }
     }
 
     override fun render(sb: SpriteBatch) {

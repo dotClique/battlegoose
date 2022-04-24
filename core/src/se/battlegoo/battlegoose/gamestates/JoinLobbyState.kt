@@ -8,7 +8,15 @@ class JoinLobbyState : GameState() {
 
     private var joinLobbyController: JoinLobbyController = JoinLobbyController(
         joinLobbyView = JoinLobbyView(stage),
-        onReadyStartBattle = { GameStateManager.replace(BattleState(it.lobby.otherPlayerID, it.lobby.battleID, false)) },
+        onReadyStartBattle = {
+            GameStateManager.replace(
+                BattleState(
+                    it.lobby.otherPlayerID,
+                    it.lobby.battleID,
+                    false
+                )
+            )
+        },
         onClickMainMenu = { GameStateManager.goBack() },
         stage
     )

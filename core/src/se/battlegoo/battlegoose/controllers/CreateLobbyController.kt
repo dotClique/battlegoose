@@ -57,10 +57,6 @@ class CreateLobbyController(
         listenForOtherPlayer = false
     }
 
-    private fun handleInput() {
-        createLobbyView.registerInput()
-    }
-
     private fun startBattle() {
         val lobbyIDCpy =
             lobbyId ?: return Modal(
@@ -75,22 +71,19 @@ class CreateLobbyController(
     }
 
     override fun update(dt: Float) {
+        createLobbyView.registerInput()
         val battleDataCpy = battleData
-        handleInput()
-        when {
-            battleDataCpy != null -> {
-                createLobbyView.onClickStartBattle = {}
-                onClickStartBattle(battleDataCpy)
-            }
-            listenForOtherPlayer == null ->
-                // The listener is then canceled and it is ready to go back.
-                onClickMainMenu()
-        }
-
-        if (readyToStartBattle) {
-            createLobbyView.onClickStartBattle = ::startBattle
+        if (battleDataCpy != null) {
+            createLobbyView.onClickStartBattle = {}
+            onClickStartBattle(battleDataCpy)
+        } else if (listenForOtherPlayer == null) {
+            onClickMainMenu()
         } else {
-            createLobbyView.onClickStartBattle = null
+            if (readyToStartBattle) {
+                createLobbyView.onClickStartBattle = ::startBattle
+            } else {
+                createLobbyView.onClickStartBattle = null
+            }
         }
     }
 }

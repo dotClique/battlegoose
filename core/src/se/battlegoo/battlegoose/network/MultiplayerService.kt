@@ -1,13 +1,13 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
-import java.util.Date
-import java.util.function.BiConsumer
-import java.util.function.Consumer
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
+import java.util.Date
+import java.util.function.BiConsumer
+import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -60,16 +60,6 @@ object MultiplayerService {
                         )
                     else listener(lobbyData, CreateLobbyStatus.OPEN, cancelListener)
                 }
-            }
-        }
-    }
-
-    // TODO: Remove this function
-    private fun tryCreateLobby(listener: Consumer<LobbyData>) {
-        databaseHandler.getUserID { userID ->
-            val lobbyID = generateReadableUID()
-            databaseHandler.setValue(DbPath.Lobbies[lobbyID], LobbyData(lobbyID, userID)) {
-                listener.accept(LobbyData(lobbyID, userID))
             }
         }
     }
@@ -152,8 +142,10 @@ object MultiplayerService {
         databaseHandler.listen(
             DbPath.RandomOpponentQueue,
         ) { updatedQueueData, queueListenerCanceler ->
+            Logger("battlegoose").error("Run requestOpp listener")
             // Create function to leave the queue if wanted
             val leaveQueue: LeaveRandomPairingQueue = { onFail, onSuccess ->
+                Logger("battlegoose").error("Trying to leave queue")
                 processingQueue = true // To not add yourself to queue again
                 purgeQueue({ str, throwable ->
                     processingQueue = false
@@ -424,7 +416,7 @@ object MultiplayerService {
     ) {
         // Have to listen on the battleID to also run the function when otherPlayerID changes.
         databaseHandler.listen(DbPath.Lobbies[lobbyID], onFail = onFail) { lobbyData,
-                                                                           cancelLobbyListener ->
+            cancelLobbyListener ->
             if (lobbyData?.battleID == null || lobbyData.battleID == "") {
                 consumer.accept(lobbyData?.battleID, cancelLobbyListener)
                 return@listen
