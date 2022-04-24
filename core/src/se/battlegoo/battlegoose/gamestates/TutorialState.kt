@@ -42,21 +42,14 @@ class TutorialState : GameState() {
                 "Try some out, and find your favorite!"
         )
     )
-    private val tutorial: Tutorial = Tutorial(steps)
-    private val tutorialView = TutorialView(stage)
+
     private var controller: TutorialController = TutorialController(
-        tutorialView, tutorial, GameStateManager::goBack
+        TutorialView(stage), Tutorial(steps), GameStateManager::goBack
     )
 
-    override fun update(dt: Float) {
-        controller.update(dt)
-    }
+    override fun update(dt: Float) = controller.update(dt)
 
-    override fun render(sb: SpriteBatch) {
-        controller.render(sb)
-    }
+    override fun render(sb: SpriteBatch) = controller.render(sb)
 
-    override fun dispose() {
-        controller.dispose()
-    }
+    override fun dispose() = controller.dispose()
 }

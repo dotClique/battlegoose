@@ -19,6 +19,8 @@ class Game : ApplicationAdapter() {
 
     companion object {
 
+        const val LOGGER_TAG = "battlegoose"
+
         private val assetManager = AssetManager()
 
         private fun loadTexture(asset: TextureAsset) =

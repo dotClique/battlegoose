@@ -40,11 +40,11 @@ class MainMenuView(
         "leaderboardBtn.png",
         x0 + 3 * (Menu.BUTTON_WIDTH + Menu.SPACER), y0, Menu.BUTTON_WIDTH, onClickLeaderboard
     )
-    private val tutorialBtn = TextButton("Tutorial", skin)
+    private val tutorialBtn = TextButton("How to play", skin)
 
     init {
-        tutorialBtn.setPosition(-10f, Game.HEIGHT - 110f)
-        tutorialBtn.setSize(600f, 120f)
+        tutorialBtn.setPosition(30f, 320f)
+        tutorialBtn.setSize(500f, 120f)
         stage.addActor(tutorialBtn)
     }
 

@@ -13,8 +13,8 @@ import se.battlegoo.battlegoose.models.tutorial.TutorialSprite
 class TutorialView(val stage: Stage) : ViewBase() {
 
     companion object {
-        private const val BUTTON_WIDTH = 250f
-        private const val BUTTON_HEIGHT = 200f
+        private const val BUTTON_WIDTH = 270f
+        private const val BUTTON_HEIGHT = 170f
         private const val BUTTON_MARGIN = 20f
     }
 
@@ -70,10 +70,11 @@ class TutorialView(val stage: Stage) : ViewBase() {
     }
 
     override fun registerInput() {
+        if (!Gdx.input.justTouched()) return
         when {
-            Gdx.input.justTouched() && backButton.isPressed -> controller.onClickBack()
-            Gdx.input.justTouched() && nextButton.isPressed -> controller.onClickForward()
-            Gdx.input.justTouched() && closeButton.isPressed -> controller.onClickClose()
+            backButton.isPressed -> controller.onClickBack()
+            nextButton.isPressed -> controller.onClickForward()
+            closeButton.isPressed -> controller.onClickClose()
         }
     }
 
@@ -92,7 +93,7 @@ class TutorialView(val stage: Stage) : ViewBase() {
         if (!this::controller.isInitialized)
             this.controller = controller
         else
-            Gdx.app.error("#PREREG", "Controller already registered")
+            Gdx.app.error(Game.LOGGER_TAG, "Controller already registered")
     }
 }
 
