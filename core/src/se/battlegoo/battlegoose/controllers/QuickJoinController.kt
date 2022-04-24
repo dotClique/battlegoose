@@ -24,8 +24,7 @@ class QuickJoinController(
 
 
     init {
-        MultiplayerService.tryRequestOpponent({ status, leaveQueue ->
-            setBattleData(status)
+        MultiplayerService.requestOpponent({ status, leaveQueue ->
             quickJoinView.setStatus(status)
             shouldStartBattle = status is RandomPairingStatus.StartBattle
             canLeaveQueue =

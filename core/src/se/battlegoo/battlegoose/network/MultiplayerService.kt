@@ -48,8 +48,9 @@ object MultiplayerService {
             databaseHandler.setValue(DbPath.Lobbies[lobbyID], LobbyData(lobbyID, userID)) {
                 // Listen for other player to join lobby
                 listener(LobbyData(lobbyID, userID), CreateLobbyStatus.OPEN) {}
-                databaseHandler.listen(DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID]) { otherPlayerID,
-                                                                                            cancelListener ->
+                databaseHandler.listen(
+                    DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID]
+                ) { otherPlayerID, cancelListener ->
                     val lobbyData = LobbyData(lobbyID, userID, otherPlayerID ?: "")
                     if (!otherPlayerID.isNullOrEmpty())
                         listener(
@@ -74,11 +75,12 @@ object MultiplayerService {
     }
 
     private fun checkRandomLobbyAvailability(consumer: Consumer<String?>) =
-        databaseHandler.read(DbPath.RandomOpponentData[RandomOpponentData::availableLobby]) { lobbyID ->
+        databaseHandler.read(
+            DbPath.RandomOpponentData[RandomOpponentData::availableLobby]
+        ) { lobbyID ->
             consumer.accept(lobbyID)
         }
 
-    // typealias RandomPairingListener = (RandomOpponentStatus, ListenerCanceler, ListenerCanceler) -> Unit,
     private fun purgeQueue(
         onFail: FailFunc = { _, throwable -> throw throwable },
         onSuccess: () -> Unit = {}
@@ -142,7 +144,7 @@ object MultiplayerService {
         )
     }
 
-    fun tryRequestOpponent(
+    fun requestOpponent(
         listener: RandomPairingListener,
         onFail: FailFunc = { _, throwable -> throw throwable },
     ) {
@@ -150,6 +152,7 @@ object MultiplayerService {
         databaseHandler.listen(
             DbPath.RandomOpponentQueue,
         ) { updatedQueueData, queueListenerCanceler ->
+            // Create function to leave the queue if wanted
             val leaveQueue: LeaveRandomPairingQueue = { onFail, onSuccess ->
                 processingQueue = true // To not add yourself to queue again
                 purgeQueue({ str, throwable ->
@@ -160,11 +163,11 @@ object MultiplayerService {
                     onSuccess()
                 }
             }
+
             val cannotLeaveQueue: LeaveRandomPairingQueue = { _, _ -> }
             if (processingQueue) {
                 return@listen
             }
-
             // Preemptively setting this to ensure no parallel lobby creation/joining
             processingQueue = true
 
@@ -357,7 +360,9 @@ object MultiplayerService {
         onFail: FailFunc = { _, throwable -> throw throwable },
         onLeftLobby: () -> Unit = {}
     ) {
-        databaseHandler.setValue(DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID], "", onFail) {
+        databaseHandler.setValue(
+            DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID], "", onFail
+        ) {
             onLeftLobby()
         }
     }
@@ -410,7 +415,7 @@ object MultiplayerService {
         }
     }
 
-    fun listenForBattleStart(
+    private fun listenForBattleStart(
         lobbyID: String,
         onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: BiConsumer<String?, ListenerCanceler>,
@@ -537,8 +542,10 @@ object MultiplayerService {
     }
 
     fun getLeaderboard(listener: Consumer<List<LeaderboardEntry>?>) {
-        databaseHandler.read(DbPath.Leaderboard, onFail = { _, _ -> listener.accept(null) }) { board
-            ->
+        databaseHandler.read(
+            DbPath.Leaderboard,
+            onFail = { _, _ -> listener.accept(null) }
+        ) { board ->
             if (board == null) {
                 listener.accept(listOf())
             } else {
