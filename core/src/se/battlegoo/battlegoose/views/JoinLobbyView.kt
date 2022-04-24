@@ -13,12 +13,13 @@ import se.battlegoo.battlegoose.network.JoinLobbyStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
 
 class JoinLobbyView(
-    private val onClickMainMenu: () -> Unit,
-    private val onJoinLobby: (String) -> Unit,
     private val stage: Stage,
 ) : ViewBase() {
 
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
+
+    var onClickMainMenu: () -> Unit = {}
+    var onClickJoinLobby: (String) -> Unit  = { _ -> }
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)
@@ -113,7 +114,7 @@ class JoinLobbyView(
             when {
                 mainMenuButton.isPressed -> onClickMainMenu()
                 joinButton.isPressed -> {
-                    onJoinLobby(lobbyIdTextField.text.uppercase())
+                    onClickJoinLobby(lobbyIdTextField.text.uppercase())
                     joined = true
                 }
             }
