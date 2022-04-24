@@ -4,12 +4,12 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 import kotlin.math.roundToInt
 
 open class UnitModel(
-    val owner: Hero<*>,
+    val owner: Hero,
     baseStats: UnitStats,
     val name: String,
     val description: String
 ) {
-    var allegiance: Hero<*> = owner
+    var allegiance: Hero = owner
 
     var currentStats: UnitStats = baseStats
         private set

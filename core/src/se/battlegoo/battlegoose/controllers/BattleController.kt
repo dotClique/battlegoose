@@ -166,15 +166,7 @@ class BattleController(
         val spellsIterator = activeSpells.iterator()
         while (spellsIterator.hasNext()) {
             val spell = spellsIterator.next()
-            println(
-                "Applying spell $spell, hero1 ${battle.hero1.currentStats.actionPoints} " +
-                    "${battle.hero2.currentStats.actionPoints}"
-            )
             spell.apply(battle)
-            println(
-                "Applied spell, hero1 ${battle.hero1.currentStats.actionPoints} " +
-                    "${battle.hero2.currentStats.actionPoints}"
-            )
             if (spell.finished) {
                 spellsIterator.remove()
             }
@@ -249,19 +241,20 @@ class BattleController(
             is SpellData.AdrenalineShot -> {
                 if (spell !is AdrenalineShotSpell)
                     throw IllegalStateException("Performed spell by other player isn't their spell")
-                spell.cast(spellData)
+                spell.cast(battle.hero2, spellData)
             }
             is SpellData.EphemeralAllegiance -> {
                 if (spell !is EphemeralAllegianceSpell)
                     throw IllegalStateException("Performed spell by other player isn't their spell")
                 spell.cast(
+                    battle.hero2,
                     spellData.copy(targetPosition = otherPerspective(spellData.targetPosition))
                 )
             }
             is SpellData.Bird52 -> {
                 if (spell !is Bird52Spell)
                     throw IllegalStateException("Performed spell by other player isn't their spell")
-                spell.cast(spellData)
+                spell.cast(battle.hero2, spellData)
             }
         }
         battle.activeSpells.second.add(activeSpell)
@@ -299,17 +292,17 @@ class BattleController(
                                         .random(random)
                                 )!!
                             )
-                            battle.activeSpells.first += battle.hero1.spell.cast(data)
+                            battle.activeSpells.first += battle.hero1.spell.cast(battle.hero1, data)
                             data
                         }
                         is Bird52Spell -> {
                             val data = SpellData.Bird52
-                            battle.activeSpells.first += battle.hero1.spell.cast(data)
+                            battle.activeSpells.first += battle.hero1.spell.cast(battle.hero1, data)
                             data
                         }
                         is AdrenalineShotSpell -> {
                             val data = SpellData.AdrenalineShot
-                            battle.activeSpells.first += battle.hero1.spell.cast(data)
+                            battle.activeSpells.first += battle.hero1.spell.cast(battle.hero1, data)
                             data
                         }
                         else -> throw NotImplementedError(
@@ -391,7 +384,7 @@ class BattleController(
         return GridVector(battleMapController.mapSize.x - 1 - (pos.y % 2) - pos.x, pos.y)
     }
 
-    private fun subtractActionPoints(hero: Hero<*>, pointsToSubtract: Int) {
+    private fun subtractActionPoints(hero: Hero, pointsToSubtract: Int) {
         hero.applyStatsModifier(
             HeroStatsModifier {
                 it.copy(actionPoints = it.actionPoints - pointsToSubtract)

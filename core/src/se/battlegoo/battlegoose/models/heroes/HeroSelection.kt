@@ -1,8 +1,8 @@
 package se.battlegoo.battlegoose.models.heroes
 
-class HeroSelection(heroes: Collection<Hero<*>>) {
+class HeroSelection(heroes: Collection<Hero>) {
 
-    private val heroesMap: Map<String, Hero<*>>
+    private val heroesMap: Map<String, Hero>
 
     var selected: String = heroes.first()::class.java.name
         set(value) {
@@ -12,7 +12,7 @@ class HeroSelection(heroes: Collection<Hero<*>>) {
                 throw IllegalArgumentException("Tried to select non-existent hero")
         }
 
-    val selectedHero: Hero<*>
+    val selectedHero: Hero
         get() = heroesMap[selected]!!
 
     init {

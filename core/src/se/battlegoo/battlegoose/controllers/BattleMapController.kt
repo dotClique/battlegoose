@@ -27,7 +27,7 @@ sealed class ActionState {
 }
 
 class BattleMapController(
-    private val hero: Hero<*>,
+    private val hero: Hero,
     private val model: BattleMap,
     private val view: BattleMapView,
     private val onMoveUnit: (fromPosition: GridVector, toPosition: GridVector) -> Unit,

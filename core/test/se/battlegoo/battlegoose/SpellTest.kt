@@ -25,7 +25,7 @@ import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 class SpellTest {
     @Test
     fun testAdrenalineShotSpell() {
-        val hero = object : Hero<AdrenalineShotSpell>(
+        val hero = object : Hero(
             HeroStats(1), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN,
             listOf(
@@ -43,7 +43,8 @@ class SpellTest {
             BattleMap(BattleMapBackground.DUNES, GridVector(10, 6)),
             "", true
         )
-        val spell = hero.spell.cast(SpellData.AdrenalineShot)
+        assertTrue("Hero spell is wrong type", hero.spell is AdrenalineShotSpell)
+        val spell = (hero.spell as AdrenalineShotSpell).cast(hero, SpellData.AdrenalineShot)
         assertEquals(
             "Wrong inital number of action points",
             1,
@@ -71,7 +72,7 @@ class SpellTest {
 
     @Test
     fun testEphemeralAllegianceSpell() {
-        val hero1 = object : Hero<EphemeralAllegianceSpell>(
+        val hero1 = object : Hero(
             HeroStats(1), EphemeralAllegianceSpell(), "", "",
             HeroSprite.SERGEANT_SWAN,
             listOf(
@@ -115,7 +116,10 @@ class SpellTest {
             battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
         )
 
-        val spell = hero1.spell.cast(SpellData.EphemeralAllegiance(GridVector(2, 2)))
+        val spell = (hero1.spell as EphemeralAllegianceSpell).cast(
+            hero1,
+            SpellData.EphemeralAllegiance(GridVector(2, 2))
+        )
 
         for (i in 1 until spell.baseSpell.duration - 1) {
             spell.apply(battle)
@@ -184,7 +188,7 @@ class SpellTest {
 
     @Test
     fun testBird52Spell() {
-        val hero = object : Hero<Bird52Spell>(
+        val hero = object : Hero(
             HeroStats(1), Bird52Spell(), "",
             "", HeroSprite.SERGEANT_SWAN,
             listOf(
@@ -214,7 +218,7 @@ class SpellTest {
         battle.battleMap.placeUnit(unit1Team2, GridVector(2, 2))
         battle.battleMap.placeUnit(unit2Team2, GridVector(4, 2))
 
-        val spell = hero.spell.cast(SpellData.Bird52)
+        val spell = (hero.spell as Bird52Spell).cast(hero, SpellData.Bird52)
 
         var stats1Team1 = unit1Team1.currentStats
         var stats2Team1 = unit2Team1.currentStats
@@ -274,8 +278,9 @@ class SpellTest {
 
     @Test
     fun testActiveSpellCallsImplementationCorrectNumberOfTimes() {
+        val hero1 = SergeantSwan()
         val battle = Battle(
-            SergeantSwan(),
+            hero1,
             SergeantSwan(),
             BattleMap(BattleMapBackground.DUNES, GridVector(10, 6)),
             "",
@@ -285,8 +290,8 @@ class SpellTest {
         val testDuration = 5
 
         class TestSpell : Spell<SpellData.Bird52>("test", "t2", testDuration, 2) {
-            override fun cast(data: SpellData.Bird52): ActiveSpell<TestSpell> {
-                return object : ActiveSpell<TestSpell>(this, data) {
+            override fun cast(caster: Hero, data: SpellData.Bird52): ActiveSpell<TestSpell> {
+                return object : ActiveSpell<TestSpell>(this, hero1, data) {
                     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
                         counter += 1
                     }
@@ -295,7 +300,7 @@ class SpellTest {
         }
 
         val spell = TestSpell()
-        val activeSpell = spell.cast(SpellData.Bird52)
+        val activeSpell = spell.cast(hero1, SpellData.Bird52)
         assertEquals("Spell::cast called apply by itself", 0, counter)
         for (i in 1..testDuration) {
             activeSpell.apply(battle)

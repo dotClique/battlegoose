@@ -5,9 +5,9 @@ import se.battlegoo.battlegoose.models.spells.Spell
 import se.battlegoo.battlegoose.models.units.UnitModel
 import kotlin.reflect.KClass
 
-abstract class Hero<T : Spell<*>> (
+abstract class Hero(
     val baseStats: HeroStats,
-    val spell: T,
+    val spell: Spell<*>,
     val name: String,
     val description: String,
     val heroSprite: HeroSprite,

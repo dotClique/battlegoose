@@ -2,9 +2,11 @@ package se.battlegoo.battlegoose.models.spells
 
 import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.Battle
+import se.battlegoo.battlegoose.models.heroes.Hero
 
-abstract class ActiveSpell<out T : Spell<*>>(
+abstract class ActiveSpell<T : Spell<*>>(
     val baseSpell: T,
+    val caster: Hero,
     open val data: SpellData
 ) {
     private var turnsSinceCast: Int = 0

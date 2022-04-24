@@ -2,13 +2,15 @@ package se.battlegoo.battlegoose.models.spells
 
 import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.Battle
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.units.UnitModel
 import java.lang.IllegalStateException
 
 class EphemeralAllegianceActiveSpell(
     baseSpell: EphemeralAllegianceSpell,
+    caster: Hero,
     override val data: SpellData.EphemeralAllegiance
-) : ActiveSpell<EphemeralAllegianceSpell>(baseSpell, data) {
+) : ActiveSpell<EphemeralAllegianceSpell>(baseSpell, caster, data) {
 
     private lateinit var convertedUnit: UnitModel
 
@@ -22,9 +24,9 @@ class EphemeralAllegianceActiveSpell(
     private fun convertUnit(battle: Battle) {
         convertedUnit = battle.battleMap.getUnit(data.targetPosition)
             ?: throw IllegalStateException("No unit on target tile ${data.targetPosition}")
-        if (convertedUnit.allegiance == battle.hero1) {
+        if (convertedUnit.allegiance == caster) {
             throw IllegalStateException("Unit on target tile already belongs to this player")
         }
-        convertedUnit.allegiance = battle.hero1
+        convertedUnit.allegiance = caster
     }
 }
