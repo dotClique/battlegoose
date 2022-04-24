@@ -41,19 +41,20 @@ class JoinLobbyState : GameState() {
         if (status is JoinLobbyStatus.StartBattle)
                 return Logger("battlegoose").error("Cannot exit lobby after battle has started")
         else if (status is JoinLobbyStatus.Ready)
-                MultiplayerService.leaveLobbyAsOtherPlayer(
-                        status.lobby.lobbyID,
-                        fail = { string, throwable ->
-                            Modal(
-                                            "Failed to leave lobby",
-                                            "Try again later. Error:$string, $throwable",
-                                            ModalType.Error {},
-                                            stage
-                                    )
-                                    .show()
-                        },
-                        onLeftLobby = { leaveLobby = true }
-                )
+            MultiplayerService.leaveLobbyAsOtherPlayer(
+                status.lobby.lobbyID,
+                onFail = { string, throwable ->
+                    Modal(
+                        "Failed to leave lobby",
+                        "Try again later. Error:$string, $throwable",
+                        ModalType.Error {},
+                        stage
+                    ).show()
+                },
+                onLeftLobby = {
+                    leaveLobby = true
+                }
+            )
         else leaveLobby = true
         listenForStartingBattle = false
     }
@@ -81,14 +82,9 @@ class JoinLobbyState : GameState() {
             }
         }
 
-<<<<<<< HEAD
-        val newJoined = joinLobbyStatus is JoinLobbyStatus.Ready
-        if (!newJoined && joined && joinLobbyStatus is JoinLobbyStatus.NotAccessible) {
-=======
 //        Logger("battlegoose").error("JoinLobbyStatus: $joinLobbyStatus")
         if (joined && joinLobbyStatus is JoinLobbyStatus.NotAccessible
         ) {
->>>>>>> 32e8409 (feat: add error handling options to battle functions in MultiplayerService)
             listenForStartingBattle = false
             Modal(
                             "Lobby deleted",

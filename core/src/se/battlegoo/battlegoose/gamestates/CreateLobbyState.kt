@@ -44,7 +44,7 @@ class CreateLobbyState : GameState() {
                     .info("Cannot leave lobby before a lobby is created.")
         MultiplayerService.deleteLobby(
             lobbyIDCpy,
-            fail = { str, t ->
+            onFail = { str, t ->
                 Modal(
                     "Error deleting lobby",
                     "Deleting lobby failed with $str, $t",

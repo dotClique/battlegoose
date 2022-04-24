@@ -21,20 +21,20 @@ object MultiplayerService {
     fun getUserID(consumer: Consumer<String>) = databaseHandler.getUserID(consumer)
 
     private fun userCanJoinLobby(userID: String, lobbyData: LobbyData): Boolean {
-        return lobbyData.otherPlayerID.isNotEmpty() && lobbyData.otherPlayerID != userID
+        return lobbyData.otherPlayerID.isEmpty() || lobbyData.otherPlayerID == userID
     }
 
     private fun setOtherPlayerIDInLobby(
-            lobbyID: String,
-            userID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            onSuccess: () -> Unit
+        lobbyID: String,
+        userID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        onSuccess: () -> Unit
     ) {
         databaseHandler.setValue(
-                DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID],
-                userID,
-                fail,
-                onSuccess
+            DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID],
+            userID,
+            onFail,
+            onSuccess
         )
     }
 
@@ -52,11 +52,9 @@ object MultiplayerService {
                         otherPlayerID,
                         cancelListener ->
                     val lobbyData = LobbyData(lobbyID, userID, otherPlayerID ?: "")
-                    if (!otherPlayerID.isNullOrEmpty()) {
+                    if (!otherPlayerID.isNullOrEmpty())
                         listener(lobbyData, CreateLobbyStatus.OTHER_PLAYER_JOINED, cancelListener)
-                        return@listen
-                    }
-                    listener(lobbyData, CreateLobbyStatus.OPEN, cancelListener)
+                    else listener(lobbyData, CreateLobbyStatus.OPEN, cancelListener)
                 }
             }
         }
@@ -139,19 +137,19 @@ object MultiplayerService {
         }
     }
 
-    private fun setAvailableLobby(availableLobby: String, callback: () -> Unit) {
+    private fun setAvailableLobby(availableLobby: String, onSuccess: () -> Unit) {
         databaseHandler.setValue(
-                DbPath.RandomOpponentData,
-                RandomOpponentData(availableLobby, Date().time),
-                onSuccess = callback
+            DbPath.RandomOpponentData,
+            RandomOpponentData(availableLobby, Date().time),
+            onSuccess = onSuccess
         )
     }
 
-    private fun popQueue(queue: List<String>, callback: () -> Unit) {
+    private fun popQueue(queue: List<String>, onSuccess: () -> Unit) {
         databaseHandler.setValue(
-                DbPath.RandomOpponentQueue,
-                queue.subList(0, queue.size - 1),
-                onSuccess = callback
+            DbPath.RandomOpponentQueue,
+            queue.subList(0, queue.size - 1),
+            onSuccess = onSuccess
         )
     }
 
@@ -233,29 +231,30 @@ object MultiplayerService {
     }
 
     fun joinLobby(
-            lobbyID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            battleListener: BiConsumer<JoinLobbyStatus, ListenerCanceler>,
+        lobbyID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        battleListener: BiConsumer<JoinLobbyStatus, ListenerCanceler>,
     ) {
         databaseHandler.getUserID { userID ->
-            databaseHandler.read(DbPath.Lobbies[lobbyID], fail) { lobby ->
+            databaseHandler.read(
+                DbPath.Lobbies[lobbyID], onFail
+            ) { lobby ->
                 if (lobby == null) {
                     battleListener.accept(JoinLobbyStatus.DoesNotExist) {}
                     return@read
                 }
 
-                if (userCanJoinLobby(userID, lobby)) {
+                if (!userCanJoinLobby(userID, lobby)) {
                     battleListener.accept(JoinLobbyStatus.Full) {}
                     return@read
                 }
                 setOtherPlayerIDInLobby(
-                        lobbyID,
-                        userID,
-                        fail = { _, _ ->
-                            battleListener.accept(JoinLobbyStatus.NotAccessible) {}
-                            Logger("battlegoose")
-                                    .error("Failed in setOtherPlayerIDInLobby called in joinLobby")
-                        }
+                    lobbyID, userID,
+                    onFail = { _, _ ->
+                        battleListener.accept(JoinLobbyStatus.NotAccessible) {}
+                        Logger("battlegoose")
+                            .error("Failed in setOtherPlayerIDInLobby called in joinLobby")
+                    }
                 ) {
                     battleListener.accept(
                             JoinLobbyStatus.Ready(
@@ -266,7 +265,9 @@ object MultiplayerService {
                                     )
                             )
                     ) {}
-                    listenForBattleStart(lobbyID, fail) { battleID, cancelLobbyListener ->
+                    listenForBattleStart(
+                        lobbyID, onFail
+                    ) { battleID, cancelLobbyListener ->
                         when (battleID) {
                             null ->
                                     battleListener.accept(
@@ -305,48 +306,51 @@ object MultiplayerService {
     }
 
     fun leaveLobbyAsOtherPlayer(
-            lobbyID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            onLeftLobby: () -> Unit = {}
+        lobbyID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        onLeftLobby: () -> Unit = {}
     ) {
-        databaseHandler.setValue(DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID], "", fail) {
+        databaseHandler.setValue(
+            DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID],
+            "", onFail
+        ) {
             onLeftLobby()
         }
     }
 
     fun deleteLobby(
-            lobbyID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            onSuccess: () -> Unit = {}
+        lobbyID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        onSuccess: () -> Unit = {}
     ) {
-        databaseHandler.deleteValue(DbPath.Lobbies[lobbyID], fail, onSuccess)
+        databaseHandler.deleteValue(DbPath.Lobbies[lobbyID], onFail, onSuccess)
     }
 
     fun startBattle(
-            lobbyID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            onCreated: (initialBattleData: BattleData) -> Unit = {}
+        lobbyID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        onCreated: () -> Unit = {}
     ) {
         val battleID = generateReadableUID()
         databaseHandler.getUserID { userID ->
             val initialBattleData =
-                    BattleData(
-                            battleID,
-                            userID,
-                            "",
-                            listOf()
-                    ) // The otherPlayerId is set by that other player.
+                BattleData(
+                    battleID,
+                    userID,
+                    "",
+                    listOf()
+                ) // The otherPlayerId is set by that other player for confirmation.
 
-            databaseHandler.setValue(DbPath.Battles[battleID], initialBattleData, fail) {
+            databaseHandler.setValue(
+                DbPath.Battles[battleID], initialBattleData, onFail
+            ) {
                 databaseHandler.setValue(
-                        DbPath.Lobbies[lobbyID][LobbyData::battleID],
-                        battleID,
-                        fail
+                    DbPath.Lobbies[lobbyID][LobbyData::battleID],
+                    battleID, onFail
                 ) {
                     // Listen for the other player to join the battle
                     databaseHandler.listen(
-                            DbPath.Battles[battleID][BattleData::otherPlayerID],
-                            fail
+                        DbPath.Battles[battleID][BattleData::otherPlayerID], onFail
                     ) { otherPlayerID, otherPlayerIDListenerCanceler ->
                         if (otherPlayerID == null || otherPlayerID == "") {
                             return@listen
@@ -354,7 +358,7 @@ object MultiplayerService {
                         this.battleID = battleID
                         databaseHandler.deleteValue(DbPath.Lobbies[lobbyID]) {}
                         otherPlayerIDListenerCanceler()
-                        listenForActions(battleID, fail)
+                        listenForActions(battleID, onFail)
                         onCreated(initialBattleData)
                     }
                 }
@@ -363,14 +367,13 @@ object MultiplayerService {
     }
 
     fun listenForBattleStart(
-            lobbyID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            consumer: BiConsumer<String?, ListenerCanceler>,
+        lobbyID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        consumer: BiConsumer<String?, ListenerCanceler>,
     ) {
         // Have to listen on the battleID to also run the function when otherPlayerID changes.
         databaseHandler.listen(
-                DbPath.Lobbies[lobbyID],
-                fail = fail // ERROR here
+            DbPath.Lobbies[lobbyID], onFail = onFail
         ) { lobbyData, cancelLobbyListener ->
             if (lobbyData?.battleID == null || lobbyData.battleID == "") {
                 consumer.accept(lobbyData?.battleID, cancelLobbyListener)
@@ -378,15 +381,16 @@ object MultiplayerService {
             }
             databaseHandler.getUserID { userID ->
                 databaseHandler.setValue(
-                        DbPath.Battles[lobbyData.battleID][BattleData::otherPlayerID],
-                        userID,
-                        fail
+                    DbPath.Battles[lobbyData.battleID][BattleData::otherPlayerID],
+                    userID, onFail
                 ) {
-                    consumer.accept(lobbyData.battleID) {}
-                    // Passing empty canceler to not call it twice
-                    this.battleID = lobbyData.battleID
+                    // The lobby will now be deleted
                     cancelLobbyListener()
-                    listenForActions(lobbyData.battleID, fail)
+                    // Keep track of the battleID of the joined battle
+                    this.battleID = lobbyData.battleID
+                    // Passing empty canceler to not call it twice
+                    consumer.accept(lobbyData.battleID) {}
+                    listenForActions(lobbyData.battleID, onFail)
                 }
             }
         }
@@ -394,22 +398,24 @@ object MultiplayerService {
 
     /** Pushes an action to the actionlist. */
     fun postAction(
-            action: ActionData,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-            onSuccess: () -> Unit = {}
+        action: ActionData,
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        onSuccess: () -> Unit = {}
+
     ) {
         val battleDataID =
-                battleID
-                        ?: return fail(
-                                "",
-                                IllegalStateException("BattleID is not set in MultiplayerService.")
-                        )
-        databaseHandler.read(DbPath.Battles[battleDataID], fail) {
+            battleID ?: return onFail(
+                "BattleID is not set in MultiplayerService.",
+                IllegalStateException()
+            )
+        databaseHandler.read(
+            DbPath.Battles[battleDataID], onFail
+        ) {
             if (it == null)
-                    return@read fail(
-                            "",
-                            IllegalStateException("There is no BattleData with the given BattleID.")
-                    )
+                return@read onFail(
+                    "There is no BattleData with the given BattleID.",
+                    IllegalStateException()
+                )
             databaseHandler.setValue(
                     DbPath.Battles[battleDataID][BattleData::actions],
                     it.actions + listOf(action)
@@ -418,31 +424,28 @@ object MultiplayerService {
     }
 
     private fun listenForActions(
-            battleID: String,
-            fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        battleID: String,
+        onFail: FailFunc = { _, throwable -> throw throwable },
     ) {
         databaseHandler.listen(
-                DbPath.Battles[battleID][BattleData::actions],
-                fail,
-                listenerCancelerConsumer = battleListenerCancelers::add
+            DbPath.Battles[battleID][BattleData::actions], onFail,
+            listenerCancelerConsumer = battleListenerCancelers::add
         ) { updatedActionData, _ ->
             if (updatedActionData == null) {
-                if (actionListBuffer != null)
-                        fail(
-                                "",
-                                IllegalStateException(
-                                        "Retrieved ActionData list is null although the local buffer is not null."
-                                )
-                        )
+                if (actionListBuffer != null) onFail(
+                    "Retrieved ActionData list is null although the local buffer is not null.",
+                    IllegalStateException()
+                )
                 // Otherwise, it is fine that the updatedActionData can be null
                 return@listen
             }
-            actionListBuffer =
-                    if (actionListBuffer == null || lastReadActionIndex == -1) {
-                        updatedActionData
-                    } else {
-                        updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
-                    }
+
+            if (actionListBuffer == null || lastReadActionIndex == -1) {
+                actionListBuffer = updatedActionData
+            } else {
+                actionListBuffer =
+                    updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
+            }
         }
     }
 
@@ -473,25 +476,29 @@ object MultiplayerService {
 
     fun getUsernameMap(listener: Consumer<Map<String, String>?>) {
         databaseHandler.read(
-                DbPath.Username,
-                fail = { _, _ -> listener.accept(null) },
-                consumer = listener
+            DbPath.Username,
+            onFail = { _, _ -> listener.accept(null) },
+            consumer = listener
         )
     }
 
     fun setUsername(username: String, listener: Consumer<Boolean>) {
         databaseHandler.getUserID { userId ->
             databaseHandler.setValue(
-                    DbPath.Username[userId],
-                    username,
-                    fail = { _, _ -> listener.accept(false) }
-            ) { listener.accept(true) }
+                DbPath.Username[userId],
+                username,
+                onFail = { _, _ -> listener.accept(false) }
+            ) {
+                listener.accept(true)
+            }
         }
     }
 
     fun getLeaderboard(listener: Consumer<List<LeaderboardEntry>?>) {
-        databaseHandler.read(DbPath.Leaderboard, fail = { _, _ -> listener.accept(null) }) { board
-            ->
+        databaseHandler.read(
+            DbPath.Leaderboard,
+            onFail = { _, _ -> listener.accept(null) }
+        ) { board ->
             if (board == null) {
                 listener.accept(listOf())
             } else {
@@ -515,5 +522,6 @@ object MultiplayerService {
         }
     }
 }
+
 
 data class LeaderboardEntry(val userId: String, val username: String?, val score: Long)

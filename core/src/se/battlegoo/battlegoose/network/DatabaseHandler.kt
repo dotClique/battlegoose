@@ -18,6 +18,7 @@ import java.util.function.Consumer
 
 typealias ConversionFunc<T> = (Map<String, Any>) -> T
 typealias ListenerCanceler = () -> Unit
+typealias FailFunc = (String, Throwable) -> Unit
 
 class DatabaseHandler {
 
@@ -59,7 +60,7 @@ class DatabaseHandler {
         orderByArg: String,
         filter: FilterType,
         filterArg: String,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: Consumer<List<T>?>,
     ) {
         dbAccessWrapper {
@@ -69,13 +70,13 @@ class DatabaseHandler {
                 .orderBy(order, orderByArg)
                 .readValue(List::class.java)
                 .then<List<T>?> { consumer.accept(it) }
-                .fail(fail)
+                .fail(onFail)
         }
     }
 
     inline fun <reified T : Any> listen(
         databasePath: DbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<T?, ListenerCanceler>
     ) {
@@ -84,7 +85,7 @@ class DatabaseHandler {
                 GdxFIRDatabase.inst().inReference(databasePath.path).onDataChange(T::class.java)
             listener.then<T?> {
                 consumer.accept(it, listener::cancel)
-            }.fail(fail)
+            }.fail(onFail)
             listenerCancelerConsumer.invoke(listener::cancel)
         }
     }
@@ -92,12 +93,12 @@ class DatabaseHandler {
     inline fun <reified T : DataModel> listen(
         databasePath: DataModelDbPath<T>,
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: BiConsumer<T?, ListenerCanceler>
     ) {
         listen(
             databasePath.toPrimitive(),
-            fail,
+            onFail,
             listenerCancelerConsumer
         ) { value, canceler ->
             consumer.accept(value?.let(getConverter()), canceler)
@@ -106,14 +107,14 @@ class DatabaseHandler {
 
     inline fun <reified T : DataModel> listen(
         databasePath: DataModelListDbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<List<T>?, ListenerCanceler>
     ) {
         val converter = getConverter<T>()
         listen(
             databasePath.toPrimitive(),
-            fail,
+            onFail,
             listenerCancelerConsumer
         ) { list, canceler ->
             consumer.accept(list?.map(converter), canceler)
@@ -122,14 +123,14 @@ class DatabaseHandler {
 
     inline fun <reified T : DataModel> listen(
         databasePath: DataModelMapDbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         noinline listenerCancelerConsumer: (ListenerCanceler) -> Unit = { _ -> },
         consumer: BiConsumer<Map<String, T>?, ListenerCanceler>
     ) {
         val converter = getConverter<T>()
         listen(
             databasePath.toPrimitive(),
-            fail,
+            onFail,
             listenerCancelerConsumer
         ) { map, canceler ->
             consumer.accept(map?.map { Pair(it.key, converter(it.value)) }?.toMap(), canceler)
@@ -138,7 +139,7 @@ class DatabaseHandler {
 
     inline fun <reified T : Any> read(
         databasePath: PrimitiveDbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: Consumer<T?>
     ) {
         dbAccessWrapper {
@@ -146,38 +147,38 @@ class DatabaseHandler {
                 .inReference(databasePath.path)
                 .readValue(T::class.java)
                 .then(consumer::accept)
-                .fail(fail)
+                .fail(onFail)
         }
     }
 
     inline fun <reified T : DataModel> read(
         databasePath: DataModelDbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: Consumer<T?>
     ) {
-        read(databasePath.toPrimitive(), fail) {
+        read(databasePath.toPrimitive(), onFail) {
             consumer.accept(it?.let(getConverter()))
         }
     }
 
     inline fun <reified T : DataModel> read(
         databasePath: DataModelListDbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: Consumer<List<T>?>
     ) {
         val converter = getConverter<T>()
-        read(databasePath.toPrimitive(), fail) {
+        read(databasePath.toPrimitive(), onFail) {
             consumer.accept(it?.map(converter))
         }
     }
 
     inline fun <reified T : DataModel> read(
         databasePath: DataModelMapDbPath<T>,
-        noinline fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        noinline onFail: FailFunc = { _, throwable -> throw throwable },
         consumer: Consumer<Map<String, T>?>
     ) {
         val converter = getConverter<T>()
-        read(databasePath.toPrimitive(), fail) { map ->
+        read(databasePath.toPrimitive(), onFail) { map ->
             consumer.accept(map?.map { Pair(it.key, converter(it.value)) }?.toMap())
         }
     }
@@ -185,7 +186,7 @@ class DatabaseHandler {
     fun <T> setValue(
         databasePath: DbPath<T>,
         value: T,
-        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        onFail: FailFunc = { _, throwable -> throw throwable },
         onSuccess: () -> Unit
     ) {
         dbAccessWrapper {
@@ -193,21 +194,21 @@ class DatabaseHandler {
                 .inReference(databasePath.path)
                 .setValue(value)
                 .then<Void> { onSuccess() }
-                .fail(fail)
+                .fail(onFail)
         }
     }
 
     fun <T> deleteValue(
         databasePath: DbPath<T>,
-        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        callback: () -> Unit
+        onFail: FailFunc = { _, throwable -> throw throwable },
+        onSuccess: () -> Unit
     ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
                 .inReference(databasePath.path)
                 .removeValue()
-                .then<Void> { callback() }
-                .fail(fail)
+                .then<Void> { onSuccess() }
+                .fail(onFail)
         }
     }
 
