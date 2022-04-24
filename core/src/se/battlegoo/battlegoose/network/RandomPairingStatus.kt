@@ -1,11 +1,13 @@
 package se.battlegoo.battlegoose.network
 
-enum class RandomOpponentStatus {
+enum class RandomPairingStatus {
     WAITING_FOR_OTHER_PLAYER,
     CREATED_LOBBY,
     JOINED_LOBBY,
     WAITING_IN_QUEUE,
-    JOIN_QUEUE,
-    TIMEOUT_INACTIVE_PLAYER,
-    OTHER_PLAYER_JOINED
+    JOINED_QUEUE,
+    OTHER_PLAYER_JOINED,
+    FIRST_IN_QUEUE,
+    FAILED,
+    START_BATTLE
 }
