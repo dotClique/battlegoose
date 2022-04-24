@@ -26,7 +26,8 @@ abstract class Hero<T : Spell<*>> (
     }
 
     fun performAction(action: ActionData) {
-        assert(action.actionPointCost <= currentStats.actionPoints) { "Not enough action points" }
+        if (action.actionPointCost > currentStats.actionPoints)
+            throw IllegalStateException("Not enough action points")
         applyStatsModifier(
             HeroStatsModifier {
                 it.copy(actionPoints = it.actionPoints - action.actionPointCost)

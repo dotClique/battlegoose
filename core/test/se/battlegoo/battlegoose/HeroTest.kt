@@ -62,7 +62,7 @@ class HeroTest {
         assertEquals("Wrong initial number of APs", 2, hero.currentStats.actionPoints)
         assertThrows(
             "Hero::performAction failed to error when costing more than current action points",
-            AssertionError::class.java
+            IllegalStateException::class.java
         ) {
             hero.performAction(ActionData.MoveUnit("", GridVector(0, 0), GridVector(0, 0), 3))
         }
@@ -77,7 +77,7 @@ class HeroTest {
         )
         assertThrows(
             "Hero::performAction failed to error when costing more than current action points",
-            AssertionError::class.java
+            IllegalStateException::class.java
         ) {
             hero.performAction(ActionData.MoveUnit("", GridVector(0, 0), GridVector(0, 0), 2))
         }

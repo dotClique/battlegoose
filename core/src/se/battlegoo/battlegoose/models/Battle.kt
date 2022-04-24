@@ -13,7 +13,7 @@ class Battle(
 ) {
 
     var yourTurn: Boolean = false
-    var turnNumber: Long = 0L
+    var turnNumber: Int = 0
         private set
     var actions: MutableList<ActionData> = mutableListOf()
         private set

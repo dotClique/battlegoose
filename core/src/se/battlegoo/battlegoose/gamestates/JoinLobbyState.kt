@@ -2,7 +2,6 @@ package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Logger
-import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.network.JoinLobbyStatus
 import se.battlegoo.battlegoose.network.ListenerCanceler
 import se.battlegoo.battlegoose.network.MultiplayerService
@@ -39,7 +38,6 @@ class JoinLobbyState : GameState() {
     private var joinLobbyStatus: JoinLobbyStatus? = null
 
     private var joined = false
-    private var battleData: BattleData? = null
 
     private fun goBack() {
         val status = joinLobbyStatus
