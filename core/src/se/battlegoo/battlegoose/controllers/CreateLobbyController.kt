@@ -77,16 +77,16 @@ class CreateLobbyController(
     override fun update(dt: Float) {
         val battleDataCpy = battleData
         handleInput()
-        if (battleDataCpy != null) {
-            createLobbyView.onClickStartBattle = {}
-            onClickStartBattle(battleDataCpy)
-            return
+        when {
+            battleDataCpy != null -> {
+                createLobbyView.onClickStartBattle = {}
+                onClickStartBattle(battleDataCpy)
+            }
+            listenForOtherPlayer == null ->
+                // The listener is then canceled and it is ready to go back.
+                onClickMainMenu()
         }
-        if (listenForOtherPlayer == null) {
-            // The listener is then canceled and it is ready to go back.
-            onClickMainMenu()
-            return
-        }
+
         if (readyToStartBattle) {
             createLobbyView.onClickStartBattle = ::startBattle
         } else {

@@ -388,7 +388,9 @@ object MultiplayerService {
                     userID,
                     "",
                     listOf()
-                ) // The otherPlayerId is set by that other player for confirmation.
+                )
+            // The otherPlayerId is set by that other player
+            // to confirm that the other player still wants to enter battle
 
             databaseHandler.setValue(DbPath.Battles[battleID], initialBattleData, onFail) {
                 databaseHandler.setValue(
@@ -465,8 +467,9 @@ object MultiplayerService {
                 )
             databaseHandler.setValue(
                 DbPath.Battles[battleDataID][BattleData::actions],
-                it.actions + listOf(action)
-            ) { onSuccess() }
+                it.actions + listOf(action),
+                onSuccess = onSuccess
+            )
         }
     }
 
@@ -489,12 +492,12 @@ object MultiplayerService {
                 return@listen
             }
 
-            if (actionListBuffer == null || lastReadActionIndex == -1) {
-                actionListBuffer = updatedActionData
-            } else {
-                actionListBuffer =
+            actionListBuffer =
+                if (actionListBuffer == null || lastReadActionIndex == -1) {
+                    updatedActionData
+                } else {
                     updatedActionData.subList(lastReadActionIndex + 1, updatedActionData.size)
-            }
+                }
         }
     }
 
