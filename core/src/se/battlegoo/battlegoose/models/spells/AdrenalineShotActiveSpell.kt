@@ -12,10 +12,12 @@ class AdrenalineShotActiveSpell(
 ) : ActiveSpell<AdrenalineShotSpell>(baseSpell, caster, data) {
 
     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
-        caster.applyStatsModifier(
-            HeroStatsModifier {
-                it.copy(actionPoints = it.actionPoints + 1)
-            }
-        )
+        if (turnsSinceCast > 0) {
+            caster.applyStatsModifier(
+                HeroStatsModifier {
+                    it.copy(actionPoints = it.actionPoints + 1)
+                }
+            )
+        }
     }
 }

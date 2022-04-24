@@ -50,7 +50,12 @@ class SpellTest {
             1,
             hero.currentStats.actionPoints
         )
-        for (i in 1..spell.baseSpell.duration) {
+        spell.apply(battle)
+        assertEquals(
+            "Should have no effect on first application", 1,
+            hero.currentStats.actionPoints
+        )
+        for (i in 2..spell.baseSpell.duration) {
             spell.apply(battle)
             assertEquals(
                 "Wrong number of action points after $i applications", 2,

@@ -6,7 +6,7 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 class AdrenalineShotSpell : Spell<SpellData.AdrenalineShot>(
     "Adrenaline Shot",
     "Get an extra action point every turn for the following 3 turns.",
-    3,
+    4,
     6
 ) {
     override fun cast(

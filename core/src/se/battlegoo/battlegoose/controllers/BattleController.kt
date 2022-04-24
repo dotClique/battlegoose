@@ -100,7 +100,7 @@ class BattleController(
         if (Gdx.input.justTouched()) {
             val touchPoint = Game.unproject(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
             if (Rectangle(view.position.x, view.position.y, view.size.x, view.size.y)
-                    .contains(touchPoint)
+                .contains(touchPoint)
             ) {
                 onCastSpell()
                 view.position = ScreenVector(view.position.x, view.position.y + view.size.y)
@@ -257,7 +257,8 @@ class BattleController(
                 spell.cast(battle.hero2, spellData)
             }
         }
-        battle.activeSpells.second.add(activeSpell)
+        battle.activeSpells.second += activeSpell
+        activeSpell.apply(battle)
     }
 
     private fun doAction(action: ActionData) {
@@ -305,6 +306,7 @@ class BattleController(
                     )
                 }
             battle.activeSpells.first += activeSpell
+            activeSpell.apply(battle)
             doAction(ActionData.CastSpell(playerID, spellData))
         }
     }
