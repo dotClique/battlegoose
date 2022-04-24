@@ -108,4 +108,8 @@ class BattleMap(
             }
         }.flatten().iterator()
     }
+
+    fun getUnits(): List<UnitModel> {
+        return units.flatten().filterNotNull()
+    }
 }

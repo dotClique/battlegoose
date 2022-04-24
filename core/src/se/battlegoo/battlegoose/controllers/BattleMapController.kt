@@ -8,6 +8,8 @@ import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.Obstacle
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.units.UnitModel
+import se.battlegoo.battlegoose.utils.Modal
+import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.BattleMapTileState
 import se.battlegoo.battlegoose.views.BattleMapTileView
 import se.battlegoo.battlegoose.views.BattleMapView
@@ -23,10 +25,13 @@ sealed class ActionState {
 class BattleMapController(
     private val hero: Hero<*>,
     private val model: BattleMap,
-    private val view: BattleMapView
+    private val view: BattleMapView,
+    private val onMoveUnit: (fromPosition: GridVector, toPosition: GridVector) -> Unit,
+    private val onAttackUnit: (attackerPosition: GridVector, targetPosition: GridVector) -> Unit
 ) : ControllerBase(view) {
 
     val mapSize by model::gridSize
+    var yourTurn = false
 
     // Radius of a hexagon is the distance from center to vertex
     private val tileHexRadius = min(
@@ -81,9 +86,22 @@ class BattleMapController(
     private fun moveUnit(controller: UnitController, from: GridVector, to: GridVector) {
         model.moveUnit(from, to)
         setUnitViewPosition(controller, to)
+        onMoveUnit(from, to)
+    }
+
+    fun moveUnit(fromPosition: GridVector, toPosition: GridVector) {
+        moveUnit(
+            getUnitControllerAt(fromPosition)
+                ?: throw IllegalStateException("No unit at position $fromPosition to be moved"),
+            fromPosition,
+            toPosition
+        )
     }
 
     private fun removeUnit(unitController: UnitController) {
+        if (unitController.selected) {
+            clearTileStates()
+        }
         unitController.unitModel.let {
             model.removeUnit(it)
             unitControllers.remove(it)
@@ -216,6 +234,10 @@ class BattleMapController(
     }
 
     private fun moveSelectedUnit(gridPosition: GridVector) {
+        if (!yourTurn) {
+            Modal("Not so fast!", "It's not your turn", ModalType.Info()).show()
+            return
+        }
         actionState.let { state ->
             if (state !is ActionState.Selecting) {
                 throw IllegalStateException("Attempted to move without selecting a unit")
@@ -227,6 +249,10 @@ class BattleMapController(
     }
 
     private fun attackWithSelectedUnit(gridPosition: GridVector) {
+        if (!yourTurn) {
+            Modal("Not so fast!", "It's not your turn", ModalType.Info()).show()
+            return
+        }
         actionState.let { state ->
             if (state !is ActionState.Selecting) {
                 throw IllegalStateException("Attempted to attack without selecting a unit")
@@ -236,6 +262,7 @@ class BattleMapController(
             val targetUnitController = getUnitControllerAt(gridPosition)
                 ?: throw IllegalStateException("Missing target unit controller")
             attackUnit(unitController, targetUnitController)
+            onAttackUnit(state.pos, gridPosition)
         }
     }
 
@@ -259,9 +286,18 @@ class BattleMapController(
     }
 
     private fun attackUnit(controller: UnitController, targetController: UnitController) {
-        // TODO Actual attack logic...
         targetController.unitModel.takeAttackDamage(controller.unitModel.currentStats.attack)
-//        removeUnit(targetController)
+        if (targetController.unitModel.isDead()) {
+            removeUnit(targetController)
+        }
+    }
+
+    fun attackUnit(attackingUnit: UnitModel, targetUnit: UnitModel) {
+        val attackingController = unitControllers[attackingUnit]
+            ?: throw IllegalStateException("No controller for attacking unit $attackingUnit")
+        val targetController = unitControllers[targetUnit]
+            ?: throw IllegalStateException("No controller for target unit $targetUnit")
+        attackUnit(attackingController, targetController)
     }
 
     override fun update(dt: Float) {

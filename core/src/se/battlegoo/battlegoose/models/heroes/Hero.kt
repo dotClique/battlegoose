@@ -1,6 +1,6 @@
 package se.battlegoo.battlegoose.models.heroes
 
-import se.battlegoo.battlegoose.models.Action
+import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.models.spells.Spell
 import se.battlegoo.battlegoose.models.units.UnitModel
 import kotlin.reflect.KClass
@@ -25,8 +25,9 @@ abstract class Hero<T : Spell<*>> (
         )
     }
 
-    fun performAction(action: Action) {
-        assert(action.actionPointCost <= currentStats.actionPoints) { "Not enough action points" }
+    fun performAction(action: ActionData) {
+        if (action.actionPointCost > currentStats.actionPoints)
+            throw IllegalStateException("Not enough action points")
         applyStatsModifier(
             HeroStatsModifier {
                 it.copy(actionPoints = it.actionPoints - action.actionPointCost)

@@ -1,6 +1,7 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.network.CreateLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.utils.Modal
@@ -15,7 +16,7 @@ class CreateLobbyState : GameState() {
     )
 
     private var readyToStartBattle = false
-    private var startBattle = false
+    private var battleData: BattleData? = null
 
     private var cancelOtherPlayerIDListener: () -> Unit = {}
     private var lobbyId: String? = null
@@ -65,7 +66,7 @@ class CreateLobbyState : GameState() {
                 stage
             ).show()
         MultiplayerService.startBattle(lobbyIDCpy) {
-            startBattle = true
+            battleData = it
         }
     }
 
@@ -77,9 +78,7 @@ class CreateLobbyState : GameState() {
         } else {
             createLobbyView.onClickStartBattle = null
         }
-        if (startBattle) {
-            GameStateManager.replace(BattleState())
-        }
+        battleData?.let { GameStateManager.replace(BattleState(it.hostID, it.battleID, true)) }
     }
 
     override fun render(sb: SpriteBatch) {

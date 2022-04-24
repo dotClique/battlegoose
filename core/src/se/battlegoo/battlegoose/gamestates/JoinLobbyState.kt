@@ -38,7 +38,6 @@ class JoinLobbyState : GameState() {
     private var joinLobbyStatus: JoinLobbyStatus? = null
 
     private var joined = false
-    private var startBattle = false
 
     private fun goBack() {
         val status = joinLobbyStatus
@@ -79,10 +78,15 @@ class JoinLobbyState : GameState() {
         }
 
         joined = newJoined
-        startBattle = joinLobbyStatus is JoinLobbyStatus.StartBattle
-
-        if (startBattle) {
-            GameStateManager.replace(BattleState())
+        joinLobbyStatus?.let {
+            if (it is JoinLobbyStatus.StartBattle) {
+                GameStateManager.replace(
+                    BattleState(
+                        it.lobby.otherPlayerID, it.lobby.battleID,
+                        false
+                    )
+                )
+            }
         }
     }
 
