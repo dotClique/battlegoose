@@ -1,13 +1,13 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
-import java.util.Date
-import java.util.function.BiConsumer
-import java.util.function.Consumer
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
+import java.util.Date
+import java.util.function.BiConsumer
+import java.util.function.Consumer
 
 object MultiplayerService {
     private val databaseHandler = DatabaseHandler()
@@ -24,11 +24,17 @@ object MultiplayerService {
         return lobbyData.otherPlayerID.isNotEmpty() && lobbyData.otherPlayerID != userID
     }
 
-    private fun joinLobby(lobbyID: String, userID: String, callback: () -> Unit) {
+    private fun setOtherPlayerIDInLobby(
+        lobbyID: String,
+        userID: String,
+        fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
+        onSuccess: () -> Unit
+    ) {
         databaseHandler.setValue(
             DbPath.Lobbies[lobbyID][LobbyData::otherPlayerID],
             userID,
-            callback = callback
+            fail,
+            onSuccess
         )
     }
 
@@ -69,7 +75,6 @@ object MultiplayerService {
             }
         }
     }
-
 
     private fun checkRandomLobbyAvailability(consumer: Consumer<String?>) =
         databaseHandler.read(
@@ -143,7 +148,7 @@ object MultiplayerService {
         databaseHandler.setValue(
             DbPath.RandomOpponentData,
             RandomOpponentData(availableLobby, Date().time),
-            callback = callback
+            onSuccess = callback
         )
     }
 
@@ -151,7 +156,7 @@ object MultiplayerService {
         databaseHandler.setValue(
             DbPath.RandomOpponentQueue,
             queue.subList(0, queue.size - 1),
-            callback = callback
+            onSuccess = callback
         )
     }
 
@@ -198,18 +203,14 @@ object MultiplayerService {
                         if (!availableLobbyID.isNullOrEmpty()) {
                             queueCanceler.accept(null)
                             setAvailableLobby("") {
-                                tryJoinLobby(
-                                    availableLobbyID, {
-                                        queueListenerCanceler.invoke()
-                                        popQueue(queue) {
-                                            lobbyIDConsumer.accept(availableLobbyID)
-                                            listener.accept(RandomOpponentStatus.JOINED_LOBBY)
-                                        }
-                                    },
-                                    { cancelListener ->
-                                        cancelBattleJoinListener.accept(cancelListener)
+                                joinLobby(
+                                    availableLobbyID,
+                                ) { _, _ -> // TODO: Needs to be updated to the new joinLobby api
+                                    queueListenerCanceler.invoke()
+                                    popQueue(queue) {
+                                        listener.accept(RandomOpponentStatus.JOINED_LOBBY)
                                     }
-                                )
+                                }
                             }
                             return@checkRandomLobbyAvailability
                         }
@@ -218,7 +219,7 @@ object MultiplayerService {
                             queueCanceler.accept(null)
                             tryCreateLobby { lobby ->
                                 setAvailableLobby(lobby.lobbyID) {
-                                listenForOtherRandomPlayerJoinLobby(lobby.lobbyID, listener)
+                                    listenForOtherRandomPlayerJoinLobby(lobby.lobbyID, listener)
                                     queueListenerCanceler.invoke()
                                     popQueue(queue) {
                                         lobbyIDConsumer.accept(lobby.lobbyID)
@@ -237,56 +238,71 @@ object MultiplayerService {
         }
     }
 
-    fun tryJoinLobby(
+    fun joinLobby(
         lobbyID: String,
-        listener: Consumer<JoinLobbyStatus>,
-        cancelBattleJoinListener: Consumer<ListenerCanceler>,
+        battleListener: BiConsumer<JoinLobbyStatus, ListenerCanceler>,
     ) {
         databaseHandler.getUserID { userID ->
             databaseHandler.read(
-                DbPath.Lobbies[lobbyID],
-                consumer = { lobby ->
-                    if (lobby == null) {
-                        listener.accept(JoinLobbyStatus.DoesNotExist)
-                        return@read
-                    }
+                DbPath.Lobbies[lobbyID]
+            ) { lobby ->
+                if (lobby == null) {
+                    battleListener.accept(JoinLobbyStatus.DoesNotExist) {}
+                    return@read
+                }
 
-                    if (userCanJoinLobby(userID, lobby)) {
-                        listener.accept(JoinLobbyStatus.Full)
-                        return@read
+                if (userCanJoinLobby(userID, lobby)) {
+                    battleListener.accept(JoinLobbyStatus.Full) {}
+                    return@read
+                }
+                setOtherPlayerIDInLobby(
+                    lobbyID, userID,
+                    fail = { _, _ ->
+                        battleListener.accept(JoinLobbyStatus.NotAccessible) {}
+                        Logger("battlegoose")
+                            .error("Failed in setOtherPlayerIDInLobby called in joinLobby")
                     }
-                    joinLobby(lobbyID, userID) {
-                        listener.accept(
-                            JoinLobbyStatus.Ready(
-                                LobbyData(
-                                    lobbyID,
-                                    lobby.hostID,
-                                    userID,
-                                    lobby.shouldStart
-                                )
+                ) {
+                    battleListener.accept(
+                        JoinLobbyStatus.Ready(
+                            LobbyData(
+                                lobbyID,
+                                lobby.hostID,
+                                userID,
                             )
                         )
-                        listenForBattleStart(
-                            lobbyID,
-                            { battleID ->
-                                if (battleID == null)
-                                    listener.accept(JoinLobbyStatus.NotAccessible)
-                                else
-                                    listener.accept(
-                                        JoinLobbyStatus.StartBattle(
-                                            LobbyData(
-                                                lobbyID, lobby.hostID, userID, true, battleID
-                                            )
-                                        )
+                    ) {}
+                    listenForBattleStart(
+                        lobbyID,
+                    ) { battleID, cancelLobbyListener ->
+                        when (battleID) {
+                            null -> battleListener.accept(
+                                JoinLobbyStatus.NotAccessible,
+                                cancelLobbyListener
+                            )
+                            "" -> battleListener.accept(
+                                JoinLobbyStatus.Ready(
+                                    LobbyData(
+                                        lobbyID,
+                                        lobby.hostID,
+                                        userID,
+                                        battleID
                                     )
-                            },
-                            { listenerCanceler ->
-                                cancelBattleJoinListener.accept(listenerCanceler)
-                            }
-                        )
+                                ),
+                                cancelLobbyListener
+                            )
+                            else -> battleListener.accept(
+                                JoinLobbyStatus.StartBattle(
+                                    LobbyData(
+                                        lobbyID, lobby.hostID, userID, battleID
+                                    )
+                                ),
+                                cancelLobbyListener
+                            )
+                        }
                     }
                 }
-            )
+            }
         }
     }
 
@@ -333,7 +349,7 @@ object MultiplayerService {
                     databaseHandler.listen(
                         DbPath.Battles[battleID][BattleData::otherPlayerID]
                     ) { otherPlayerID, otherPlayerIDListenerCanceler ->
-                        if (otherPlayerID == null || otherPlayerID.length < 0) {
+                        if (otherPlayerID == null || otherPlayerID == "") {
                             return@listen
                         }
                         this.battleID = battleID
@@ -349,38 +365,28 @@ object MultiplayerService {
 
     fun listenForBattleStart(
         lobbyID: String,
-        consumer: Consumer<String?>,
-        listenerCancelerConsumer: Consumer<ListenerCanceler>
+        consumer: BiConsumer<String?, ListenerCanceler>,
     ) {
-        var cancelListener = false
-        val listenerCanceler: ListenerCanceler = { cancelListener = true }
+        // Have to listen on the battleID to also run the function when otherPlayerID changes.
         databaseHandler.listen(
-            DbPath.Lobbies[lobbyID][LobbyData::battleID]
-        ) { battleID, battleIDListenerCanceler ->
-            listenerCancelerConsumer.accept(listenerCanceler)
-            if (cancelListener) {
-                Logger("battlegoose").error("Canceled listener in listenForBattleStart")
-                battleIDListenerCanceler()
+            DbPath.Lobbies[lobbyID]
+        ) { lobbyData, cancelLobbyListener ->
+            if (lobbyData?.battleID == null || lobbyData.battleID == "") {
+                consumer.accept(lobbyData?.battleID, cancelLobbyListener)
                 return@listen
             }
-            if (battleID == null) {
-                consumer.accept(null)
-                return@listen
-            } else if (battleID == "")
-                return@listen
-
             databaseHandler.getUserID { userID ->
                 databaseHandler.setValue(
-                    DbPath.Battles[battleID][BattleData::otherPlayerID],
+                    DbPath.Battles[lobbyData.battleID][BattleData::otherPlayerID],
                     userID
                 ) {
-                    consumer.accept(battleID)
-                    battleIDListenerCanceler()
+                    consumer.accept(lobbyData.battleID) {}
+                    // Passing empty canceler to not call it twice
+                    this.battleID = lobbyData.battleID
+                    cancelLobbyListener()
+                    listenForActions(lobbyData.battleID)
                 }
             }
-
-            this.battleID = battleID
-            listenForActions(battleID)
         }
     }
 

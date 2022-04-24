@@ -186,13 +186,13 @@ class DatabaseHandler {
         databasePath: DbPath<T>,
         value: T,
         fail: (String, Throwable) -> Unit = { _, throwable -> throw throwable },
-        callback: () -> Unit
+        onSuccess: () -> Unit
     ) {
         dbAccessWrapper {
             GdxFIRDatabase.inst()
                 .inReference(databasePath.path)
                 .setValue(value)
-                .then<Void> { callback() }
+                .then<Void> { onSuccess() }
                 .fail(fail)
         }
     }
@@ -227,8 +227,8 @@ class DatabaseHandler {
         val lobbyID = data[LobbyData::lobbyID.name] as String
         val hostID = data[LobbyData::hostID.name] as String
         val otherPlayerID = data[LobbyData::otherPlayerID.name] as String
-        val shouldStart = data[LobbyData::shouldStart.name] as Boolean
-        return LobbyData(lobbyID, hostID, otherPlayerID, shouldStart)
+        val battleID = data[LobbyData::battleID.name] as String
+        return LobbyData(lobbyID, hostID, otherPlayerID, battleID)
     }
 
     @Suppress("UNCHECKED_CAST")
