@@ -166,7 +166,7 @@ class BattleController(
         val spellsIterator = activeSpells.iterator()
         while (spellsIterator.hasNext()) {
             val spell = spellsIterator.next()
-            spell.apply(battle)
+            applySpell(spell)
             if (spell.finished) {
                 spellsIterator.remove()
             }
@@ -258,7 +258,7 @@ class BattleController(
             }
         }
         battle.activeSpells.second += activeSpell
-        activeSpell.apply(battle)
+        applySpell(activeSpell)
     }
 
     private fun doAction(action: ActionData) {
@@ -306,8 +306,8 @@ class BattleController(
                     )
                 }
             battle.activeSpells.first += activeSpell
-            activeSpell.apply(battle)
             doAction(ActionData.CastSpell(playerID, spellData))
+            applySpell(activeSpell)
         }
     }
 
@@ -390,5 +390,11 @@ class BattleController(
         if (hero.currentStats.actionPoints <= 0) {
             endTurn()
         }
+    }
+
+    private fun applySpell(activeSpell: ActiveSpell<*>) {
+        activeSpell.apply(battle)
+        battleMapController.checkForDeadUnits()
+        battle.getCurrentOutcome()?.let(::resolveGame)
     }
 }

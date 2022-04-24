@@ -313,6 +313,12 @@ class BattleMapController(
         attackUnit(attackingController, targetController)
     }
 
+    fun checkForDeadUnits() {
+        unitControllers.values
+            .filter { it.unitModel.isDead() }
+            .forEach(::removeUnit)
+    }
+
     override fun update(dt: Float) {
         for (tRow in tileControllers) {
             for (tc in tRow) {
