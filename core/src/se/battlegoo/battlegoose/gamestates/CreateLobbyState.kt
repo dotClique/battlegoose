@@ -2,9 +2,10 @@ package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.controllers.CreateLobbyController
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.views.CreateLobbyView
 
-class CreateLobbyState : GameState() {
+class CreateLobbyState(selectedHero: Hero) : LobbyState(selectedHero) {
 
     private val createLobbyController: CreateLobbyController = CreateLobbyController(
         createLobbyView = CreateLobbyView(

@@ -2,9 +2,10 @@ package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.controllers.JoinLobbyController
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.views.JoinLobbyView
 
-class JoinLobbyState : GameState() {
+class JoinLobbyState(selectedHero: Hero) : LobbyState(selectedHero) {
 
     private var joinLobbyController: JoinLobbyController = JoinLobbyController(
         joinLobbyView = JoinLobbyView(stage),
