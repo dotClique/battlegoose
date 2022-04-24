@@ -19,7 +19,11 @@ import kotlin.math.sqrt
 
 sealed class ActionState {
     object Idle : ActionState()
-    data class Selecting(val pos: GridVector) : ActionState()
+    data class Selecting(
+        val pos: GridVector,
+        val tileController: BattleMapTileController,
+        val unit: UnitModel
+    ) : ActionState()
 }
 
 class BattleMapController(
@@ -146,7 +150,7 @@ class BattleMapController(
                     } else {
                         registerValidSelection()
                         clearTileStates()
-                        actionState = ActionState.Selecting(gridPosition)
+                        actionState = ActionState.Selecting(gridPosition, tileController, unitModel)
                         showMoveAndAttackOptionsForSelectedUnit()
                         tileController.state = BattleMapTileState.FOCUSED
                         val unitController = getUnitControllerAt(gridPosition)
@@ -171,6 +175,18 @@ class BattleMapController(
                 clearTileStates()
                 attackWithSelectedUnit(gridPosition)
                 actionState = ActionState.Idle
+            }
+        }
+    }
+
+    fun reselectCurrentSelection() {
+        actionState.let { state ->
+            if (state is ActionState.Selecting) {
+                clearTileStates()
+                actionState = ActionState.Idle
+                if (state.unit == model.getUnit(state.pos)) {
+                    selectTile(state.pos, state.tileController)
+                }
             }
         }
     }

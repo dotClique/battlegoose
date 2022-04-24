@@ -177,6 +177,7 @@ class BattleController(
         }
         battle.actions += action
         subtractActionPoints(battle.hero2, action.actionPointCost)
+        battleMapController.reselectCurrentSelection()
     }
 
     private fun handleReceivedPassAction() {
