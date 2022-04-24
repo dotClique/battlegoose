@@ -100,7 +100,7 @@ class BattleController(
         if (Gdx.input.justTouched()) {
             val touchPoint = Game.unproject(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
             if (Rectangle(view.position.x, view.position.y, view.size.x, view.size.y)
-                .contains(touchPoint)
+                    .contains(touchPoint)
             ) {
                 onCastSpell()
                 view.position = ScreenVector(view.position.x, view.position.y + view.size.y)
@@ -184,7 +184,7 @@ class BattleController(
             is ActionData.Forfeit -> resolveGame(BattleOutcome.VICTORY)
             is ActionData.MoveUnit -> handleReceivedMoveAction(action)
             is ActionData.Pass -> handleReceivedPassAction()
-            is ActionData.CastSpell<*> -> handleReceivedSpellCast(action.spell)
+            is ActionData.CastSpell -> handleReceivedSpellCast(action.spell)
         }
         battle.actions += action
         subtractActionPoints(battle.hero2, action.actionPointCost)
@@ -280,37 +280,32 @@ class BattleController(
 
     private fun onCastSpell() {
         if (battle.yourTurn) {
-            doAction(
-                ActionData.CastSpell(
-                    playerID,
-                    when (battle.hero1.spell) {
-                        is EphemeralAllegianceSpell -> {
-                            val data = SpellData.EphemeralAllegiance(
-                                battle.battleMap.getPosOfUnit(
-                                    battle.battleMap.getUnits()
-                                        .filter { it.allegiance == battle.hero2 }
-                                        .random(random)
-                                )!!
-                            )
-                            battle.activeSpells.first += battle.hero1.spell.cast(battle.hero1, data)
-                            data
-                        }
-                        is Bird52Spell -> {
-                            val data = SpellData.Bird52
-                            battle.activeSpells.first += battle.hero1.spell.cast(battle.hero1, data)
-                            data
-                        }
-                        is AdrenalineShotSpell -> {
-                            val data = SpellData.AdrenalineShot
-                            battle.activeSpells.first += battle.hero1.spell.cast(battle.hero1, data)
-                            data
-                        }
-                        else -> throw NotImplementedError(
-                            "No casting implemented for ${battle.hero1.spell::class.java.name}"
+            val (spellData, activeSpell) =
+                when (battle.hero1.spell) {
+                    is EphemeralAllegianceSpell -> {
+                        val data = SpellData.EphemeralAllegiance(
+                            battle.battleMap.getPosOfUnit(
+                                battle.battleMap.getUnits()
+                                    .filter { it.allegiance == battle.hero2 }
+                                    .random(random)
+                            )!!
                         )
+                        Pair(data, battle.hero1.spell.cast(battle.hero1, data))
                     }
-                )
-            )
+                    is Bird52Spell -> {
+                        val data = SpellData.Bird52
+                        Pair(data, battle.hero1.spell.cast(battle.hero1, data))
+                    }
+                    is AdrenalineShotSpell -> {
+                        val data = SpellData.AdrenalineShot
+                        Pair(data, battle.hero1.spell.cast(battle.hero1, data))
+                    }
+                    else -> throw NotImplementedError(
+                        "No casting implemented for ${battle.hero1.spell::class.java.name}"
+                    )
+                }
+            battle.activeSpells.first += activeSpell
+            doAction(ActionData.CastSpell(playerID, spellData))
         }
     }
 
