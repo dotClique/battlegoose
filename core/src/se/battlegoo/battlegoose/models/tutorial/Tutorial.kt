@@ -14,7 +14,10 @@ class Tutorial(tutorialSteps: List<TutorialStep>) {
             index == tutorialSteps.size - 1 -> last = true
         }
 
-        TutorialStep(step.tutorialSprite, step.headerText, step.tutorialText, step.extraText, first, last)
+        TutorialStep(
+            step.tutorialSprite, step.headerText, step.tutorialText,
+            step.extraText, first, last
+        )
     }.toList()
 
     val size: Int

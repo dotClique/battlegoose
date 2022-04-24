@@ -35,34 +35,45 @@ class TutorialView(val stage: Stage) : ViewBase() {
     private val mainSkin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private val backButton = TextButton("Back", mainSkin)
     private val nextButton = TextButton("Next", mainSkin)
+    private val closeButton = TextButton("Close", mainSkin)
 
     init {
         backButton.width = BUTTON_WIDTH
         backButton.height = BUTTON_HEIGHT
         nextButton.width = BUTTON_WIDTH
         nextButton.height = BUTTON_HEIGHT
+        closeButton.width = BUTTON_WIDTH
+        closeButton.height = BUTTON_HEIGHT
 
         backButton.setPosition(BUTTON_MARGIN, Game.HEIGHT / 2f - backButton.height / 2f)
-        nextButton.setPosition(Game.WIDTH - nextButton.width - BUTTON_MARGIN,
-            Game.HEIGHT / 2f - backButton.height / 2f)
+        nextButton.setPosition(
+            Game.WIDTH - nextButton.width - BUTTON_MARGIN,
+            Game.HEIGHT / 2f - backButton.height / 2f
+        )
+        closeButton.setPosition(nextButton.x, pos.y + maxSize.y - BUTTON_HEIGHT)
 
         stage.addActor(backButton)
         stage.addActor(nextButton)
+        stage.addActor(closeButton)
     }
 
     fun showTutorialPage(viewModel: TutorialViewModel) {
         pageView = TutorialPageView(
             pos, maxSize,
-            TutorialPageViewModel(viewModel.tutorialSprite, viewModel.headerText, viewModel.tutorialText, viewModel.extraText)
+            TutorialPageViewModel(
+                viewModel.tutorialSprite, viewModel.headerText,
+                viewModel.tutorialText, viewModel.extraText
+            )
         )
         backButton.isVisible = !viewModel.first
-//        nextButton.isVisible = !viewModel.last
+        nextButton.isVisible = !viewModel.last
     }
 
     override fun registerInput() {
         when {
             Gdx.input.justTouched() && backButton.isPressed -> controller.onClickBack()
             Gdx.input.justTouched() && nextButton.isPressed -> controller.onClickForward()
+            Gdx.input.justTouched() && closeButton.isPressed -> controller.onClickClose()
         }
     }
 
@@ -88,6 +99,7 @@ class TutorialView(val stage: Stage) : ViewBase() {
 interface ITutorialViewController {
     fun onClickBack()
     fun onClickForward()
+    fun onClickClose()
 }
 
 data class TutorialViewModel(

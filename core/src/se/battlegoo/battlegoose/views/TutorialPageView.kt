@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.tutorial.TutorialSprite
 import se.battlegoo.battlegoose.utils.fitScale
@@ -63,11 +62,16 @@ class TutorialPageView(
         backgroundSprite.setPosition(pos.x + backgroundOffset.x, pos.y + backgroundOffset.y)
         backgroundSprite.setSize(backgroundSize.x, backgroundSize.y)
 
-        val imageMax = ScreenVector(backgroundSize.x * IMAGE_WIDTH, backgroundSize.y * IMAGE_HEIGHT)
-        val (imageSize, imageOffset) = fitScale(tutorialTexture, ScreenVector(imageMax.x, imageMax.y))
+        val imageMax = ScreenVector(
+            backgroundSize.x * IMAGE_WIDTH,
+            backgroundSize.y * IMAGE_HEIGHT
+        )
+        val (imageSize, imageOffset) =
+            fitScale(tutorialTexture, ScreenVector(imageMax.x, imageMax.y))
         tutorialSprite.setPosition(
             backgroundSprite.x + backgroundSize.x * (1f - IMAGE_WIDTH) / 2f + imageOffset.x,
-            backgroundSprite.y + backgroundSprite.height - imageMax.y + imageOffset.y - IMAGE_MARGIN_ABOVE
+            backgroundSprite.y + backgroundSprite.height - imageMax.y + imageOffset.y -
+                IMAGE_MARGIN_ABOVE
         )
         tutorialSprite.setSize(imageSize.x, imageSize.y)
 
@@ -117,4 +121,9 @@ class TutorialPageView(
     }
 }
 
-data class TutorialPageViewModel(val sprite: TutorialSprite, val header: String, val text: String, val textExtra: String? = null)
+data class TutorialPageViewModel(
+    val sprite: TutorialSprite,
+    val header: String,
+    val text: String,
+    val textExtra: String? = null
+)
