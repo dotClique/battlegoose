@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.network.RandomPairingStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
 
 class QuickJoinView(
@@ -21,13 +22,12 @@ class QuickJoinView(
 
     private val mainMenuButton: TextButton = TextButton("Main Menu", skin)
     private val titleLabel: Label = Label("Quick Join", skin)
-    private val statusLabel: Label = Label("", skin)
+    private val statusLabel: DotWaitingLabelView = DotWaitingLabelView("", skin)
 
     private val x0: Float = Menu.SPACER
     private val y0: Float = Menu.BOTTOM_SPACING
 
     init {
-        stage.addActor(mainMenuButton)
 
         mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
@@ -40,16 +40,28 @@ class QuickJoinView(
             Game.HEIGHT * 0.9f
         )
 
-        statusLabel.setAlignment(Align.center)
-        statusLabel.setFontScale(2.6f)
         statusLabel.setPosition(
             Game.WIDTH / 2f - statusLabel.width / 2f,
             Game.HEIGHT * 0.6f
         )
-        statusLabel.setText("Status") // Status messages from MultiplayerService will be in this
-        // Logger("Quick Join", Logger.INFO).info(it.toString())
+        stage.addActor(mainMenuButton)
+        stage.addActor(titleLabel)
+        statusLabel.shouldDotLoad = true
     }
 
+    fun setStatus(status: RandomPairingStatus) {
+        statusLabel.setText(
+            when (status) {
+                RandomPairingStatus.WAITING_IN_QUEUE ->
+                    "Waiting in queue"
+                RandomPairingStatus.START_BATTLE ->
+                    "Starting battle"
+                RandomPairingStatus.WAITING_FOR_OTHER_PLAYER ->
+                    "Waiting for other player"
+                else -> status.toString()
+            }
+        )
+    }
     override fun registerInput() {
         if (Gdx.input.justTouched() && mainMenuButton.isPressed) {
             onClickMainMenu()
@@ -58,11 +70,7 @@ class QuickJoinView(
 
     override fun render(sb: SpriteBatch) {
         sb.draw(background, 0f, 0f, Game.WIDTH, Game.HEIGHT)
-
-        titleLabel.draw(sb, 1f)
-        statusLabel.draw(sb, 1f)
-
-        mainMenuButton.draw(sb, 1f)
+        statusLabel.render(sb)
     }
 
     override fun dispose() {

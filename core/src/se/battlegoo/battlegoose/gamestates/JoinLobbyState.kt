@@ -20,26 +20,26 @@ class JoinLobbyState : GameState() {
 
     private fun createJoinLobbyView(): JoinLobbyView {
         return JoinLobbyView(
-                onClickMainMenu = this::goBack,
-                stage = stage,
-                onJoinLobby = { lobbyID ->
-                    MultiplayerService.joinLobby(lobbyID) { status, cancelListener ->
-                        if (listenForStartingBattle == false) {
-                            listenForStartingBattle = null
-                            cancelListener()
-                            return@joinLobby
-                        }
-                        joinLobbyView.setStatus(status)
-                        joinLobbyStatus = status
+            onClickMainMenu = this::goBack,
+            stage = stage,
+            onJoinLobby = { lobbyID ->
+                MultiplayerService.joinLobby(lobbyID) { status, cancelListener ->
+                    if (listenForStartingBattle == false) {
+                        listenForStartingBattle = null
+                        cancelListener()
+                        return@joinLobby
                     }
+                    joinLobbyView.setStatus(status)
+                    joinLobbyStatus = status
                 }
+            }
         )
     }
 
     private fun goBack() {
         val status = joinLobbyStatus
         if (status is JoinLobbyStatus.StartBattle)
-                return Logger("battlegoose").error("Cannot exit lobby after battle has started")
+            return Logger("battlegoose").error("Cannot exit lobby after battle has started")
         else if (status is JoinLobbyStatus.Ready)
             MultiplayerService.leaveLobbyAsOtherPlayer(
                 status.lobby.lobbyID,
@@ -77,7 +77,7 @@ class JoinLobbyState : GameState() {
         joinLobbyStatus?.let {
             if (it is JoinLobbyStatus.StartBattle) {
                 GameStateManager.replace(
-                        BattleState(it.lobby.otherPlayerID, it.lobby.battleID, false)
+                    BattleState(it.lobby.otherPlayerID, it.lobby.battleID, false)
                 )
             }
         }
@@ -87,12 +87,12 @@ class JoinLobbyState : GameState() {
         ) {
             listenForStartingBattle = false
             Modal(
-                            "Lobby deleted",
-                            "The joined lobby was deleted. Try another lobby.",
-                            ModalType.Info(),
-                            stage
-                    )
-                    .show()
+                "Lobby deleted",
+                "The joined lobby was deleted. Try another lobby.",
+                ModalType.Info(),
+                stage
+            )
+                .show()
         }
 
         joined = joinLobbyStatus is JoinLobbyStatus.Ready
