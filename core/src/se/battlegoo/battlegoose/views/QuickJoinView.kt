@@ -52,11 +52,11 @@ class QuickJoinView(
     fun setStatus(status: RandomPairingStatus) {
         statusLabel.setText(
             when (status) {
-                RandomPairingStatus.WAITING_IN_QUEUE ->
+                RandomPairingStatus.WaitingInQueue ->
                     "Waiting in queue"
-                RandomPairingStatus.START_BATTLE ->
+                RandomPairingStatus.StartBattle ->
                     "Starting battle"
-                RandomPairingStatus.WAITING_FOR_OTHER_PLAYER ->
+                RandomPairingStatus.WaitingForOtherPlayer ->
                     "Waiting for other player"
                 else -> status.toString()
             }

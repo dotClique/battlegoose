@@ -93,5 +93,4 @@ class CreateLobbyController(
             createLobbyView.onClickStartBattle = null
         }
     }
-
 }

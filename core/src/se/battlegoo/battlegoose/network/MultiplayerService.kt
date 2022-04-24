@@ -121,7 +121,7 @@ object MultiplayerService {
         val updatedQueue = queue + userID
 
         databaseHandler.setValue(DbPath.RandomOpponentQueue, updatedQueue) {
-            listener(RandomPairingStatus.JOINED_QUEUE, cannotLeaveQueue)
+            listener(RandomPairingStatus.JoinedQueue, cannotLeaveQueue)
         }
         return updatedQueue
     }
@@ -181,10 +181,10 @@ object MultiplayerService {
                     // the player can do  anything
                     if (queue.first() != userID) {
                         processingQueue = false
-                        listener(RandomPairingStatus.WAITING_IN_QUEUE, leaveQueue)
+                        listener(RandomPairingStatus.WaitingInQueue, leaveQueue)
                         return@getUserID
                     }
-                    listener(RandomPairingStatus.FIRST_IN_QUEUE, cannotLeaveQueue)
+                    listener(RandomPairingStatus.FirstInQueue, cannotLeaveQueue)
                     // The player is here first in queue, and either joins an available lobby
                     // for random matchmaking or creates his own lobby if there is
                     // another player in the queue.
@@ -204,7 +204,7 @@ object MultiplayerService {
                                             queueListenerCanceler()
                                             popQueue(queue) {
                                                 listener(
-                                                    RandomPairingStatus.JOINED_LOBBY,
+                                                    RandomPairingStatus.JoinedLobby,
                                                     cannotLeaveQueue
                                                 )
                                             }
@@ -212,7 +212,11 @@ object MultiplayerService {
                                         is JoinLobbyStatus.StartBattle -> {
                                             cancelJoinLobbyListener()
                                             listener(
-                                                RandomPairingStatus.START_BATTLE,
+                                                RandomPairingStatus.StartBattle(
+                                                    joinLobbyStatus.lobby.otherPlayerID,
+                                                    joinLobbyStatus.lobby.battleID,
+                                                    false
+                                                ),
                                                 cannotLeaveQueue
                                             )
                                         }
@@ -221,7 +225,7 @@ object MultiplayerService {
                                             processingQueue = false
                                             popQueue(queue) {
                                                 listener(
-                                                    RandomPairingStatus.FAILED,
+                                                    RandomPairingStatus.Failed,
                                                     cannotLeaveQueue
                                                 )
                                             }
@@ -238,7 +242,7 @@ object MultiplayerService {
                                         queueListenerCanceler()
                                         popQueue(queue) {
                                             listener(
-                                                RandomPairingStatus.CREATED_LOBBY,
+                                                RandomPairingStatus.CreatedLobby,
                                                 cannotLeaveQueue
                                             )
                                         }
@@ -247,7 +251,7 @@ object MultiplayerService {
                                 when (createLobbyStatus) {
                                     CreateLobbyStatus.OPEN -> {
                                         listener(
-                                            RandomPairingStatus.WAITING_FOR_OTHER_PLAYER,
+                                            RandomPairingStatus.WaitingForOtherPlayer,
                                             cannotLeaveQueue
                                         )
                                     }
@@ -255,7 +259,11 @@ object MultiplayerService {
                                         cancelOtherPlayerIDListener()
                                         startBattle(lobby.lobbyID, onFail) {
                                             listener(
-                                                RandomPairingStatus.START_BATTLE,
+                                                RandomPairingStatus.StartBattle(
+                                                    it.hostID,
+                                                    it.battleID,
+                                                    true
+                                                ),
                                                 cannotLeaveQueue
                                             )
                                         }
@@ -264,7 +272,7 @@ object MultiplayerService {
                             }
                         } else {
                             processingQueue = false
-                            listener(RandomPairingStatus.WAITING_FOR_OTHER_PLAYER, leaveQueue)
+                            listener(RandomPairingStatus.WaitingForOtherPlayer, leaveQueue)
                         }
                     }
                 }

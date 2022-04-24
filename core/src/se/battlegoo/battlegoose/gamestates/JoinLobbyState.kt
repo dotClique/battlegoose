@@ -1,12 +1,7 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.controllers.JoinLobbyController
-import se.battlegoo.battlegoose.network.JoinLobbyStatus
-import se.battlegoo.battlegoose.network.MultiplayerService
-import se.battlegoo.battlegoose.utils.Modal
-import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyState : GameState() {

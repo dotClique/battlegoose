@@ -19,7 +19,7 @@ class JoinLobbyView(
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND)
 
     var onClickMainMenu: () -> Unit = {}
-    var onClickJoinLobby: (String) -> Unit  = { _ -> }
+    var onClickJoinLobby: (String) -> Unit = { _ -> }
 
     private var skin: Skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
     private var lobbyIdTextField: TextField = TextField("", skin)

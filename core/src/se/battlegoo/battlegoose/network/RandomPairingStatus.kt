@@ -1,13 +1,15 @@
 package se.battlegoo.battlegoose.network
 
-enum class RandomPairingStatus {
-    WAITING_FOR_OTHER_PLAYER,
-    CREATED_LOBBY,
-    JOINED_LOBBY,
-    WAITING_IN_QUEUE,
-    JOINED_QUEUE,
-    OTHER_PLAYER_JOINED,
-    FIRST_IN_QUEUE,
-    FAILED,
-    START_BATTLE
+import se.battlegoo.battlegoose.datamodels.BattleData
+
+sealed class RandomPairingStatus {
+    object WaitingForOtherPlayer : RandomPairingStatus()
+    object CreatedLobby: RandomPairingStatus()
+    object JoinedLobby: RandomPairingStatus()
+    object WaitingInQueue: RandomPairingStatus()
+    object JoinedQueue: RandomPairingStatus()
+    object OtherPlayerJoined: RandomPairingStatus()
+    object FirstInQueue: RandomPairingStatus()
+    object Failed: RandomPairingStatus()
+    data class StartBattle(val playerID: String, val battleID: String, val isHost: Boolean): RandomPairingStatus()
 }

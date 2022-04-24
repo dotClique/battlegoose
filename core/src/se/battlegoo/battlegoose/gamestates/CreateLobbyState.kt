@@ -28,7 +28,6 @@ class CreateLobbyState : GameState() {
     fun goBack() =
         createLobbyController.goBack()
 
-
     override fun update(dt: Float) {
         createLobbyController.update(dt)
     }
