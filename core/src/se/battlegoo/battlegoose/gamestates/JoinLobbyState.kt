@@ -81,8 +81,14 @@ class JoinLobbyState : GameState() {
             }
         }
 
+<<<<<<< HEAD
         val newJoined = joinLobbyStatus is JoinLobbyStatus.Ready
         if (!newJoined && joined && joinLobbyStatus is JoinLobbyStatus.NotAccessible) {
+=======
+//        Logger("battlegoose").error("JoinLobbyStatus: $joinLobbyStatus")
+        if (joined && joinLobbyStatus is JoinLobbyStatus.NotAccessible
+        ) {
+>>>>>>> 32e8409 (feat: add error handling options to battle functions in MultiplayerService)
             listenForStartingBattle = false
             Modal(
                             "Lobby deleted",
@@ -93,7 +99,7 @@ class JoinLobbyState : GameState() {
                     .show()
         }
 
-        joined = newJoined
+        joined = joinLobbyStatus is JoinLobbyStatus.Ready
         if (canAndWantToLeave()) {
             GameStateManager.goBack()
         }
