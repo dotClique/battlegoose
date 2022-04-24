@@ -168,7 +168,7 @@ class HeroSelectionView(
         if (this.controller == null)
             this.controller = controller
         else
-            Gdx.app.error("#PREREG", "Controller already registered")
+            Gdx.app.error(Game.LOGGER_TAG, "Controller already registered")
     }
 
     private fun onClickHeroCard(heroId: String) {

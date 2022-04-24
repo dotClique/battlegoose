@@ -10,6 +10,7 @@ class MainMenuState :
     GameState() {
 
     private var mainMenuView = MainMenuView(
+        stage,
         onClickCreateLobby = { GameStateManager.push(CreateLobbyState()) },
         onClickJoinLobby = { GameStateManager.push(JoinLobbyState()) },
 //        onClickJoinLobby = {
@@ -22,7 +23,8 @@ class MainMenuState :
 //                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} )).show()
 //        },
         onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
-        onClickLeaderboard = { GameStateManager.push(LeaderboardState()) }
+        onClickLeaderboard = { GameStateManager.push(LeaderboardState()) },
+        onClickTutorial = { GameStateManager.push(TutorialState()) }
     )
 
     private var changeUsernameController = ChangeUsernameController(
