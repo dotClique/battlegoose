@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.RandomPairingStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
@@ -66,8 +65,6 @@ class QuickJoinView(
                 is RandomPairingStatus.Failed ->
                     "Failed to load"
                 else -> {
-                    Logger(Game.LOGGER_TAG)
-                        .error("RandomPairingStatus '$status' replaced with 'Loading'")
                     "Loading"
                 }
             }
