@@ -1,35 +1,37 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import se.battlegoo.battlegoose.controllers.QuickJoinController
 import se.battlegoo.battlegoose.views.QuickJoinView
 
 class QuickJoinState : GameState() {
 
-    private val quickJoinView = QuickJoinView(
-        this::goBack,
-        stage
+    private val quickJoinController = QuickJoinController(
+        quickJoinView = QuickJoinView(this::goBack, stage),
+        onReadyStartBattle = { userID, battleID, isHost ->
+            GameStateManager.replace(
+                BattleState(
+                    userID,
+                    battleID,
+                    isHost
+                )
+            )
+        },
+        onClickMainMenu = { GameStateManager.goBack() },
+        stage = stage
     )
 
-    init {
-    }
-
-    private fun goBack() {
-        GameStateManager.goBack()
-    }
-
-    private fun handleInput() {
-        quickJoinView.registerInput()
-    }
+    private fun goBack(): Unit = quickJoinController.goBack()
 
     override fun update(dt: Float) {
-        handleInput()
+        quickJoinController.update(dt)
     }
 
     override fun render(sb: SpriteBatch) {
-        quickJoinView.render(sb)
+        quickJoinController.render(sb)
     }
 
     override fun dispose() {
-        quickJoinView.dispose()
+        quickJoinController.dispose()
     }
 }

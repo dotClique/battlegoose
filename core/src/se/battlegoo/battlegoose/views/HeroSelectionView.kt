@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
@@ -168,7 +169,7 @@ class HeroSelectionView(
         if (this.controller == null)
             this.controller = controller
         else
-            Gdx.app.error(Game.LOGGER_TAG, "Controller already registered")
+            Logger(Game.LOGGER_TAG).error("Controller already registered")
     }
 
     private fun onClickHeroCard(heroId: String) {

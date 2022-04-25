@@ -71,7 +71,7 @@ class BattleController(
         placeUnits()
         placeObstacles()
         battle.yourTurn = random.nextBoolean() xor battle.isHost
-        Logger("Battle", Logger.INFO).info("Battle ${battle.battleId} playerId: $playerID")
+        Logger(Game.LOGGER_TAG, Logger.INFO).info("Battle ${battle.battleId} playerId: $playerID")
         startTurn()
     }
 
@@ -106,7 +106,7 @@ class BattleController(
     }
 
     private fun startTurn() {
-        Logger("Battle", Logger.INFO)
+        Logger(Game.LOGGER_TAG, Logger.INFO)
             .info((if (battle.yourTurn) "My" else "Opponent's") + " turn")
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
     }

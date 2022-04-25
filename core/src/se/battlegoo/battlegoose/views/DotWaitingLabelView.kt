@@ -34,8 +34,9 @@ class DotWaitingLabelView(
         statusLabel.setText("${statusLabel.text}.")
     }
 
-    fun setText(text: String) {
+    fun setText(text: String, shouldDotLoad: Boolean? = null) {
         statusLabel.setText(text)
+        this.shouldDotLoad = shouldDotLoad ?: this.shouldDotLoad
     }
 
     fun setPosition(x: Float, y: Float) = statusLabel.setPosition(x, y)
