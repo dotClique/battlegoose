@@ -7,8 +7,8 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
 import se.battlegoo.battlegoose.models.heroes.MajorMallard
 import se.battlegoo.battlegoose.models.heroes.SergeantSwan
-import se.battlegoo.battlegoose.views.HeroSelectionView
-import se.battlegoo.battlegoose.views.HeroSelectionViewModel
+import se.battlegoo.battlegoose.views.screens.HeroSelectionView
+import se.battlegoo.battlegoose.views.screens.HeroSelectionViewModel
 
 class HeroSelectionState(
     private val createLobbyState: (Hero) -> LobbyState

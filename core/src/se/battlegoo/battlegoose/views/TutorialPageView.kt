@@ -11,6 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.tutorial.TutorialSprite
 import se.battlegoo.battlegoose.utils.fitScale
+import se.battlegoo.battlegoose.views.utils.Fonts
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class TutorialPageView(
     pos: ScreenVector,

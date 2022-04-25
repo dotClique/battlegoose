@@ -5,7 +5,7 @@ import se.battlegoo.battlegoose.controllers.TutorialController
 import se.battlegoo.battlegoose.models.tutorial.Tutorial
 import se.battlegoo.battlegoose.models.tutorial.TutorialSprite
 import se.battlegoo.battlegoose.models.tutorial.TutorialStep
-import se.battlegoo.battlegoose.views.TutorialView
+import se.battlegoo.battlegoose.views.screens.TutorialView
 
 class TutorialState : GameState() {
 

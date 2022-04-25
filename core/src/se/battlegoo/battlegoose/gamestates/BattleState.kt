@@ -9,7 +9,7 @@ import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
-import se.battlegoo.battlegoose.views.BattleView
+import se.battlegoo.battlegoose.views.screens.BattleView
 
 class BattleState(
     playerID: String,

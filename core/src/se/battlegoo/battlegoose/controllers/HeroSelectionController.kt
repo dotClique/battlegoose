@@ -1,8 +1,8 @@
 package se.battlegoo.battlegoose.controllers
 
 import se.battlegoo.battlegoose.models.heroes.HeroSelection
-import se.battlegoo.battlegoose.views.HeroSelectionView
-import se.battlegoo.battlegoose.views.IHeroSelectionViewController
+import se.battlegoo.battlegoose.views.screens.HeroSelectionView
+import se.battlegoo.battlegoose.views.screens.IHeroSelectionViewController
 
 class HeroSelectionController(
     private val view: HeroSelectionView,

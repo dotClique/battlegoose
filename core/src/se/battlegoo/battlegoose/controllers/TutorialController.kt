@@ -2,9 +2,9 @@ package se.battlegoo.battlegoose.controllers
 
 import se.battlegoo.battlegoose.models.tutorial.Tutorial
 import se.battlegoo.battlegoose.models.tutorial.TutorialStep
-import se.battlegoo.battlegoose.views.ITutorialViewController
-import se.battlegoo.battlegoose.views.TutorialView
-import se.battlegoo.battlegoose.views.TutorialViewModel
+import se.battlegoo.battlegoose.views.screens.ITutorialViewController
+import se.battlegoo.battlegoose.views.screens.TutorialView
+import se.battlegoo.battlegoose.views.screens.TutorialViewModel
 
 class TutorialController(
     private val view: TutorialView,

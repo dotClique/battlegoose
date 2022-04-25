@@ -3,7 +3,7 @@ package se.battlegoo.battlegoose.gamestates
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.network.LeaderboardEntry
 import se.battlegoo.battlegoose.network.MultiplayerService
-import se.battlegoo.battlegoose.views.LeaderboardView
+import se.battlegoo.battlegoose.views.screens.LeaderboardView
 
 class LeaderboardState : GameState() {
 

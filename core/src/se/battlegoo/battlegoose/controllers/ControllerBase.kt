@@ -1,7 +1,7 @@
 package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import se.battlegoo.battlegoose.views.ViewBase
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 abstract class ControllerBase(private val view: ViewBase) {
     abstract fun update(dt: Float)

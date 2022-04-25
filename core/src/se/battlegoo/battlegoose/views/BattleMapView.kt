@@ -6,6 +6,7 @@ import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class BattleMapView(
     background: BattleMapBackground,

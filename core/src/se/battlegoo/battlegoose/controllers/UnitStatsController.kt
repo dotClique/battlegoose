@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.models.units.UnitModel
-import se.battlegoo.battlegoose.views.UnitStatsView
+import se.battlegoo.battlegoose.views.units.UnitStatsView
 
 class UnitStatsController(
     unitModel: UnitModel?,
