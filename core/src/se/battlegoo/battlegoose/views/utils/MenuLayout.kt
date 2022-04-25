@@ -1,8 +1,8 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.utils
 
 import se.battlegoo.battlegoose.Game
 
-class Menu {
+class MenuLayout {
     companion object {
         const val BOTTOM_SPACING = 80f // y-axis offset for menu screen options
         const val SPACER = 50f // spacer between menu screen option

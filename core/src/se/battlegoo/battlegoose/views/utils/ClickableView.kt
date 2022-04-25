@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.utils
 
 import com.badlogic.gdx.Gdx
 import se.battlegoo.battlegoose.Game

@@ -1,7 +1,9 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.units
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.Shaders
+import se.battlegoo.battlegoose.views.utils.SpriteViewBase
 
 class UnitView(
     unitSprite: UnitSprite,

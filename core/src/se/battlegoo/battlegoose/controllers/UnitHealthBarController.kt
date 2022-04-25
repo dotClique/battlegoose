@@ -3,7 +3,7 @@ package se.battlegoo.battlegoose.controllers
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.units.UnitModel
-import se.battlegoo.battlegoose.views.UnitHealthBarView
+import se.battlegoo.battlegoose.views.units.UnitHealthBarView
 
 class UnitHealthBarController(
     private val unitModel: UnitModel,

@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.utils
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Label

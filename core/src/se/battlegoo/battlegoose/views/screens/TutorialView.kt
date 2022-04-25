@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
@@ -10,6 +10,10 @@ import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.tutorial.TutorialSprite
+import se.battlegoo.battlegoose.views.TutorialPageView
+import se.battlegoo.battlegoose.views.TutorialPageViewModel
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class TutorialView(val stage: Stage) : ViewBase() {
 

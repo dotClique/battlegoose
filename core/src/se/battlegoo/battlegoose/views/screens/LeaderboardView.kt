@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -11,6 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.Fonts
+import se.battlegoo.battlegoose.views.utils.MenuLayout
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class LeaderboardView(
     private val onClickMainMenu: () -> Unit,
@@ -27,13 +31,13 @@ class LeaderboardView(
     private val leaderboardFont: BitmapFont = skin.getFont(Fonts.STAR_SOLDIER.identifier)
     private val leaderboardLayout = GlyphLayout(leaderboardFont, "")
 
-    private val x0: Float = Menu.SPACER
-    private val y0: Float = Menu.BOTTOM_SPACING
+    private val x0: Float = MenuLayout.SPACER
+    private val y0: Float = MenuLayout.BOTTOM_SPACING
 
     init {
         stage.addActor(mainMenuButton)
 
-        mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
+        mainMenuButton.width = MenuLayout.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
         mainMenuButton.setPosition(x0, y0)
 

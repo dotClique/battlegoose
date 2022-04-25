@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.heroes
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -14,6 +14,9 @@ import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.utils.fitScale
+import se.battlegoo.battlegoose.views.utils.Fonts
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class HeroCardView(
     position: ScreenVector,

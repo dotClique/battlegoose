@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.units
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -10,6 +10,7 @@ import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.utils.createDrawableOfTexture
 import se.battlegoo.battlegoose.utils.createSolidColorTexture
 import se.battlegoo.battlegoose.utils.emptyDrawable
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class UnitHealthBarView(
     position: ScreenVector,

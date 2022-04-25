@@ -8,6 +8,10 @@ import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.utils.gridmath.isPointInsideHexagon
 import se.battlegoo.battlegoose.utils.TextureAsset
 import se.battlegoo.battlegoose.utils.WavePulsator
+import se.battlegoo.battlegoose.views.utils.ClickObserver
+import se.battlegoo.battlegoose.views.utils.ClickableImpl
+import se.battlegoo.battlegoose.views.utils.ClickableView
+import se.battlegoo.battlegoose.views.utils.ViewBase
 import kotlin.math.sqrt
 
 enum class BattleMapTileState {

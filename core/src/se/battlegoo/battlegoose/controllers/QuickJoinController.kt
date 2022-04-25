@@ -8,7 +8,7 @@ import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.network.RandomPairingStatus
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
-import se.battlegoo.battlegoose.views.QuickJoinView
+import se.battlegoo.battlegoose.views.screens.QuickJoinView
 
 class QuickJoinController(
     hero: Hero,

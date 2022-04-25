@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -15,6 +15,10 @@ import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
+import se.battlegoo.battlegoose.views.heroes.HeroIconView
+import se.battlegoo.battlegoose.views.utils.ButtonView
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 interface BattleViewObserver {
     fun onCastSpell()

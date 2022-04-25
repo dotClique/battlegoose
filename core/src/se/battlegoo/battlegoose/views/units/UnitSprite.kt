@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.units
 
 enum class UnitSprite {
     PRIVATE_PENGUIN,

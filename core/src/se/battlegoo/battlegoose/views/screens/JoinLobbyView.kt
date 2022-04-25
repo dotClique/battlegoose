@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -11,6 +11,10 @@ import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.JoinLobbyStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.DotWaitingLabelView
+import se.battlegoo.battlegoose.views.utils.MenuLayout
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class JoinLobbyView(
     private val stage: Stage,
@@ -30,8 +34,8 @@ class JoinLobbyView(
     private val joinButton: TextButton = TextButton("Join", skin)
     private val statusLabel: DotWaitingLabelView = DotWaitingLabelView("", skin)
 
-    private val x0: Float = Menu.SPACER
-    private val y0: Float = Menu.BOTTOM_SPACING
+    private val x0: Float = MenuLayout.SPACER
+    private val y0: Float = MenuLayout.BOTTOM_SPACING
 
     private var joined: Boolean = false
         set(value) {
@@ -47,10 +51,10 @@ class JoinLobbyView(
         lobbyIdTextField.height = Game.HEIGHT / 12f
         lobbyIdTextField.width = Game.WIDTH / 5f
 
-        mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
+        mainMenuButton.width = MenuLayout.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
 
-        joinButton.width = Menu.BUTTON_WIDTH / 1.3f
+        joinButton.width = MenuLayout.BUTTON_WIDTH / 1.3f
         joinButton.height *= 1.5f
         titleLabel.setFontScale(5f)
         joinButton.setPosition(

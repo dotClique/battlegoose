@@ -11,6 +11,10 @@ import com.badlogic.gdx.utils.Align
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.CreateLobbyStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.DotWaitingLabelView
+import se.battlegoo.battlegoose.views.utils.MenuLayout
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class CreateLobbyView(
     private val onClickMainMenu: () -> Unit,
@@ -52,8 +56,8 @@ class CreateLobbyView(
             }
         }
 
-    private val x0: Float = Menu.SPACER
-    private val y0: Float = Menu.BOTTOM_SPACING
+    private val x0: Float = MenuLayout.SPACER
+    private val y0: Float = MenuLayout.BOTTOM_SPACING
 
     init {
         titleLabel.setAlignment(Align.center)
@@ -65,8 +69,8 @@ class CreateLobbyView(
         lobbyIdTextField.width = Game.WIDTH / 5f
         lobbyIdTextField.isDisabled = true
 
-        mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
-        startBattleButton.width = Menu.BUTTON_WIDTH.toFloat()
+        mainMenuButton.width = MenuLayout.BUTTON_WIDTH.toFloat()
+        startBattleButton.width = MenuLayout.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
         startBattleButton.height *= 1.5f
         titleLabel.setFontScale(5f)

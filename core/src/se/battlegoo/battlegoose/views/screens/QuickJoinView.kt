@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -11,6 +11,10 @@ import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.network.RandomPairingStatus
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.DotWaitingLabelView
+import se.battlegoo.battlegoose.views.utils.MenuLayout
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class QuickJoinView(
     private val onClickMainMenu: () -> Unit,
@@ -25,12 +29,12 @@ class QuickJoinView(
     private val titleLabel: Label = Label("Quick Join", skin)
     private val statusLabel: DotWaitingLabelView = DotWaitingLabelView("", skin)
 
-    private val x0: Float = Menu.SPACER
-    private val y0: Float = Menu.BOTTOM_SPACING
+    private val x0: Float = MenuLayout.SPACER
+    private val y0: Float = MenuLayout.BOTTOM_SPACING
 
     init {
 
-        mainMenuButton.width = Menu.BUTTON_WIDTH.toFloat()
+        mainMenuButton.width = MenuLayout.BUTTON_WIDTH.toFloat()
         mainMenuButton.height *= 1.5f
         mainMenuButton.setPosition(x0, y0)
 

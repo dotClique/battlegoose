@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -11,6 +11,12 @@ import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.heroes.HeroSprite
 import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.heroes.HeroCardView
+import se.battlegoo.battlegoose.views.heroes.HeroCardViewModel
+import se.battlegoo.battlegoose.views.heroes.HeroDetailsView
+import se.battlegoo.battlegoose.views.heroes.HeroDetailsViewModel
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KClass

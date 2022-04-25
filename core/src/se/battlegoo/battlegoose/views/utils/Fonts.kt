@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.utils
 
 enum class Fonts(val identifier: String) {
     STAR_SOLDIER("star-soldier-font"),

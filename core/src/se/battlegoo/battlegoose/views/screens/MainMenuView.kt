@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.screens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -7,6 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.utils.TextureAsset
+import se.battlegoo.battlegoose.views.utils.ButtonView
+import se.battlegoo.battlegoose.views.utils.MenuLayout
+import se.battlegoo.battlegoose.views.utils.Skins
+import se.battlegoo.battlegoose.views.utils.ViewBase
 
 class MainMenuView(
     stage: Stage,
@@ -20,25 +24,25 @@ class MainMenuView(
     private val background = Game.getTexture(TextureAsset.MENU_BACKGROUND_GOOSE)
     private val skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
 
-    private val x0: Float = Menu.SPACER
-    private val y0: Float = Menu.BOTTOM_SPACING
+    private val x0: Float = MenuLayout.SPACER
+    private val y0: Float = MenuLayout.BOTTOM_SPACING
 
     // Button icons background by Icons8
     private val createLobbyBtn = ButtonView(
         "createLobbyBtn.png",
-        x0, y0, Menu.BUTTON_WIDTH, onClickCreateLobby
+        x0, y0, MenuLayout.BUTTON_WIDTH, onClickCreateLobby
     )
     private val joinLobbyBtn = ButtonView(
         "joinLobbyBtn.png",
-        x0 + Menu.BUTTON_WIDTH + Menu.SPACER, y0, Menu.BUTTON_WIDTH, onClickJoinLobby
+        x0 + MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER, y0, MenuLayout.BUTTON_WIDTH, onClickJoinLobby
     )
     private val quickJoinBtn = ButtonView(
         "quickJoinBtn.png",
-        x0 + 2 * (Menu.BUTTON_WIDTH + Menu.SPACER), y0, Menu.BUTTON_WIDTH, onClickQuickJoin
+        x0 + 2 * (MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER), y0, MenuLayout.BUTTON_WIDTH, onClickQuickJoin
     )
     private val leaderboardBtn = ButtonView(
         "leaderboardBtn.png",
-        x0 + 3 * (Menu.BUTTON_WIDTH + Menu.SPACER), y0, Menu.BUTTON_WIDTH, onClickLeaderboard
+        x0 + 3 * (MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER), y0, MenuLayout.BUTTON_WIDTH, onClickLeaderboard
     )
     private val tutorialBtn = TextButton("How to play", skin)
 

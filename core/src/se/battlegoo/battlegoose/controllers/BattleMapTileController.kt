@@ -2,7 +2,7 @@ package se.battlegoo.battlegoose.controllers
 
 import se.battlegoo.battlegoose.views.BattleMapTileState
 import se.battlegoo.battlegoose.views.BattleMapTileView
-import se.battlegoo.battlegoose.views.ClickObserver
+import se.battlegoo.battlegoose.views.utils.ClickObserver
 
 class BattleMapTileController(
     private val tileView: BattleMapTileView,

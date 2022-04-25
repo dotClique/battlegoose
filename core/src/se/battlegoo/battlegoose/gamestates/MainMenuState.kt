@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.controllers.ChangeUsernameController
 import se.battlegoo.battlegoose.views.ChangeUsernameView
-import se.battlegoo.battlegoose.views.MainMenuView
+import se.battlegoo.battlegoose.views.screens.MainMenuView
 
 class MainMenuState :
     GameState() {

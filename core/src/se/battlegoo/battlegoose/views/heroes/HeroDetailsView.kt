@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.views
+package se.battlegoo.battlegoose.views.heroes
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -18,6 +18,8 @@ import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
+import se.battlegoo.battlegoose.views.utils.Fonts
+import se.battlegoo.battlegoose.views.utils.Skins
 import kotlin.reflect.KClass
 
 class HeroDetailsView(

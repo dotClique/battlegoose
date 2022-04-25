@@ -9,7 +9,7 @@ import se.battlegoo.battlegoose.network.JoinLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
-import se.battlegoo.battlegoose.views.JoinLobbyView
+import se.battlegoo.battlegoose.views.screens.JoinLobbyView
 
 class JoinLobbyController(
     hero: Hero,
