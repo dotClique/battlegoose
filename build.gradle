@@ -59,20 +59,6 @@ allprojects {
     }
 }
 
-project(":desktop") {
-    apply plugin: "kotlin"
-
-
-    dependencies {
-        implementation project(":core")
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
-        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    }
-}
-
 project(":android") {
     apply plugin: "android"
     apply plugin: "kotlin-android"
