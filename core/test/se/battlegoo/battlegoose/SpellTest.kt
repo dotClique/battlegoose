@@ -297,7 +297,10 @@ class SpellTest {
         val testDuration = 5
 
         class TestSpell : Spell<SpellData.Bird52>("test", "t2", testDuration, 2) {
-            override fun cast(caster: Hero, data: SpellData.Bird52): ActiveSpell<TestSpell> {
+            override fun castImplementation(
+                caster: Hero,
+                data: SpellData.Bird52
+            ): ActiveSpell<TestSpell> {
                 return object : ActiveSpell<TestSpell>(this, hero1, data) {
                     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
                         counter += 1

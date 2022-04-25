@@ -148,6 +148,11 @@ class BattleController(
         if (battle.yourTurn) {
             turnStartMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
             turnCounterSeconds = 0
+            battle.hero1.spell.decreaseCooldown()
+            view.spellCooldownRemaining = battle.hero1.spell.remainingCooldown
+        } else {
+            battle.hero2.spell.decreaseCooldown()
+            view.spellCooldownRemaining = battle.hero2.spell.remainingCooldown
         }
     }
 

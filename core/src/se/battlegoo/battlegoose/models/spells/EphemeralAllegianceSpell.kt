@@ -10,7 +10,7 @@ class EphemeralAllegianceSpell : Spell<SpellData.EphemeralAllegiance>(
     // turn when casting uses the (presumably) only action point
     5
 ) {
-    override fun cast(
+    override fun castImplementation(
         caster: Hero,
         data: SpellData.EphemeralAllegiance
     ): ActiveSpell<EphemeralAllegianceSpell> {

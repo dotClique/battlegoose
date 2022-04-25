@@ -141,6 +141,8 @@ class BattleView(
             field = yourTurn
         }
 
+    var spellCooldownRemaining: Int = 0
+
     init {
         backgroundSprite.setPosition(position.x, position.y)
         backgroundSprite.setSize(infoBackgroundWidth, infoBackgroundHeight)
@@ -151,18 +153,32 @@ class BattleView(
     }
 
     private fun newSpellModal(): Modal {
-        return Modal(
-            hero.spell.title,
-            "${hero.spell.description}\nCooldown: ${hero.spell.cooldown}",
-            // TODO: Fix auto linebreak
-            ModalType.Question(
-                onYes = { observer?.onCastSpell() }
-            ),
-            stage,
-            contentActors = listOf(textTable),
-            prefHeight = PREF_MODAL_HEIGHT,
-            prefWidth = PREF_MODAL_WIDTH
-        )
+        return if (spellCooldownRemaining <= 0) {
+            Modal(
+                hero.spell.title,
+                "${hero.spell.description}\nCooldown: ${hero.spell.cooldown}",
+                // TODO: Fix auto linebreak
+                ModalType.Question(
+                    onYes = { observer?.onCastSpell() }
+                ),
+                stage,
+                contentActors = listOf(textTable),
+                prefHeight = PREF_MODAL_HEIGHT,
+                prefWidth = PREF_MODAL_WIDTH
+            )
+        } else {
+            Modal(
+                hero.spell.title,
+                "${hero.spell.description}\nCooldown: ${hero.spell.cooldown}\n" +
+                    "Cooldown remaining: $spellCooldownRemaining",
+                // TODO: Fix auto linebreak
+                ModalType.Info(),
+                stage,
+                contentActors = listOf(textTable),
+                prefHeight = PREF_MODAL_HEIGHT,
+                prefWidth = PREF_MODAL_WIDTH
+            )
+        }
     }
 
     private fun newSurrenderModal(): Modal {
