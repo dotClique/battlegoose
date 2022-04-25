@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.network.JoinLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.utils.Modal
@@ -11,6 +12,7 @@ import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.JoinLobbyView
 
 class JoinLobbyController(
+    hero: Hero,
     val joinLobbyView: JoinLobbyView,
     val onReadyStartBattle: (JoinLobbyStatus.StartBattle) -> Unit,
     val onClickMainMenu: () -> Unit,
@@ -25,7 +27,7 @@ class JoinLobbyController(
 
     init {
         joinLobbyView.onClickJoinLobby = { lobbyID ->
-            MultiplayerService.joinLobby(lobbyID) { status, cancelListener ->
+            MultiplayerService.joinLobby(lobbyID, hero) { status, cancelListener ->
                 if (listenForStartingBattle == false) {
                     listenForStartingBattle = null
                     cancelListener()

@@ -10,7 +10,9 @@ import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import se.battlegoo.battlegoose.views.HeroSelectionView
 import se.battlegoo.battlegoose.views.HeroSelectionViewModel
 
-class HeroSelectionState : GameState() {
+class HeroSelectionState(
+    private val createLobbyState: (Hero) -> LobbyState
+) : GameState() {
 
     private val heroes: List<Hero> = listOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross())
     private val heroSelection = HeroSelection(heroes)
@@ -28,11 +30,9 @@ class HeroSelectionState : GameState() {
     private val controller = HeroSelectionController(
         heroSelectionView,
         heroSelection,
-        this::goBack
-    ) { GameStateManager.replace(BattleState("", "", true)) } // TODO
-
-    private fun goBack() {
-        GameStateManager.goBack()
+        GameStateManager::goBack
+    ) {
+        GameStateManager.replace(createLobbyState(heroSelection.selectedHero))
     }
 
     override fun update(dt: Float) {

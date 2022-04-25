@@ -50,14 +50,17 @@ class Modal(
     }
 
     private fun <T : Actor> addActors(actors: List<T>) {
+        dialog.contentTable.row()
         actors.forEach { dialog.contentTable.add(it) }
     }
 
     init {
         dialog.setScale(scale)
-        val dialogText = Label(text, skin)
-        dialogText.wrap = true
-        dialog.contentTable.add(dialogText).center().width(dialog.prefWidth * 0.9f)
+        if (text != null) {
+            val dialogText = Label(text, skin)
+            dialogText.wrap = true
+            dialog.contentTable.add(dialogText).center().width(dialog.prefWidth * 0.9f)
+        }
         addActors(contentActors)
         dialog.isMovable = false
         when (type) {

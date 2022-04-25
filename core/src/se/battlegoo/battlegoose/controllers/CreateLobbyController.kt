@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.BattleData
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.network.CreateLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.utils.Modal
@@ -11,6 +12,7 @@ import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyController(
+    val hero: Hero,
     val createLobbyView: CreateLobbyView,
     val onClickStartBattle: (BattleData) -> Unit,
     val onClickMainMenu: () -> Unit,
@@ -66,7 +68,7 @@ class CreateLobbyController(
                 ModalType.Error(),
                 stage
             ).show()
-        MultiplayerService.startBattle(lobbyIDCpy) {
+        MultiplayerService.startBattle(lobbyIDCpy, hero) {
             battleData = it
         }
     }

@@ -2,17 +2,21 @@ package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.controllers.QuickJoinController
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.views.QuickJoinView
 
-class QuickJoinState : GameState() {
+class QuickJoinState(selectedHero: Hero) : LobbyState(selectedHero) {
 
     private val quickJoinController = QuickJoinController(
+        selectedHero,
         quickJoinView = QuickJoinView(this::goBack, stage),
-        onReadyStartBattle = { userID, battleID, isHost ->
+        onReadyStartBattle = { battle, isHost ->
             GameStateManager.replace(
                 BattleState(
-                    userID,
-                    battleID,
+                    if (isHost) battle.hostID else battle.otherPlayerID,
+                    battle.battleID,
+                    battle.hostHero.toHero(),
+                    battle.otherHero!!.toHero(),
                     isHost
                 )
             )

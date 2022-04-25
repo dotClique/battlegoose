@@ -11,8 +11,8 @@ class MainMenuState :
 
     private var mainMenuView = MainMenuView(
         stage,
-        onClickCreateLobby = { GameStateManager.push(CreateLobbyState()) },
-        onClickJoinLobby = { GameStateManager.push(JoinLobbyState()) },
+        onClickCreateLobby = { GameStateManager.push(HeroSelectionState { CreateLobbyState(it) }) },
+        onClickJoinLobby = { GameStateManager.push(HeroSelectionState { JoinLobbyState(it) }) },
 //        onClickJoinLobby = {
 //            Modal(
 //                "A longer title than the other",
@@ -22,7 +22,7 @@ class MainMenuState :
 //                "This will move page",
 //                ModalType.Question(onYes = {GameStateManager.push(JoinLobbyState())} )).show()
 //        },
-        onClickQuickJoin = { GameStateManager.push(QuickJoinState()) },
+        onClickQuickJoin = { GameStateManager.push(HeroSelectionState { QuickJoinState(it) }) },
         onClickLeaderboard = { GameStateManager.push(LeaderboardState()) },
         onClickTutorial = { GameStateManager.push(TutorialState()) }
     )
