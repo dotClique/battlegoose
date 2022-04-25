@@ -24,6 +24,16 @@ sealed class ActionState {
         val tileController: BattleMapTileController,
         val unit: UnitModel
     ) : ActionState()
+    data class SelectingEnemy(val pos: GridVector) : ActionState()
+}
+
+interface BattleMapObserver {
+    fun onSelectUnit(unit: UnitModel)
+    fun onDeselectUnit()
+}
+
+interface BattleMapObservable {
+    fun subscribe(observer: BattleMapObserver)
 }
 
 class BattleMapController(
@@ -32,7 +42,18 @@ class BattleMapController(
     private val view: BattleMapView,
     private val onMoveUnit: (fromPosition: GridVector, toPosition: GridVector) -> Unit,
     private val onAttackUnit: (attackerPosition: GridVector, targetPosition: GridVector) -> Unit
-) : ControllerBase(view) {
+) : ControllerBase(view), BattleMapObservable {
+
+    companion object {
+        // Relative values in percentage (0f - 1f) to place elements atop the background
+        private const val TILE_HEXES_WIDTH_RATIO = 0.92f
+        private const val TILE_HEXES_HEIGHT_RATIO = 0.92f
+    }
+
+    private val tileHexesWidth = TILE_HEXES_WIDTH_RATIO * view.size.x
+    private val tileHexesHeight = TILE_HEXES_HEIGHT_RATIO * view.size.y
+
+    private var observer: BattleMapObserver? = null
 
     val mapSize by model::gridSize
     var yourTurn = false
@@ -40,9 +61,9 @@ class BattleMapController(
     // Radius of a hexagon is the distance from center to vertex
     private val tileHexRadius = min(
         // Width of single tile is sqrt(3) radii, total +.5 tile to make space for the offset rows
-        view.size.x / (sqrt(3f) * (mapSize.x + 0.5f)),
+        tileHexesWidth / (sqrt(3f) * (mapSize.x + 0.5f)),
         // Height of single tile is 2 radii, but each overlaps the previous 1/4, except the first one adding 1/2 radius
-        view.size.y / (2 * mapSize.y * 0.75f + 0.5f)
+        tileHexesHeight / (2 * mapSize.y * 0.75f + 0.5f)
     )
     private val tilesSize = ScreenVector(
         tileHexRadius * sqrt(3f) * mapSize.x,
@@ -142,10 +163,17 @@ class BattleMapController(
         when (tileController.state) {
             BattleMapTileState.NORMAL -> {
                 model.getUnit(gridPosition).let { unitModel ->
-                    if (unitModel == null || unitModel.allegiance != hero) {
+                    if (unitModel == null) {
+                        if (actionState is ActionState.SelectingEnemy) {
+                            actionState = ActionState.Idle
+                            observer?.onDeselectUnit()
+                            return
+                        }
                         registerInvalidSelection()
-                    } else {
-                        registerValidSelection()
+                        return
+                    }
+                    registerValidSelection()
+                    if (unitModel.allegiance == hero) {
                         clearTileStates()
                         actionState = ActionState.Selecting(gridPosition, tileController, unitModel)
                         showMoveAndAttackOptionsForSelectedUnit()
@@ -153,24 +181,42 @@ class BattleMapController(
                         val unitController = getUnitControllerAt(gridPosition)
                             ?: throw IllegalStateException("Missing unit controller")
                         unitController.selected = true
+                    } else {
+                        actionState.also {
+                            if (it is ActionState.Selecting) {
+                                clearTileStates()
+                                observer?.onDeselectUnit()
+                            } else if (it is ActionState.SelectingEnemy) {
+                                if (it.pos == gridPosition) {
+                                    actionState = ActionState.Idle
+                                    observer?.onDeselectUnit()
+                                    return
+                                }
+                            }
+                        }
+                        actionState = ActionState.SelectingEnemy(gridPosition)
                     }
+                    observer?.onSelectUnit(unitModel)
                 }
             }
             BattleMapTileState.FOCUSED -> {
                 registerValidSelection()
                 clearTileStates()
+                observer?.onDeselectUnit()
                 actionState = ActionState.Idle
             }
             BattleMapTileState.MOVE_TARGET -> {
                 registerValidSelection()
                 clearTileStates()
                 moveSelectedUnit(gridPosition)
+                observer?.onDeselectUnit()
                 actionState = ActionState.Idle
             }
             BattleMapTileState.ATTACK_TARGET -> {
                 registerValidSelection()
                 clearTileStates()
                 attackWithSelectedUnit(gridPosition)
+                observer?.onDeselectUnit()
                 actionState = ActionState.Idle
             }
         }
@@ -180,6 +226,7 @@ class BattleMapController(
         actionState.let { state ->
             if (state is ActionState.Selecting) {
                 clearTileStates()
+                observer?.onDeselectUnit()
                 actionState = ActionState.Idle
                 if (state.unit == model.getUnit(state.pos)) {
                     selectTile(state.pos, state.tileController)
@@ -229,7 +276,7 @@ class BattleMapController(
         }
         val hintTiles = actionState.let { state ->
             when (state) {
-                ActionState.Idle -> {
+                ActionState.Idle, is ActionState.SelectingEnemy -> {
                     model.filter { pos ->
                         model.getUnit(pos).let { it != null && it.allegiance == hero }
                     }
@@ -369,5 +416,9 @@ class BattleMapController(
         for (uc in unitControllers.values) {
             uc.dispose()
         }
+    }
+
+    override fun subscribe(observer: BattleMapObserver) {
+        this.observer = observer
     }
 }
