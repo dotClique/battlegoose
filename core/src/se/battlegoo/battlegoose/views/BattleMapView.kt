@@ -25,8 +25,8 @@ class BattleMapView(
     override fun render(sb: SpriteBatch) {
         sb.draw(
             backgroundTextureRegion,
-            0f, 0f,
-            Game.WIDTH, Game.HEIGHT
+            pos.x, pos.y,
+            size.x, size.y
         )
     }
 

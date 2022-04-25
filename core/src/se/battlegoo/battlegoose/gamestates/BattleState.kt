@@ -1,15 +1,15 @@
 package se.battlegoo.battlegoose.gamestates
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.controllers.BattleController
 import se.battlegoo.battlegoose.datamodels.GridVector
+import se.battlegoo.battlegoose.datamodels.ScreenVector
 import se.battlegoo.battlegoose.models.Battle
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.BattleMapBackground
 import se.battlegoo.battlegoose.models.heroes.Hero
-import se.battlegoo.battlegoose.views.FacingDirection
-import se.battlegoo.battlegoose.views.UnitSprite
-import se.battlegoo.battlegoose.views.UnitView
+import se.battlegoo.battlegoose.views.BattleView
 
 class BattleState(
     playerID: String,
@@ -18,19 +18,28 @@ class BattleState(
     otherHero: Hero,
     isHost: Boolean
 ) : GameState() {
-    private val battleController: BattleController = BattleController(
-        Battle(
-            if (isHost) hostHero else otherHero,
-            if (isHost) otherHero else hostHero,
-            BattleMap(
-                BattleMapBackground.values().random(BattleController.getRandom(battleID)),
-                GridVector(10, 6)
-            ),
-            battleID,
-            isHost
+
+    private val battle = Battle(
+        if (isHost) hostHero else otherHero,
+        if (isHost) otherHero else hostHero,
+        BattleMap(
+            BattleMapBackground.values().random(BattleController.getRandom(battleID)),
+            GridVector(10, 6)
         ),
-        UnitView(UnitSprite.DELINQUENT_DUCK, FacingDirection.LEFT), // TODO: Change to
-        // BattleView
+        battleID,
+        isHost
+    )
+
+    private val battleController: BattleController = BattleController(
+        battle,
+        BattleView(
+            battle.battleMap.background,
+            ScreenVector(0f, 0f),
+            ScreenVector(Game.WIDTH, Game.HEIGHT),
+            battle.hero1,
+            battle.hero2,
+            stage
+        ),
         playerID
     )
 

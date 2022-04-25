@@ -10,12 +10,20 @@ import se.battlegoo.battlegoose.models.units.UnitModel
 
 class UnitStatsView(
     private val position: ScreenVector,
-    val width: Int
+    val width: Float
 ) : ViewBase() {
 
     var unit: UnitModel? = null
 
-    private val texture = Texture("statsScroll.png")
+    private val xIndent = position.x + width / 4.4f
+
+    private val texture = Texture("statsScrollCompact.png")
+    private val rolledTexture = Texture("statsScrollCompactRolled.png")
+
+    val height =
+        (texture.height.toFloat() / texture.width.toFloat() * width).toInt()
+
+    private val scale = width / texture.width.toFloat()
 
     private val statsSprite = Sprite(TextureRegion(texture))
         .also {
@@ -23,12 +31,11 @@ class UnitStatsView(
             it.setScale(scale)
         }
 
-    val height =
-        (texture.height.toFloat() / texture.width.toFloat() * width.toFloat()).toInt()
-
-    private val scale = width.toFloat() / texture.width.toFloat()
-
-    private val xIndent = position.x + width / 4.5f
+    private val rolledSprite = Sprite(TextureRegion(rolledTexture))
+        .also {
+            it.setCenter(position.x + width / 2, position.y + height / 2)
+            it.setScale(scale)
+        }
 
     private val font = BitmapFont()
         .also {
@@ -37,50 +44,54 @@ class UnitStatsView(
         }
 
     override fun render(sb: SpriteBatch) {
-        unit?.let { unit ->
+        unit.let { unit ->
+            if (unit == null) {
+                rolledSprite.draw(sb)
+                return
+            }
             statsSprite.draw(sb)
             font.draw(
                 sb,
                 "[ ${unit.name} ]",
                 xIndent,
-                position.y + height * 13.5f / 16
+                position.y + height * 13 / 16
             )
             font.draw(
                 sb,
-                "HP:\t${unit.currentStats.health}/${unit.currentStats.maxHealth}",
+                "HP: ${unit.currentStats.health}/${unit.currentStats.maxHealth}",
                 xIndent,
-                position.y + height * 12 / 16
+                position.y + height * 11.5f / 16
             )
             font.draw(
                 sb,
-                "Attack:\t${unit.currentStats.attack}",
-                xIndent,
-                position.y + height * 11 / 16
-            )
-            font.draw(
-                sb,
-                "Defense:\t${unit.currentStats.defense}",
+                "Attack: ${unit.currentStats.attack}",
                 xIndent,
                 position.y + height * 10 / 16
             )
             font.draw(
                 sb,
-                "Speed:\t${unit.currentStats.speed}",
+                "Defense: ${unit.currentStats.defense}",
                 xIndent,
-                position.y + height * 9 / 16
+                position.y + height * 8.5f / 16
             )
             font.draw(
                 sb,
-                "Range:\t${unit.currentStats.range}",
+                "Speed: ${unit.currentStats.speed}",
                 xIndent,
-                position.y + height * 8 / 16
+                position.y + height * 7 / 16
+            )
+            font.draw(
+                sb,
+                "Range: ${unit.currentStats.range}",
+                xIndent,
+                position.y + height * 5.5f / 16
             )
             if (unit.currentStats.isFlying) {
                 font.draw(
                     sb,
                     "Flying",
                     xIndent,
-                    position.y + height * 7 / 16
+                    position.y + height * 4 / 16
                 )
             }
         }
@@ -88,6 +99,7 @@ class UnitStatsView(
 
     override fun dispose() {
         texture.dispose()
+        rolledTexture.dispose()
         font.dispose()
     }
 }

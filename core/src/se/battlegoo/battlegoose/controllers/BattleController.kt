@@ -1,8 +1,6 @@
 package se.battlegoo.battlegoose.controllers
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.Logger
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ActionData
@@ -23,24 +21,36 @@ import se.battlegoo.battlegoose.models.units.DelinquentDuck
 import se.battlegoo.battlegoose.models.units.GuardGoose
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 import se.battlegoo.battlegoose.models.units.SpitfireSeagull
+import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.BattleMapView
+import se.battlegoo.battlegoose.views.BattleView
+import se.battlegoo.battlegoose.views.BattleViewObserver
 import se.battlegoo.battlegoose.views.FacingDirection
 import se.battlegoo.battlegoose.views.UnitSprite
+import se.battlegoo.battlegoose.views.UnitStatsView
 import se.battlegoo.battlegoose.views.UnitView
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.random.Random
 
 class BattleController(
-    val battle: Battle,
-    private val view: UnitView,
+    private val battle: Battle,
+    private val view: BattleView,
     private val playerID: String
-) : ControllerBase(view) {
+
+) : ControllerBase(view), BattleMapObserver, BattleViewObserver {
 
     companion object {
+        // Relative values in percentage (0f - 1f) to place elements atop the background
+        private const val BATTLE_MAP_WIDTH_RATIO = 0.8f
+        private const val BATTLE_MAP_HEIGHT_RATIO = 1f
+
+        private const val STATS_VIEW_WIDTH_RATIO = 0.2f
+        // private const val STATS_VIEW_HEIGHT_RATIO = 1f
+
         fun getRandom(battleId: String): Random {
             return Random(battleId.hashCode())
         }
@@ -48,21 +58,35 @@ class BattleController(
 
     private val random: Random = getRandom(battle.battleId)
 
-    private val mapSize = ScreenVector(
-        Game.WIDTH * 0.8f,
-        Game.HEIGHT * 0.9f
-    )
+    private val battleMapWidth = BATTLE_MAP_WIDTH_RATIO * view.maxSize.x
+    private val battleMapHeight = BATTLE_MAP_HEIGHT_RATIO * view.maxSize.y
+    private val battleMapX =
+        view.position.x + view.maxSize.x * (1f - BATTLE_MAP_WIDTH_RATIO)
+    private val battleMapY = // Centered
+        view.position.y + view.maxSize.y * (1f - BATTLE_MAP_HEIGHT_RATIO) / 2
+    private val statsWidth = (STATS_VIEW_WIDTH_RATIO * view.maxSize.x)
 
     private val battleMapController = BattleMapController(
         battle.hero1,
         battle.battleMap,
         BattleMapView(
             battle.battleMap.background,
-            ScreenVector((Game.WIDTH - mapSize.x) / 2f, (Game.HEIGHT - mapSize.y) / 2f),
-            mapSize
+            ScreenVector(battleMapX, battleMapY),
+            ScreenVector(battleMapWidth, battleMapHeight)
         ),
         ::onAttackUnit,
         ::onMoveUnit
+    )
+
+    private val unitStatsController: UnitStatsController = UnitStatsController(
+        null,
+        UnitStatsView(
+            ScreenVector(
+                view.position.x,
+                view.position.y + view.maxSize.y * 0.3f
+            ),
+            statsWidth
+        )
     )
 
     private val maxTurnTimeSeconds = 60
@@ -72,8 +96,9 @@ class BattleController(
     private var battleOver = false
 
     init {
-        view.position = ScreenVector(50f, 50f)
-        view.size = ScreenVector(200f, 200f)
+        view.subscribe(this)
+        battleMapController.subscribe(this)
+        unitStatsController.showView = true
         placeUnits()
         placeObstacles()
         battle.yourTurn = random.nextBoolean() xor battle.isHost
@@ -81,12 +106,8 @@ class BattleController(
         startTurn()
     }
 
-    override fun render(sb: SpriteBatch) {
-        battleMapController.render(sb)
-        view.render(sb)
-    }
-
     override fun update(dt: Float) {
+        view.registerInput()
         if (battle.yourTurn) {
             turnStartMillis?.let { startTime ->
                 (TimeUnit.NANOSECONDS.toMillis(System.nanoTime()) - startTime).let { elapsed ->
@@ -98,29 +119,15 @@ class BattleController(
             }
         }
 
-        // Example spell cast button
-        if (Gdx.input.justTouched()) {
-            val touchPoint = Game.unproject(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
-            if (Rectangle(view.position.x, view.position.y, view.size.x, view.size.y)
-                .contains(touchPoint)
-            ) {
-                onCastSpell()
-                view.position = ScreenVector(view.position.x, view.position.y + view.size.y)
-            }
-        }
-
         if (!battle.yourTurn) {
             checkForOpposingMoves()
         }
         battleMapController.update(dt)
     }
 
-    override fun dispose() {
-        battleMapController.dispose()
-    }
-
     private fun startTurn() {
         battleMapController.yourTurn = battle.yourTurn
+        view.yourTurn = battle.yourTurn
         Logger(Game.LOGGER_TAG, Logger.INFO)
             .info((if (battle.yourTurn) "My" else "Opponent's") + " turn")
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
@@ -282,7 +289,7 @@ class BattleController(
         }
     }
 
-    private fun onCastSpell() {
+    override fun onCastSpell() {
         if (battle.yourTurn) {
             val (spellData, activeSpell) =
                 when (battle.hero1.spell) {
@@ -314,12 +321,12 @@ class BattleController(
         }
     }
 
-    private fun onForfeit() {
+    override fun onForfeit() {
         doAction(ActionData.Forfeit(playerID))
         resolveGame(BattleOutcome.DEFEAT)
     }
 
-    private fun onPass() {
+    override fun onPass() {
         doAction(ActionData.Pass(playerID))
         subtractActionPoints(battle.hero1, battle.hero1.currentStats.actionPoints)
     }
@@ -398,5 +405,26 @@ class BattleController(
     private fun applySpell(activeSpell: ActiveSpell<*>) {
         activeSpell.apply(battle)
         battle.getCurrentOutcome()?.let(::resolveGame)
+    }
+
+    override fun render(sb: SpriteBatch) {
+        battleMapController.render(sb)
+        view.render(sb)
+        unitStatsController.render(sb)
+    }
+
+    override fun dispose() {
+        battleMapController.dispose()
+        view.dispose()
+        unitStatsController.dispose()
+    }
+
+    override fun onSelectUnit(unit: UnitModel) {
+        unitStatsController.unit = unit
+        unitStatsController.showView = true
+    }
+
+    override fun onDeselectUnit() {
+        unitStatsController.unit = null
     }
 }
