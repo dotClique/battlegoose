@@ -92,6 +92,15 @@ class BattleController(
     private val maxTurnTimeSeconds = 60
     private var turnStartMillis: Long? = null
     private var turnElapsedMillis: Long? = null
+    private var turnCounterSeconds: Int? = null
+        set(value) {
+            field = value
+            if (value != null) {
+                view.turnTimer = maxTurnTimeSeconds - value - 1
+            } else {
+                view.turnTimer = null
+            }
+        }
 
     private var battleOver = false
 
@@ -112,8 +121,13 @@ class BattleController(
             turnStartMillis?.let { startTime ->
                 (TimeUnit.NANOSECONDS.toMillis(System.nanoTime()) - startTime).let { elapsed ->
                     turnElapsedMillis = elapsed
-                    if (elapsed > maxTurnTimeSeconds * 1000) {
-                        onPass()
+                    turnCounterSeconds?.let {
+                        if (elapsed >= it * 1000) {
+                            turnCounterSeconds = it + 1
+                        }
+                        if (it >= maxTurnTimeSeconds) {
+                            onPass()
+                        }
                     }
                 }
             }
@@ -133,11 +147,13 @@ class BattleController(
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
         if (battle.yourTurn) {
             turnStartMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
+            turnCounterSeconds = 0
         }
     }
 
     private fun endTurn() {
         turnStartMillis = null
+        turnCounterSeconds = null
         battle.getCurrentOutcome()?.let(::resolveGame)
         battle.nextTurn()
         startTurn()

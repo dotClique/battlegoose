@@ -1,10 +1,12 @@
 package se.battlegoo.battlegoose.views
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import se.battlegoo.battlegoose.Game
@@ -27,8 +29,7 @@ class BattleView(
     val hero: Hero,
     enemyHero: Hero,
     val stage: Stage
-) :
-    ViewBase() {
+) : ViewBase() {
 
     companion object {
         // Relative values in percentage (0f - 1f) to place elements atop the background
@@ -61,6 +62,23 @@ class BattleView(
         }
     )
     private val backgroundSprite = Sprite(backgroundTexture)
+
+    private val skin = Skin(Gdx.files.internal(Skins.STAR_SOLDIER.filepath))
+
+    private val turnTimerLabel: Label = Label("", skin).also {
+        it.setPosition(
+            position.x + heroIconMarginUpLeft,
+            position.y + maxSize.y - heroIconWidth - heroIconMarginUpLeft * 2
+        )
+        it.setScale(2f)
+        it.color = Color.BLACK
+        stage.addActor(it)
+    }
+    var turnTimer: Int? = null
+        set(value) {
+            field = value
+            turnTimerLabel.setText(turnTimer?.toString() ?: "")
+        }
 
     private val heroIconView = HeroIconView(
         ScreenVector(
