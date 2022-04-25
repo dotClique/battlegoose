@@ -30,7 +30,7 @@ import se.battlegoo.battlegoose.views.BattleMapView
 import se.battlegoo.battlegoose.views.FacingDirection
 import se.battlegoo.battlegoose.views.UnitSprite
 import se.battlegoo.battlegoose.views.UnitView
-import kotlin.IllegalStateException
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -65,6 +65,10 @@ class BattleController(
         ::onMoveUnit
     )
 
+    private val maxTurnTimeSeconds = 60
+    private var turnStartMillis: Long? = null
+    private var turnElapsedMillis: Long? = null
+
     init {
         view.position = ScreenVector(50f, 50f)
         view.size = ScreenVector(200f, 200f)
@@ -81,6 +85,17 @@ class BattleController(
     }
 
     override fun update(dt: Float) {
+        if (battle.yourTurn) {
+            turnStartMillis?.let { startTime ->
+                (TimeUnit.NANOSECONDS.toMillis(System.nanoTime()) - startTime).let { elapsed ->
+                    turnElapsedMillis = elapsed
+                    if (elapsed > maxTurnTimeSeconds * 1000) {
+                        onPass()
+                    }
+                }
+            }
+        }
+
         // Example spell cast button
         if (Gdx.input.justTouched()) {
             val touchPoint = Game.unproject(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
@@ -109,9 +124,13 @@ class BattleController(
         Logger(Game.LOGGER_TAG, Logger.INFO)
             .info((if (battle.yourTurn) "My" else "Opponent's") + " turn")
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
+        if (battle.yourTurn) {
+            turnStartMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())
+        }
     }
 
     private fun endTurn() {
+        turnStartMillis = null
         battle.getCurrentOutcome()?.let(::resolveGame)
         battle.nextTurn()
         startTurn()
