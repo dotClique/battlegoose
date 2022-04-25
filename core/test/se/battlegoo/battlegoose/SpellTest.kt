@@ -121,6 +121,7 @@ class SpellTest {
             battle.battleMap.count { battle.battleMap.getUnit(it)?.owner == hero2 }
         )
 
+        assertTrue("Wrong hero spell type", hero1.spell is EphemeralAllegianceSpell)
         val spell = (hero1.spell as EphemeralAllegianceSpell).cast(
             hero1,
             SpellData.EphemeralAllegiance(GridVector(2, 2))
@@ -223,6 +224,7 @@ class SpellTest {
         battle.battleMap.placeUnit(unit1Team2, GridVector(2, 2))
         battle.battleMap.placeUnit(unit2Team2, GridVector(4, 2))
 
+        assertTrue("Wrong hero spell type", hero.spell is Bird52Spell)
         val spell = (hero.spell as Bird52Spell).cast(hero, SpellData.Bird52)
 
         var stats1Team1 = unit1Team1.currentStats

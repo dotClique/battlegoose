@@ -6,7 +6,8 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 class AdrenalineShotSpell : Spell<SpellData.AdrenalineShot>(
     "Adrenaline Shot",
     "Get an extra action point every turn for the following 3 turns.",
-    4,
+    4, // 1 extra duration beecause the spell isn't helpful the first turn when casting uses
+    // the (presumably) only action point
     6
 ) {
     override fun cast(

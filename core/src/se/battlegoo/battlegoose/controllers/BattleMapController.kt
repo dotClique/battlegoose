@@ -314,7 +314,8 @@ class BattleMapController(
     }
 
     private fun updateFromModel() {
-        for (unitController in unitControllers.values.asSequence()) {
+        // Wrap with toList to avoid ConcurrentModificationException when removing while iterating
+        for (unitController in unitControllers.values.toList()) {
             val model = unitController.unitModel
             if (model.isDead()) {
                 removeUnit(unitController)
