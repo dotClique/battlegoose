@@ -9,8 +9,7 @@ import se.battlegoo.battlegoose.views.UnitView
 open class UnitController(
     val unitModel: UnitModel,
     private val unitView: UnitView
-) :
-    ControllerBase(unitView) {
+) : ControllerBase(unitView) {
 
     // Extra backing property to allow accessors with non-default implementations while delegating
     private var _viewSize: ScreenVector by unitView::size
