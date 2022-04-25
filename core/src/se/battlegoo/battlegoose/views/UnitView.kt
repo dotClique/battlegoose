@@ -5,7 +5,8 @@ import se.battlegoo.battlegoose.utils.TextureAsset
 
 class UnitView(
     unitSprite: UnitSprite,
-    val textureStartFacingDirection: FacingDirection
+    val textureStartFacingDirection: FacingDirection,
+    val ownedByThisPlayer: Boolean = true
 ) : SpriteViewBase(
     when (unitSprite) {
         UnitSprite.PRIVATE_PENGUIN -> TextureAsset.UNIT_PRIVATE_PENGUIN
@@ -35,7 +36,7 @@ class UnitView(
     override fun render(sb: SpriteBatch) {
         val previousShader = sb.shader
         if (converted) {
-            sb.shader = RedShiftShader
+            sb.shader = if (ownedByThisPlayer) Shaders.RedShift else Shaders.GreenShift
         }
         super.render(sb)
         sb.shader = previousShader

@@ -357,16 +357,20 @@ class BattleController(
             for (unitClass in hero.army) {
                 val controller = when (unitClass) {
                     GuardGoose::class -> UnitController(
-                        GuardGoose(hero), UnitView(UnitSprite.GUARD_GOOSE, direction)
+                        GuardGoose(hero),
+                        UnitView(UnitSprite.GUARD_GOOSE, direction, isThisPlayer)
                     )
                     DelinquentDuck::class -> UnitController(
-                        DelinquentDuck(hero), UnitView(UnitSprite.DELINQUENT_DUCK, direction)
+                        DelinquentDuck(hero),
+                        UnitView(UnitSprite.DELINQUENT_DUCK, direction, isThisPlayer)
                     )
                     PrivatePenguin::class -> UnitController(
-                        PrivatePenguin(hero), UnitView(UnitSprite.PRIVATE_PENGUIN, direction)
+                        PrivatePenguin(hero),
+                        UnitView(UnitSprite.PRIVATE_PENGUIN, direction, isThisPlayer)
                     )
                     SpitfireSeagull::class -> UnitController(
-                        SpitfireSeagull(hero), UnitView(UnitSprite.SPITFIRE_SEAGULL, direction)
+                        SpitfireSeagull(hero),
+                        UnitView(UnitSprite.SPITFIRE_SEAGULL, direction, isThisPlayer)
                     )
                     else -> throw NotImplementedError(
                         "No controller creator for unit class " +
