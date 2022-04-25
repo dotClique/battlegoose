@@ -397,7 +397,6 @@ class BattleController(
 
     private fun applySpell(activeSpell: ActiveSpell<*>) {
         activeSpell.apply(battle)
-        battleMapController.checkForDeadUnits()
         battle.getCurrentOutcome()?.let(::resolveGame)
     }
 }

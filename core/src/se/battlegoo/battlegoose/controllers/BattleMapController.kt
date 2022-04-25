@@ -313,10 +313,17 @@ class BattleMapController(
         attackUnit(attackingController, targetController)
     }
 
-    fun checkForDeadUnits() {
-        unitControllers.values
-            .filter { it.unitModel.isDead() }
-            .forEach(::removeUnit)
+    private fun updateFromModel() {
+        for (unitController in unitControllers.values.asSequence()) {
+            val model = unitController.unitModel
+            if (model.isDead()) {
+                removeUnit(unitController)
+                continue
+            }
+            if (unitController.converted != (model.allegiance != model.owner)) {
+                unitController.converted = !unitController.converted
+            }
+        }
     }
 
     override fun update(dt: Float) {
@@ -328,6 +335,7 @@ class BattleMapController(
         for (uc in unitControllers.values) {
             uc.update(dt)
         }
+        updateFromModel()
     }
 
     override fun render(sb: SpriteBatch) {

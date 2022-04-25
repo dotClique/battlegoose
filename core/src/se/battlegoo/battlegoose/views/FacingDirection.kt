@@ -2,5 +2,10 @@ package se.battlegoo.battlegoose.views
 
 enum class FacingDirection {
     RIGHT,
-    LEFT
+    LEFT;
+
+    fun flipped(): FacingDirection = when (this) {
+        RIGHT -> LEFT
+        LEFT -> RIGHT
+    }
 }

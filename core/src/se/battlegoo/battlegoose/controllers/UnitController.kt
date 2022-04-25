@@ -33,6 +33,11 @@ open class UnitController(
         }
 
     var selected: Boolean by unitView::focused
+    var converted: Boolean = false
+        set(value) {
+            field = value
+            unitView.flipped = converted
+        }
 
     private var unitHealthBarController = UnitHealthBarController(
         unitModel,

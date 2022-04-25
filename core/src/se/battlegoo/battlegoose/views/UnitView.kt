@@ -4,7 +4,7 @@ import se.battlegoo.battlegoose.utils.TextureAsset
 
 class UnitView(
     unitSprite: UnitSprite,
-    textureStartFacingDirection: FacingDirection
+    val textureStartFacingDirection: FacingDirection
 ) : SpriteViewBase(
     when (unitSprite) {
         UnitSprite.PRIVATE_PENGUIN -> TextureAsset.UNIT_PRIVATE_PENGUIN
@@ -19,6 +19,15 @@ class UnitView(
             if (value == this.facingDirection) return
             sprite.flip(true, false)
             field = value
+        }
+
+    var flipped: Boolean = false
+        set(value) {
+            field = value
+            facingDirection = if (value)
+                textureStartFacingDirection.flipped()
+            else
+                textureStartFacingDirection
         }
 
     var focused: Boolean = false
