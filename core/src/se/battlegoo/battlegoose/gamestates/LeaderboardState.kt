@@ -17,17 +17,36 @@ class LeaderboardState : GameState() {
         stage
     )
 
+    private var userId: String? = null
+
     private var leaderboard: List<LeaderboardEntry> = listOf()
 
-    private val leaderboardText: String
-        get() {
-            return leaderboard.take(LEADERBOARD_SIZE).joinToString("\n") { entry ->
-                "${(entry.username ?: UNKNOWN_USERNAME)}: ${entry.score}"
-            }
+    private fun getUserScoreText(): String {
+        if (userId != null) {
+            val place = leaderboard.indexOfFirst { it.userId == userId }
+            if (place == -1) return ""
+            val score = leaderboard[place].score
+            return "\n\nYou (no. ${place + 1}): $score"
         }
+        return ""
+    }
+
+    private fun getLeaderboardText(): String {
+        return leaderboard.take(LEADERBOARD_SIZE).joinToString("\n") { entry ->
+            "${(entry.username ?: UNKNOWN_USERNAME)}: ${entry.score}"
+        }
+    }
 
     init {
         updateLeaderboard()
+        MultiplayerService.getUserID {
+            userId = it
+            updateText()
+        }
+    }
+
+    private fun updateText() {
+        leaderboardView.setLeaderboardText(getLeaderboardText() + getUserScoreText())
     }
 
     private fun goBack() {
@@ -38,7 +57,7 @@ class LeaderboardState : GameState() {
         MultiplayerService.getLeaderboard {
             it?.let {
                 leaderboard = it
-                leaderboardView.setLeaderboardText(leaderboardText)
+                updateText()
             }
         }
     }
