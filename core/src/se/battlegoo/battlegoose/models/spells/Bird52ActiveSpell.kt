@@ -3,11 +3,15 @@ package se.battlegoo.battlegoose.models.spells
 import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.datamodels.SpellData
 import se.battlegoo.battlegoose.models.Battle
+import se.battlegoo.battlegoose.models.heroes.Hero
 import kotlin.math.abs
 import kotlin.math.floor
 
-class Bird52ActiveSpell(baseSpell: Bird52Spell, override val data: SpellData.Bird52) :
-    ActiveSpell<Bird52Spell>(baseSpell, data) {
+class Bird52ActiveSpell(
+    baseSpell: Bird52Spell,
+    caster: Hero,
+    override val data: SpellData.Bird52
+) : ActiveSpell<Bird52Spell>(baseSpell, caster, data) {
 
     override fun applyImplementation(battle: Battle, turnsSinceCast: Int) {
         // Hits a number of columns equaling numColumnsToAttack or numColumnsToAttack+1,

@@ -286,7 +286,7 @@ class DatabaseHandler {
 
     @Suppress("UNCHECKED_CAST")
     fun convertToSpellData(data: Map<String, Any>): SpellData {
-        val spellData = data[ActionData.CastSpell<*>::spell.name] as Map<String, Any>
+        val spellData = data[ActionData.CastSpell::spell.name] as Map<String, Any>
         val spellType = spellData[SpellData::spellType.name] as String
         // Parse a string like "se.battlegoo.battlegoose.SpellData$AdrenalineShotSpellData" into a
         // KClass

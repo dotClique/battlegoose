@@ -27,7 +27,7 @@ sealed class ActionState {
 }
 
 class BattleMapController(
-    private val hero: Hero<*>,
+    private val hero: Hero,
     private val model: BattleMap,
     private val view: BattleMapView,
     private val onMoveUnit: (fromPosition: GridVector, toPosition: GridVector) -> Unit,
@@ -313,6 +313,20 @@ class BattleMapController(
         attackUnit(attackingController, targetController)
     }
 
+    private fun updateFromModel() {
+        // Wrap with toList to avoid ConcurrentModificationException when removing while iterating
+        for (unitController in unitControllers.values.toList()) {
+            val model = unitController.unitModel
+            if (model.isDead()) {
+                removeUnit(unitController)
+                continue
+            }
+            if (unitController.converted != (model.allegiance != model.owner)) {
+                unitController.converted = !unitController.converted
+            }
+        }
+    }
+
     override fun update(dt: Float) {
         for (tRow in tileControllers) {
             for (tc in tRow) {
@@ -322,6 +336,7 @@ class BattleMapController(
         for (uc in unitControllers.values) {
             uc.update(dt)
         }
+        updateFromModel()
     }
 
     override fun render(sb: SpriteBatch) {

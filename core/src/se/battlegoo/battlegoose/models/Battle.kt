@@ -5,8 +5,8 @@ import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.spells.ActiveSpell
 
 class Battle(
-    val hero1: Hero<*>,
-    val hero2: Hero<*>,
+    val hero1: Hero,
+    val hero2: Hero,
     val battleMap: BattleMap,
     val battleId: String,
     val isHost: Boolean

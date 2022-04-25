@@ -6,7 +6,7 @@ import se.battlegoo.battlegoose.models.units.GuardGoose
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 
-class SergeantSwan : Hero<EphemeralAllegianceSpell>(
+class SergeantSwan : Hero(
     HeroStats(),
     EphemeralAllegianceSpell(),
     "Sergeant Swan",

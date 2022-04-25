@@ -17,7 +17,7 @@ import se.battlegoo.battlegoose.models.units.PrivatePenguin
 class HeroTest {
     @Test
     fun testHero() {
-        val hero = object : Hero<AdrenalineShotSpell>(
+        val hero = object : Hero(
             HeroStats(2), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN,
             listOf(
@@ -47,7 +47,7 @@ class HeroTest {
 
     @Test
     fun testHeroNotAllowedToPerformActionCostingMoreThanCurrentActionPoints() {
-        val hero = object : Hero<AdrenalineShotSpell>(
+        val hero = object : Hero(
             HeroStats(2), AdrenalineShotSpell(), "",
             "", HeroSprite.SERGEANT_SWAN,
             listOf(

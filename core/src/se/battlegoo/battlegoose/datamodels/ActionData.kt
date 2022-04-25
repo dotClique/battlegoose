@@ -21,9 +21,9 @@ sealed class ActionData : DataModel {
         override val actionPointCost: Int = 1
     ) : ActionData()
 
-    data class CastSpell<T : SpellData>(
+    data class CastSpell(
         override val playerID: String,
-        val spell: T,
+        val spell: SpellData,
         override val actionPointCost: Int = 1
     ) : ActionData()
 

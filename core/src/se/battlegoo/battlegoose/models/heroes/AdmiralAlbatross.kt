@@ -5,7 +5,7 @@ import se.battlegoo.battlegoose.models.units.DelinquentDuck
 import se.battlegoo.battlegoose.models.units.GuardGoose
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 
-class AdmiralAlbatross : Hero<AdrenalineShotSpell>(
+class AdmiralAlbatross : Hero(
     HeroStats(),
     AdrenalineShotSpell(),
     "Admiral Albatross",

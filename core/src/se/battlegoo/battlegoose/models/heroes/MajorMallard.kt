@@ -5,7 +5,7 @@ import se.battlegoo.battlegoose.models.units.DelinquentDuck
 import se.battlegoo.battlegoose.models.units.PrivatePenguin
 import se.battlegoo.battlegoose.models.units.SpitfireSeagull
 
-class MajorMallard : Hero<Bird52Spell>(
+class MajorMallard : Hero(
     HeroStats(),
     Bird52Spell(),
     "Major Mallard",

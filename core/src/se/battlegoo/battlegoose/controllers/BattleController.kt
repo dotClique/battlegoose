@@ -69,6 +69,8 @@ class BattleController(
     private var turnStartMillis: Long? = null
     private var turnElapsedMillis: Long? = null
 
+    private var battleOver = false
+
     init {
         view.position = ScreenVector(50f, 50f)
         view.size = ScreenVector(200f, 200f)
@@ -107,10 +109,7 @@ class BattleController(
             }
         }
 
-        if (battle.yourTurn) {
-            battleMapController.yourTurn = true
-        } else {
-            battleMapController.yourTurn = false
+        if (!battle.yourTurn) {
             checkForOpposingMoves()
         }
         battleMapController.update(dt)
@@ -121,6 +120,7 @@ class BattleController(
     }
 
     private fun startTurn() {
+        battleMapController.yourTurn = battle.yourTurn
         Logger(Game.LOGGER_TAG, Logger.INFO)
             .info((if (battle.yourTurn) "My" else "Opponent's") + " turn")
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
@@ -137,6 +137,8 @@ class BattleController(
     }
 
     private fun resolveGame(outcome: BattleOutcome) {
+        if (battleOver) return
+        battleOver = true
         MultiplayerService.endBattle()
         MultiplayerService.incrementScore(outcome.scoreChange) {}
         // view.showResolutionScreen { GameStateManager.goBack() }
@@ -166,15 +168,7 @@ class BattleController(
         val spellsIterator = activeSpells.iterator()
         while (spellsIterator.hasNext()) {
             val spell = spellsIterator.next()
-            println(
-                "Applying spell $spell, hero1 ${battle.hero1.currentStats.actionPoints} " +
-                    "${battle.hero2.currentStats.actionPoints}"
-            )
-            spell.apply(battle)
-            println(
-                "Applied spell, hero1 ${battle.hero1.currentStats.actionPoints} " +
-                    "${battle.hero2.currentStats.actionPoints}"
-            )
+            applySpell(spell)
             if (spell.finished) {
                 spellsIterator.remove()
             }
@@ -192,7 +186,7 @@ class BattleController(
             is ActionData.Forfeit -> resolveGame(BattleOutcome.VICTORY)
             is ActionData.MoveUnit -> handleReceivedMoveAction(action)
             is ActionData.Pass -> handleReceivedPassAction()
-            is ActionData.CastSpell<*> -> handleReceivedSpellCast(action.spell)
+            is ActionData.CastSpell -> handleReceivedSpellCast(action.spell)
         }
         battle.actions += action
         subtractActionPoints(battle.hero2, action.actionPointCost)
@@ -249,28 +243,31 @@ class BattleController(
             is SpellData.AdrenalineShot -> {
                 if (spell !is AdrenalineShotSpell)
                     throw IllegalStateException("Performed spell by other player isn't their spell")
-                spell.cast(spellData)
+                spell.cast(battle.hero2, spellData)
             }
             is SpellData.EphemeralAllegiance -> {
                 if (spell !is EphemeralAllegianceSpell)
                     throw IllegalStateException("Performed spell by other player isn't their spell")
                 spell.cast(
+                    battle.hero2,
                     spellData.copy(targetPosition = otherPerspective(spellData.targetPosition))
                 )
             }
             is SpellData.Bird52 -> {
                 if (spell !is Bird52Spell)
                     throw IllegalStateException("Performed spell by other player isn't their spell")
-                spell.cast(spellData)
+                spell.cast(battle.hero2, spellData)
             }
         }
-        battle.activeSpells.second.add(activeSpell)
+        battle.activeSpells.second += activeSpell
+        applySpell(activeSpell)
     }
 
     private fun doAction(action: ActionData) {
         MultiplayerService.postAction(action)
         battle.actions += action
         subtractActionPoints(battle.hero1, action.actionPointCost)
+        battle.getCurrentOutcome()?.let(::resolveGame)
     }
 
     private fun onAttackUnit(attackerPosition: GridVector, targetPosition: GridVector) {
@@ -287,37 +284,33 @@ class BattleController(
 
     private fun onCastSpell() {
         if (battle.yourTurn) {
-            doAction(
-                ActionData.CastSpell(
-                    playerID,
-                    when (battle.hero1.spell) {
-                        is EphemeralAllegianceSpell -> {
-                            val data = SpellData.EphemeralAllegiance(
-                                battle.battleMap.getPosOfUnit(
-                                    battle.battleMap.getUnits()
-                                        .filter { it.allegiance == battle.hero2 }
-                                        .random(random)
-                                )!!
-                            )
-                            battle.activeSpells.first += battle.hero1.spell.cast(data)
-                            data
-                        }
-                        is Bird52Spell -> {
-                            val data = SpellData.Bird52
-                            battle.activeSpells.first += battle.hero1.spell.cast(data)
-                            data
-                        }
-                        is AdrenalineShotSpell -> {
-                            val data = SpellData.AdrenalineShot
-                            battle.activeSpells.first += battle.hero1.spell.cast(data)
-                            data
-                        }
-                        else -> throw NotImplementedError(
-                            "No casting implemented for ${battle.hero1.spell::class.java.name}"
+            val (spellData, activeSpell) =
+                when (battle.hero1.spell) {
+                    is EphemeralAllegianceSpell -> {
+                        val data = SpellData.EphemeralAllegiance(
+                            battle.battleMap.getPosOfUnit(
+                                battle.battleMap.getUnits()
+                                    .filter { it.allegiance == battle.hero2 }
+                                    .random(random)
+                            )!!
                         )
+                        Pair(data, battle.hero1.spell.cast(battle.hero1, data))
                     }
-                )
-            )
+                    is Bird52Spell -> {
+                        val data = SpellData.Bird52
+                        Pair(data, battle.hero1.spell.cast(battle.hero1, data))
+                    }
+                    is AdrenalineShotSpell -> {
+                        val data = SpellData.AdrenalineShot
+                        Pair(data, battle.hero1.spell.cast(battle.hero1, data))
+                    }
+                    else -> throw NotImplementedError(
+                        "No casting implemented for ${battle.hero1.spell::class.java.name}"
+                    )
+                }
+            battle.activeSpells.first += activeSpell
+            doAction(ActionData.CastSpell(playerID, spellData))
+            applySpell(activeSpell)
         }
     }
 
@@ -391,7 +384,7 @@ class BattleController(
         return GridVector(battleMapController.mapSize.x - 1 - (pos.y % 2) - pos.x, pos.y)
     }
 
-    private fun subtractActionPoints(hero: Hero<*>, pointsToSubtract: Int) {
+    private fun subtractActionPoints(hero: Hero, pointsToSubtract: Int) {
         hero.applyStatsModifier(
             HeroStatsModifier {
                 it.copy(actionPoints = it.actionPoints - pointsToSubtract)
@@ -400,5 +393,10 @@ class BattleController(
         if (hero.currentStats.actionPoints <= 0) {
             endTurn()
         }
+    }
+
+    private fun applySpell(activeSpell: ActiveSpell<*>) {
+        activeSpell.apply(battle)
+        battle.getCurrentOutcome()?.let(::resolveGame)
     }
 }
