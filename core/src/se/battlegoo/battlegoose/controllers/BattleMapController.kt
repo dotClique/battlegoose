@@ -103,9 +103,6 @@ class BattleMapController(
     }
 
     private fun removeUnit(unitController: UnitController) {
-        if (unitController.selected) {
-            clearTileStates()
-        }
         unitController.unitModel.let {
             model.removeUnit(it)
             unitControllers.remove(it)
