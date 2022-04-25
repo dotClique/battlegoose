@@ -10,10 +10,14 @@ data class TutorialStep(
 )
 
 enum class TutorialSprite {
+    INTERNET_CONNECTION,
     MAIN_MENU,
     CREATE_LOBBY,
     JOIN_LOBBY,
     QUICK_JOIN,
     HERO_SELECT,
-    BATTLE
+    LEADERBOARD,
+    BATTLE_GENERAL,
+    BATTLE_MOVE_AND_ATTACK,
+    BATTLE_SPELL
 }

@@ -34,12 +34,16 @@ class TutorialPageView(
 
     private val tutorialTexture: Texture = Texture(
         when (viewModel.sprite) {
-            TutorialSprite.MAIN_MENU -> "tutorial/mainMenu.png"
-            TutorialSprite.CREATE_LOBBY,
-            TutorialSprite.JOIN_LOBBY,
-            TutorialSprite.QUICK_JOIN,
-            TutorialSprite.HERO_SELECT,
-            TutorialSprite.BATTLE -> "tutorial/createLobby.png"
+            TutorialSprite.INTERNET_CONNECTION -> "tutorial/internetConnection.png"
+            TutorialSprite.MAIN_MENU -> "tutorial/mainMenu.jpg"
+            TutorialSprite.CREATE_LOBBY -> "tutorial/createLobby.jpg"
+            TutorialSprite.JOIN_LOBBY -> "tutorial/joinLobby.jpg"
+            TutorialSprite.QUICK_JOIN -> "tutorial/quickJoin.jpg"
+            TutorialSprite.HERO_SELECT -> "tutorial/heroSelection.jpg"
+            TutorialSprite.LEADERBOARD -> "tutorial/leaderboard.jpg"
+            TutorialSprite.BATTLE_GENERAL -> "tutorial/battleGeneral.jpg"
+            TutorialSprite.BATTLE_MOVE_AND_ATTACK -> "tutorial/battleMoveAndAttack.jpg"
+            TutorialSprite.BATTLE_SPELL -> "tutorial/battleSpell.jpg"
         }
     )
     private val tutorialSprite: Sprite = Sprite(tutorialTexture)
