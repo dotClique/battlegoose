@@ -8,6 +8,7 @@ import se.battlegoo.battlegoose.views.CreateLobbyView
 class CreateLobbyState(selectedHero: Hero) : LobbyState(selectedHero) {
 
     private val createLobbyController: CreateLobbyController = CreateLobbyController(
+        selectedHero,
         createLobbyView = CreateLobbyView(
             this::goBack,
             stage
@@ -17,6 +18,8 @@ class CreateLobbyState(selectedHero: Hero) : LobbyState(selectedHero) {
                 BattleState(
                     it.hostID,
                     it.battleID,
+                    it.hostHero.toHero(),
+                    it.otherHero!!.toHero(),
                     true
                 )
             )

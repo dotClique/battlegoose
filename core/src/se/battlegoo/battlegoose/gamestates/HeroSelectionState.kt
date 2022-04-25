@@ -11,8 +11,8 @@ import se.battlegoo.battlegoose.views.HeroSelectionView
 import se.battlegoo.battlegoose.views.HeroSelectionViewModel
 
 class HeroSelectionState(
-    private val createLobbyState: (Hero<*>) -> LobbyState
-): GameState() {
+    private val createLobbyState: (Hero) -> LobbyState
+) : GameState() {
 
     private val heroes: List<Hero> = listOf(SergeantSwan(), MajorMallard(), AdmiralAlbatross())
     private val heroSelection = HeroSelection(heroes)

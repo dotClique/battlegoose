@@ -8,12 +8,15 @@ import se.battlegoo.battlegoose.views.JoinLobbyView
 class JoinLobbyState(selectedHero: Hero) : LobbyState(selectedHero) {
 
     private var joinLobbyController: JoinLobbyController = JoinLobbyController(
+        selectedHero,
         joinLobbyView = JoinLobbyView(stage),
         onReadyStartBattle = {
             GameStateManager.replace(
                 BattleState(
-                    it.lobby.otherPlayerID,
-                    it.lobby.battleID,
+                    it.battle.otherPlayerID,
+                    it.battle.battleID,
+                    it.battle.hostHero.toHero(),
+                    it.battle.otherHero!!.toHero(),
                     false
                 )
             )

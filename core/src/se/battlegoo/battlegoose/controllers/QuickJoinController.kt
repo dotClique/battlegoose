@@ -2,6 +2,8 @@ package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
+import se.battlegoo.battlegoose.datamodels.BattleData
+import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.network.MultiplayerService
 import se.battlegoo.battlegoose.network.RandomPairingStatus
 import se.battlegoo.battlegoose.utils.Modal
@@ -9,8 +11,9 @@ import se.battlegoo.battlegoose.utils.ModalType
 import se.battlegoo.battlegoose.views.QuickJoinView
 
 class QuickJoinController(
+    hero: Hero,
     private val quickJoinView: QuickJoinView,
-    val onReadyStartBattle: (userID: String, battleID: String, isHost: Boolean) -> Unit,
+    val onReadyStartBattle: (battle: BattleData, isHost: Boolean) -> Unit,
     val onClickMainMenu: () -> Unit,
     val stage: Stage
 ) : ControllerBase(quickJoinView) {
@@ -25,12 +28,12 @@ class QuickJoinController(
     private var successfullyLeftQueue = false
     private var leaveTimeoutCounter = 0f
 
-    private var battleData: BattleStateData? = null
+    private var battleData: RandomPairingStatus.StartBattle? = null
 
     private var showingErrorModal = false
 
     init {
-        MultiplayerService.requestOpponent({ status, leaveQueue ->
+        MultiplayerService.requestOpponent(hero, { status, leaveQueue ->
             setBattleData(status)
             quickJoinView.setStatus(status)
             shouldStartBattle = status is RandomPairingStatus.StartBattle
@@ -55,11 +58,7 @@ class QuickJoinController(
 
     private fun setBattleData(status: RandomPairingStatus) {
         if (status is RandomPairingStatus.StartBattle) {
-            battleData = BattleStateData(
-                userID = status.playerID,
-                battleID = status.battleID,
-                isHost = status.isHost
-            )
+            battleData = status
         }
     }
 
@@ -89,8 +88,7 @@ class QuickJoinController(
         when {
             wantToLeaveQueue && canLeaveQueue && successfullyLeftQueue -> onClickMainMenu()
             shouldStartBattle && dataCpy != null -> onReadyStartBattle(
-                dataCpy.userID,
-                dataCpy.battleID,
+                dataCpy.battle,
                 dataCpy.isHost
             )
             shouldStartBattle && dataCpy == null -> showModal(
@@ -113,5 +111,3 @@ class QuickJoinController(
         quickJoinView.dispose()
     }
 }
-
-data class BattleStateData(val userID: String, val battleID: String, val isHost: Boolean)

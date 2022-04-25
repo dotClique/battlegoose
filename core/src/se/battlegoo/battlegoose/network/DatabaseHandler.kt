@@ -10,9 +10,13 @@ import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.DataModel
 import se.battlegoo.battlegoose.datamodels.GridVector
+import se.battlegoo.battlegoose.datamodels.HeroData
 import se.battlegoo.battlegoose.datamodels.LobbyData
 import se.battlegoo.battlegoose.datamodels.RandomOpponentData
 import se.battlegoo.battlegoose.datamodels.SpellData
+import se.battlegoo.battlegoose.models.heroes.AdmiralAlbatross
+import se.battlegoo.battlegoose.models.heroes.MajorMallard
+import se.battlegoo.battlegoose.models.heroes.SergeantSwan
 import java.util.function.BiConsumer
 import java.util.function.Consumer
 
@@ -220,6 +224,7 @@ class DatabaseHandler {
             SpellData::class -> ::convertToSpellData
             BattleData::class -> ::convertToBattle
             RandomOpponentData::class -> ::convertToRandomOpponentData
+            HeroData::class -> ::convertToHeroData
             else -> throw NotImplementedError("No deserializer for ${T::class}")
         } as ConversionFunc<T>
     }
@@ -232,6 +237,16 @@ class DatabaseHandler {
         return LobbyData(lobbyID, hostID, otherPlayerID, battleID)
     }
 
+    fun convertToHeroData(data: Map<String, Any>): HeroData<*> {
+        val heroType = data[HeroData<*>::heroType.name] as String
+        return when (Class.forName(heroType).kotlin) {
+            SergeantSwan::class -> HeroData(SergeantSwan())
+            MajorMallard::class -> HeroData(MajorMallard())
+            AdmiralAlbatross::class -> HeroData(AdmiralAlbatross())
+            else -> throw NotImplementedError("The hero class $heroType has no deserializer")
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun convertToBattle(battleData: Map<String, Any>): BattleData {
         val battleID = battleData[BattleData::battleID.name] as String
@@ -242,7 +257,10 @@ class DatabaseHandler {
         val actions: List<ActionData> = actionsRaw
             ?.map(::convertToActionData)
             ?: emptyList()
-        return BattleData(battleID, hostID, otherPlayerID, actions)
+        val hostHero = convertToHeroData(battleData[BattleData::hostHero.name] as Map<String, Any>)
+        val otherHero = (battleData[BattleData::otherHero.name] as Map<String, Any>?)
+            ?.let(::convertToHeroData)
+        return BattleData(battleID, hostID, otherPlayerID, actions, hostHero, otherHero)
     }
 
     @Suppress("UNCHECKED_CAST")
