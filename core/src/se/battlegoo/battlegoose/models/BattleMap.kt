@@ -1,9 +1,9 @@
 package se.battlegoo.battlegoose.models
 
 import se.battlegoo.battlegoose.datamodels.GridVector
+import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.utils.gridmath.Direction
 import se.battlegoo.battlegoose.utils.gridmath.neighbours
-import se.battlegoo.battlegoose.models.units.UnitModel
 
 class BattleMap(
     val background: BattleMapBackground,

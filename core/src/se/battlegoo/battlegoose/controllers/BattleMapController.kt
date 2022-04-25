@@ -3,13 +3,13 @@ package se.battlegoo.battlegoose.controllers
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.datamodels.ScreenVector
-import se.battlegoo.battlegoose.utils.gridmath.findReachablePositions
 import se.battlegoo.battlegoose.models.BattleMap
 import se.battlegoo.battlegoose.models.Obstacle
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.models.units.UnitModel
 import se.battlegoo.battlegoose.utils.Modal
 import se.battlegoo.battlegoose.utils.ModalType
+import se.battlegoo.battlegoose.utils.gridmath.findReachablePositions
 import se.battlegoo.battlegoose.views.BattleMapTileState
 import se.battlegoo.battlegoose.views.BattleMapTileView
 import se.battlegoo.battlegoose.views.BattleMapView

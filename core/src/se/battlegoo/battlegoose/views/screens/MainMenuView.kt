@@ -34,15 +34,23 @@ class MainMenuView(
     )
     private val joinLobbyBtn = ButtonView(
         "joinLobbyBtn.png",
-        x0 + MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER, y0, MenuLayout.BUTTON_WIDTH, onClickJoinLobby
+        x0 + MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER,
+        y0,
+        MenuLayout.BUTTON_WIDTH, onClickJoinLobby
     )
     private val quickJoinBtn = ButtonView(
         "quickJoinBtn.png",
-        x0 + 2 * (MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER), y0, MenuLayout.BUTTON_WIDTH, onClickQuickJoin
+        x0 + 2 * (MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER),
+        y0,
+        MenuLayout.BUTTON_WIDTH,
+        onClickQuickJoin
     )
     private val leaderboardBtn = ButtonView(
         "leaderboardBtn.png",
-        x0 + 3 * (MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER), y0, MenuLayout.BUTTON_WIDTH, onClickLeaderboard
+        x0 + 3 * (MenuLayout.BUTTON_WIDTH + MenuLayout.SPACER),
+        y0,
+        MenuLayout.BUTTON_WIDTH,
+        onClickLeaderboard
     )
     private val tutorialBtn = TextButton("How to play", skin)
 
