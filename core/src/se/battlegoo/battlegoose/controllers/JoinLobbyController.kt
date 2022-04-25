@@ -2,8 +2,6 @@ package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.Logger
-import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.models.heroes.Hero
 import se.battlegoo.battlegoose.network.JoinLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
@@ -43,7 +41,7 @@ class JoinLobbyController(
     private fun goBack() {
         val status = joinLobbyStatus
         if (status is JoinLobbyStatus.StartBattle)
-            return Logger(Game.LOGGER_TAG).error("Cannot exit lobby after battle has started")
+            return
         else if (status is JoinLobbyStatus.Ready)
             MultiplayerService.leaveLobbyAsOtherPlayer(
                 status.lobby.lobbyID,
@@ -83,7 +81,6 @@ class JoinLobbyController(
             return
         }
 
-        Logger(Game.LOGGER_TAG).debug("JoinLobbyStatus: $joinLobbyStatus")
         if (joined && joinLobbyStatus is JoinLobbyStatus.NotAccessible
         ) {
             listenForStartingBattle = false

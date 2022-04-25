@@ -1,8 +1,6 @@
 package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.utils.Logger
-import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.GridVector
 import se.battlegoo.battlegoose.datamodels.ScreenVector
@@ -111,7 +109,6 @@ class BattleController(
         placeUnits()
         placeObstacles()
         battle.yourTurn = random.nextBoolean() xor battle.isHost
-        Logger(Game.LOGGER_TAG, Logger.INFO).info("Battle ${battle.battleId} playerId: $playerID")
         startTurn()
     }
 
@@ -142,8 +139,6 @@ class BattleController(
     private fun startTurn() {
         battleMapController.yourTurn = battle.yourTurn
         view.yourTurn = battle.yourTurn
-        Logger(Game.LOGGER_TAG, Logger.INFO)
-            .info((if (battle.yourTurn) "My" else "Opponent's") + " turn")
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
         if (battle.yourTurn) {
             turnStartMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime())

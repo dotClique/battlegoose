@@ -146,10 +146,8 @@ object MultiplayerService {
         databaseHandler.listen(
             DbPath.RandomOpponentQueue,
         ) { updatedQueueData, queueListenerCanceler ->
-            Logger(Game.LOGGER_TAG).debug("Run requestOpp listener")
             // Create function to leave the queue if wanted
             val leaveQueue: LeaveRandomPairingQueue = { onFail, onSuccess ->
-                Logger(Game.LOGGER_TAG).debug("Trying to leave queue")
                 processingQueue = true // To not add yourself to queue again
                 purgeQueue({ str, throwable ->
                     processingQueue = false
