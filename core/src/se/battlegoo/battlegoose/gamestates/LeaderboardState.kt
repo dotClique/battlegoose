@@ -24,7 +24,12 @@ class LeaderboardState : GameState() {
     private fun getUserScoreText(): String {
         if (userId != null) {
             val place = leaderboard.indexOfFirst { it.userId == userId }
-            if (place == -1) return ""
+            if (place == -1) {
+                MultiplayerService.incrementScore(0) {
+                    updateLeaderboard()
+                }
+                return ""
+            }
             val score = leaderboard[place].score
             return "\n\nYou (no. ${place + 1}): $score"
         }
