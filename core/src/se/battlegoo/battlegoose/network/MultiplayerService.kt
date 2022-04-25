@@ -1,6 +1,7 @@
 package se.battlegoo.battlegoose.network
 
 import com.badlogic.gdx.utils.Logger
+import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ActionData
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.datamodels.LobbyData
@@ -142,10 +143,10 @@ object MultiplayerService {
         databaseHandler.listen(
             DbPath.RandomOpponentQueue,
         ) { updatedQueueData, queueListenerCanceler ->
-            Logger("battlegoose").error("Run requestOpp listener")
+            Logger(Game.LOGGER_TAG).debug("Run requestOpp listener")
             // Create function to leave the queue if wanted
             val leaveQueue: LeaveRandomPairingQueue = { onFail, onSuccess ->
-                Logger("battlegoose").error("Trying to leave queue")
+                Logger(Game.LOGGER_TAG).debug("Trying to leave queue")
                 processingQueue = true // To not add yourself to queue again
                 purgeQueue({ str, throwable ->
                     processingQueue = false
@@ -296,7 +297,7 @@ object MultiplayerService {
                     userID,
                     onFail = { _, _ ->
                         battleListener.accept(JoinLobbyStatus.NotAccessible) {}
-                        Logger("battlegoose")
+                        Logger(Game.LOGGER_TAG)
                             .error("Failed in setOtherPlayerIDInLobby called in joinLobby")
                     }
                 ) {

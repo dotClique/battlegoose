@@ -6,7 +6,6 @@ import se.battlegoo.battlegoose.views.CreateLobbyView
 
 class CreateLobbyState : GameState() {
 
-    // battleData?.let { GameStateManager.replace(BattleState(it.hostID, it.battleID, true)) }
     private val createLobbyController: CreateLobbyController = CreateLobbyController(
         createLobbyView = CreateLobbyView(
             this::goBack,

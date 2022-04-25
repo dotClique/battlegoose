@@ -2,6 +2,7 @@ package se.battlegoo.battlegoose.controllers
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Logger
+import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.BattleData
 import se.battlegoo.battlegoose.network.CreateLobbyStatus
 import se.battlegoo.battlegoose.network.MultiplayerService
@@ -41,7 +42,7 @@ class CreateLobbyController(
 
     fun goBack() {
         val lobbyIDCpy = lobbyId
-            ?: return Logger("battlegoose")
+            ?: return Logger(Game.LOGGER_TAG, Logger.INFO)
                 .info("Cannot leave lobby before a lobby is created.")
         MultiplayerService.deleteLobby(
             lobbyIDCpy,
