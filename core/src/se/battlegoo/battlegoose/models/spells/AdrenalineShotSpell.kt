@@ -10,7 +10,7 @@ class AdrenalineShotSpell : Spell<SpellData.AdrenalineShot>(
     // the (presumably) only action point
     6
 ) {
-    override fun cast(
+    override fun castImplementation(
         caster: Hero,
         data: SpellData.AdrenalineShot
     ): ActiveSpell<AdrenalineShotSpell> {
