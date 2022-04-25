@@ -48,3 +48,13 @@ class UnitView(
         sprite.flip(facingDirection == FacingDirection.LEFT, false)
     }
 }
+
+enum class FacingDirection {
+    RIGHT,
+    LEFT;
+
+    fun flipped(): FacingDirection = when (this) {
+        RIGHT -> LEFT
+        LEFT -> RIGHT
+    }
+}

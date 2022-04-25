@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.Game
 import se.battlegoo.battlegoose.datamodels.ScreenVector
-import se.battlegoo.battlegoose.gridmath.isPointInsideHexagon
+import se.battlegoo.battlegoose.utils.gridmath.isPointInsideHexagon
 import se.battlegoo.battlegoose.utils.TextureAsset
 import se.battlegoo.battlegoose.utils.WavePulsator
 import kotlin.math.sqrt

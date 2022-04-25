@@ -1,4 +1,4 @@
-package se.battlegoo.battlegoose.gridmath
+package se.battlegoo.battlegoose.utils.gridmath
 
 import se.battlegoo.battlegoose.datamodels.ScreenVector
 import kotlin.math.abs
