@@ -30,8 +30,7 @@ class TutorialState : GameState() {
                 "Are all your friends busy? Want a new challenge? Then find an internet stranger " +
                 "to play with online.",
             "4) Access the leaderboard\n" +
-                "Want to know how you're doing? Go to the leaderboard to see the top 10 players " +
-                "globally, and how you compare.\n" +
+                "Want to know how you're doing? Compare yourself to the top players.\n" +
                 "\n" +
                 "5) How to play\n" +
                 "To open the tutorial, press the \"How to play\"-button.\n" +
@@ -70,13 +69,14 @@ class TutorialState : GameState() {
             TutorialSprite.QUICK_JOIN,
             "Quick Join",
             "To pair up with a random opponent online, simply press this and wait until " +
-                "one becomes available. When an opponent is found, you will automatically start" +
+                "one becomes available. When an opponent is found, you will automatically start " +
                 "to battle."
         ),
         TutorialStep(
             TutorialSprite.LEADERBOARD,
             "Leaderboard",
-            "On the leaderboard you can see the score of the top 10 players globally. " +
+            "On the leaderboard you can see the score of the top 10 players globally, " +
+                "and your score and placing. " +
                 "Winning a battle earns you 1 point, losing a battle retracts 1 point, and " +
                 "neither user will receive or lose points if it’s a tie."
         ),
