@@ -1,5 +1,6 @@
 package se.battlegoo.battlegoose.views
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import se.battlegoo.battlegoose.utils.TextureAsset
 
 class UnitView(
@@ -21,14 +22,24 @@ class UnitView(
             field = value
         }
 
-    var flipped: Boolean = false
+    var converted: Boolean = false
         set(value) {
+            if (value == field) return
             field = value
             facingDirection = if (value)
                 textureStartFacingDirection.flipped()
             else
                 textureStartFacingDirection
         }
+
+    override fun render(sb: SpriteBatch) {
+        val previousShader = sb.shader
+        if (converted) {
+            sb.shader = RedShiftShader
+        }
+        super.render(sb)
+        sb.shader = previousShader
+    }
 
     var focused: Boolean = false
 

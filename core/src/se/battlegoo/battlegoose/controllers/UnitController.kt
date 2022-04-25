@@ -36,7 +36,7 @@ open class UnitController(
     var converted: Boolean = false
         set(value) {
             field = value
-            unitView.flipped = converted
+            unitView.converted = converted
         }
 
     private var unitHealthBarController = UnitHealthBarController(
