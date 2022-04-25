@@ -109,10 +109,7 @@ class BattleController(
             }
         }
 
-        if (battle.yourTurn) {
-            battleMapController.yourTurn = true
-        } else {
-            battleMapController.yourTurn = false
+        if (!battle.yourTurn) {
             checkForOpposingMoves()
         }
         battleMapController.update(dt)
@@ -123,6 +120,7 @@ class BattleController(
     }
 
     private fun startTurn() {
+        battleMapController.yourTurn = battle.yourTurn
         Logger(Game.LOGGER_TAG, Logger.INFO)
             .info((if (battle.yourTurn) "My" else "Opponent's") + " turn")
         applySpells(if (battle.yourTurn) battle.activeSpells.first else battle.activeSpells.second)
