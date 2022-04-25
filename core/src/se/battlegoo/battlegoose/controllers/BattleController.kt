@@ -69,6 +69,8 @@ class BattleController(
     private var turnStartMillis: Long? = null
     private var turnElapsedMillis: Long? = null
 
+    private var battleOver = false
+
     init {
         view.position = ScreenVector(50f, 50f)
         view.size = ScreenVector(200f, 200f)
@@ -137,6 +139,8 @@ class BattleController(
     }
 
     private fun resolveGame(outcome: BattleOutcome) {
+        if (battleOver) return
+        battleOver = true
         MultiplayerService.endBattle()
         MultiplayerService.incrementScore(outcome.scoreChange) {}
         // view.showResolutionScreen { GameStateManager.goBack() }
@@ -265,6 +269,7 @@ class BattleController(
         MultiplayerService.postAction(action)
         battle.actions += action
         subtractActionPoints(battle.hero1, action.actionPointCost)
+        battle.getCurrentOutcome()?.let(::resolveGame)
     }
 
     private fun onAttackUnit(attackerPosition: GridVector, targetPosition: GridVector) {
