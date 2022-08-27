@@ -74,3 +74,14 @@ The runners were registered using the following command:
 ```bash
 sudo gitlab-runner register --non-interactive --url https://gitlab.stud.idi.ntnu.no/ --registration-token $REGISTRATION_TOKEN --executor "docker" --docker-image alpine:latest --run-untagged --description "gitlab-runner-frat-no1337"
 ```
+
+## Old repository
+
+This project was formerly hosted on GitLab, which means issue and PR numbers restart
+after tag v1.0-anonymified. The commits up to and including that point have been
+anonymified to hide the identity of one contributor for privacy reasons. To view PRs
+and issues from before the move, head to https://gitlab.com/LarsSelbekk/battlegoose,
+which is also anonymified but includes GitLab-specific data. Because of the
+anonymization process, everything appears to be done by one author, which is not the
+case. For comments, the proper author is mentioned in italics underneath, but
+assignee/reviewer-information for example is simply lost.
