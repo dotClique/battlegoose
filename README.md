@@ -1,3 +1,5 @@
+<img src=https://battlegoo.se/goose.png width=250 />
+
 # BattleGoose
 
 The ultimate turn-based online multiplayer game that will literally give you goosebumps.
