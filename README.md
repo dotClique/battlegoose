@@ -4,7 +4,7 @@ The ultimate turn-based online multiplayer game that will literally give you goo
 
 Get the game at [battlegoo.se](https://battlegoo.se)!
 
-<a href="https://youtu.be/h7RUAqPUY1M"><img src="https://i.imgur.com/77hZr8C.png" alt="Watch the BattleGoose trailer!" width="720"/></a>
+<a href="https://trailer.battlegoo.se"><img src="https://i.imgur.com/77hZr8C.png" alt="Watch the BattleGoose trailer!" width="720"/></a>
 
 ## Development
 
