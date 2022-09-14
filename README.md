@@ -1,4 +1,4 @@
-<img src=https://battlegoo.se/goose.png width=250 />
+<img src="https://battlegoo.se/goose.png" width="250" alt="The BattleGoose logo: A well-armed duck" />
 
 # BattleGoose
 
